@@ -1019,6 +1019,8 @@
 /* Masquer complètement le container Daily natif en mode D4 */
 #dailyVideoContainer {
   display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Masquer le dock vidéo obsolète */
@@ -1026,9 +1028,19 @@
   display: none !important;
 }
 
-/* Masquer le launcher bubble Daily */
-.daily-video-launcher {
+/* Masquer le launcher bubble Daily - V11: Correction des sélecteurs */
+.daily-video-launcher,
+#dailyVideoLauncher {
   display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* V11: Masquer tous les boutons mic/cam Daily */
+#dailyVideoContainer button,
+.daily-video-container button {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 /* ============================================

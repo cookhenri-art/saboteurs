@@ -493,10 +493,10 @@ function forceUnmuteWithNotification(phase, registry) {
 
 /**
  * D4 v5.8: Met à jour visuellement les boutons mute
- * V11: Boutons inline supprimés - uniquement boutons briefing
+ * V11: Boutons inline supprimés - uniquement boutons briefing + mobile
  */
 function updateMuteButtonsUI(audioMuted, videoMuted) {
-  // Boutons du briefing UI
+  // Boutons du briefing UI (PC)
   const briefingMicBtn = document.getElementById('briefingMicBtn');
   const briefingCamBtn = document.getElementById('briefingCamBtn');
   
@@ -523,7 +523,34 @@ function updateMuteButtonsUI(audioMuted, videoMuted) {
       briefingCamBtn.classList.remove('is-off');
     }
   }
+  
+  // V11: Boutons mobile
+  const mobileMicBtn = document.getElementById('mobileMicBtn');
+  const mobileCamBtn = document.getElementById('mobileCamBtn');
+  
+  if (mobileMicBtn) {
+    if (audioMuted) {
+      mobileMicBtn.textContent = '🔇';
+      mobileMicBtn.classList.add('is-off');
+    } else {
+      mobileMicBtn.textContent = '🎤';
+      mobileMicBtn.classList.remove('is-off');
+    }
+  }
+  
+  if (mobileCamBtn) {
+    if (videoMuted) {
+      mobileCamBtn.textContent = '🚫';
+      mobileCamBtn.classList.add('is-off');
+    } else {
+      mobileCamBtn.textContent = '📹';
+      mobileCamBtn.classList.remove('is-off');
+    }
+  }
 }
+
+// V11: Exposer globalement pour synchronisation cross-module
+window.updateMuteButtonsUI = updateMuteButtonsUI;
 
 /**
  * D4 v5.8: Affiche une notification de démute

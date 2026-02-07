@@ -720,6 +720,9 @@
     // V11: Démarrer le polling des phases privées
     startPhasePolling();
     
+    // V11: Démarrer le polling de synchronisation des boutons mic/cam
+    startControlStatePolling();
+    
     log('Briefing UI shown');
   }
   
@@ -758,6 +761,9 @@
     
     // V11: Arrêter le polling vidéo
     stopVideoPolling();
+    
+    // V11: Arrêter le polling de synchronisation des boutons
+    stopControlStatePolling();
     
     // Retirer la classe split du body
     document.body.classList.remove('video-split-active');
@@ -1561,7 +1567,7 @@
       await callObj.setLocalAudio(newState);
       
       // V11: Attendre un peu et RE-VÉRIFIER que le changement a pris effet
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
       const actualState = await callObj.localAudio();
       
       // V11: L'état muted est l'INVERSE de l'état audio
@@ -1574,7 +1580,13 @@
         window.VideoTracksRegistry.setUserMutedAudio(isMicMuted);
       }
       
+      // V11: Mettre à jour TOUS les boutons mic possibles
       updateMicButton();
+      
+      // V11: Aussi mettre à jour via video-integration-client si disponible
+      if (typeof window.updateMuteButtonsUI === 'function') {
+        window.updateMuteButtonsUI(isMicMuted, isCamOff);
+      }
       
       // Afficher le toast de confirmation
       showMuteToast(isMicMuted);
@@ -1602,7 +1614,7 @@
       await callObj.setLocalVideo(newState);
       
       // V11: Attendre un peu et RE-VÉRIFIER que le changement a pris effet
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
       const actualState = await callObj.localVideo();
       
       // V11: L'état off est l'INVERSE de l'état vidéo
@@ -1615,7 +1627,13 @@
         window.VideoTracksRegistry.setUserMutedVideo(isCamOff);
       }
       
+      // V11: Mettre à jour TOUS les boutons cam possibles
       updateCamButton();
+      
+      // V11: Aussi mettre à jour via video-integration-client si disponible
+      if (typeof window.updateMuteButtonsUI === 'function') {
+        window.updateMuteButtonsUI(isMicMuted, isCamOff);
+      }
       
     } catch (e) {
       log('Error toggling camera:', e);
@@ -1695,8 +1713,35 @@
       isCamOff = !(await callObj.localVideo());
       updateMicButton();
       updateCamButton();
+      
+      // V11: Aussi mettre à jour via la fonction globale
+      if (typeof window.updateMuteButtonsUI === 'function') {
+        window.updateMuteButtonsUI(isMicMuted, isCamOff);
+      }
     } catch (e) {
       log('Error syncing control states:', e);
+    }
+  }
+  
+  // V11: Polling périodique pour synchroniser l'état des boutons (toutes les 2 secondes)
+  let controlStatePollingInterval = null;
+  
+  function startControlStatePolling() {
+    if (controlStatePollingInterval) return;
+    
+    controlStatePollingInterval = setInterval(() => {
+      if (isVisible()) {
+        syncControlStates();
+      }
+    }, 2000);
+    log('Started control state polling');
+  }
+  
+  function stopControlStatePolling() {
+    if (controlStatePollingInterval) {
+      clearInterval(controlStatePollingInterval);
+      controlStatePollingInterval = null;
+      log('Stopped control state polling');
     }
   }
 
