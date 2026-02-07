@@ -827,6 +827,9 @@
       }
     }
   </style>
+  <!-- Traductions (chargées avant le script principal) -->
+  <script src="/translations.js"></script>
+  <script src="/site-translations.js"></script>
 </head>
 <body>
   <div class="stats-shell">
@@ -2303,9 +2306,7 @@
     });
   </script>
   
-  <!-- Traductions -->
-  <script src="/translations.js"></script>
-  <script src="/site-translations.js"></script>
+  <!-- Appliquer les traductions -->
   <script>
     // Appliquer les traductions au chargement
     if (typeof applySiteTranslations === 'function') {
