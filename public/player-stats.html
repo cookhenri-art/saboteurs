@@ -1136,16 +1136,29 @@
       return fallback;
     }
     
-    // Labels traduits dynamiquement
+    // Labels traduits dynamiquement avec noms de rôles selon thème
     function getPowerLabels() {
+      const sabPlural = tRole('saboteur', true);
+      const sabSingular = tRole('saboteur', false);
+      const astPlural = tRole('astronaut', true);
+      const astSingular = tRole('astronaut', false);
+      
+      // Descriptions générées dynamiquement (pas de t() pour permettre les noms de rôles dynamiques)
+      const descSoigneur = t('power_doctor_desc_prefix', 'Soins') + ` ${astSingular} + ` + t('power_doctor_desc_suffix', 'potions mort') + ` ${sabPlural}`;
+      const descBluffer = t('power_bluffer_desc_prefix', 'Victoire') + ` ${sabSingular} + 0 ` + t('power_bluffer_desc_suffix', 'vote contre toi');
+      const descExterminator = t('power_exterminator_desc_prefix', 'Potions mort sur') + ` ${astPlural}`;
+      const descInvestigator = t('power_investigator_desc_prefix', 'Votes justes vs') + ` ${sabPlural}`;
+      const descCaptain = t('power_captain_desc_prefix', 'Départages + transferts pro-') + astSingular;
+      const descSecurity = t('power_security_desc_prefix', 'Vengeance efficace vs') + ` ${sabSingular}`;
+      
       return {
-        A: [t('power_doctor', 'Docteur / Sorcière'), t('power_doctor_desc', 'Soins astro + potions mort saboteurs')],
-        B: [t('power_bluffer', 'Bluffer (Incognito)'), t('power_bluffer_desc', 'Victoire saboteur + 0 vote contre toi')],
+        A: [t('power_doctor', 'Soigneur'), descSoigneur],
+        B: [t('power_bluffer', 'Bluffer (Incognito)'), descBluffer],
         C: [t('power_resistant', 'Le plus Résistant'), t('power_resistant_desc', 'Taux de survie en fin de partie')],
-        D: [t('power_exterminator', 'Exterminateur'), t('power_exterminator_desc', 'Potions mort sur astronautes')],
-        E: [t('power_investigator', 'Enquêteur'), t('power_investigator_desc', 'Votes justes vs saboteurs')],
-        F: [t('power_captain', 'Chef de station'), t('power_captain_desc', 'Départages + transferts pro-astro')],
-        G: [t('power_security', 'Chef de sécurité'), t('power_security_desc', 'Vengeance efficace vs saboteur')],
+        D: [t('power_exterminator', 'Exterminateur'), descExterminator],
+        E: [t('power_investigator', 'Enquêteur'), descInvestigator],
+        F: [t('power_captain', 'Capitaine'), descCaptain],
+        G: [t('power_security', 'Vengeance'), descSecurity],
         I: [t('power_streak', 'Série de Victoires'), t('power_streak_desc', 'Meilleure streak (tous rôles)')],
         H: [t('power_champion', 'Champion'), t('power_champion_desc', 'Moyenne pondérée globale')]
       };
@@ -1189,52 +1202,63 @@
       }
     }
     
-    // V42: Noms des équipes selon le thème
+    // V42: Noms des équipes selon le thème (utilise TRANSLATIONS.themeRoles)
     function getTeamNames() {
       const theme = localStorage.getItem('saboteur_theme') || 'default';
       const lang = getCurrentLang();
       
-      const names = {
-        'default': {
-          fr: { astronaut: 'Astronaute', saboteur: 'Saboteur' },
-          en: { astronaut: 'Astronaut', saboteur: 'Saboteur' },
-          es: { astronaut: 'Astronauta', saboteur: 'Saboteador' },
-          de: { astronaut: 'Astronaut', saboteur: 'Saboteur' },
-          it: { astronaut: 'Astronauta', saboteur: 'Sabotatore' },
-          pt: { astronaut: 'Astronauta', saboteur: 'Sabotador' },
-          nl: { astronaut: 'Astronaut', saboteur: 'Saboteur' }
-        },
-        'werewolf': {
-          fr: { astronaut: 'Villageois', saboteur: 'Loup-Garou' },
-          en: { astronaut: 'Villager', saboteur: 'Werewolf' },
-          es: { astronaut: 'Aldeano', saboteur: 'Hombre Lobo' },
-          de: { astronaut: 'Dorfbewohner', saboteur: 'Werwolf' },
-          it: { astronaut: 'Villico', saboteur: 'Lupo Mannaro' },
-          pt: { astronaut: 'Aldeão', saboteur: 'Lobisomem' },
-          nl: { astronaut: 'Dorpeling', saboteur: 'Weerwolf' }
-        },
-        'wizard-academy': {
-          fr: { astronaut: 'Élève', saboteur: 'Sorcier Noir' },
-          en: { astronaut: 'Student', saboteur: 'Dark Wizard' },
-          es: { astronaut: 'Estudiante', saboteur: 'Mago Oscuro' },
-          de: { astronaut: 'Schüler', saboteur: 'Schwarzmagier' },
-          it: { astronaut: 'Studente', saboteur: 'Mago Oscuro' },
-          pt: { astronaut: 'Estudante', saboteur: 'Mago Negro' },
-          nl: { astronaut: 'Student', saboteur: 'Duistere Tovenaar' }
-        },
-        'mythic-realms': {
-          fr: { astronaut: 'Héros', saboteur: 'Titan' },
-          en: { astronaut: 'Hero', saboteur: 'Titan' },
-          es: { astronaut: 'Héroe', saboteur: 'Titán' },
-          de: { astronaut: 'Held', saboteur: 'Titan' },
-          it: { astronaut: 'Eroe', saboteur: 'Titano' },
-          pt: { astronaut: 'Herói', saboteur: 'Titã' },
-          nl: { astronaut: 'Held', saboteur: 'Titan' }
+      // Utiliser TRANSLATIONS.themeRoles si disponible
+      if (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.themeRoles) {
+        const themeRoles = TRANSLATIONS.themeRoles[theme] || TRANSLATIONS.themeRoles['default'];
+        if (themeRoles) {
+          const getRole = (roleKey) => {
+            if (themeRoles[roleKey]) {
+              return themeRoles[roleKey][lang] || themeRoles[roleKey].fr || roleKey;
+            }
+            return roleKey;
+          };
+          return {
+            astronaut: getRole('astronaut'),
+            saboteur: getRole('saboteur')
+          };
         }
-      };
+      }
       
-      const themeNames = names[theme] || names['default'];
-      return themeNames[lang] || themeNames['fr'];
+      // Fallback si TRANSLATIONS non disponible
+      const fallbackNames = {
+        'default': { astronaut: 'Astronaute', saboteur: 'Saboteur' },
+        'werewolf': { astronaut: 'Villageois', saboteur: 'Loup-Garou' },
+        'wizard-academy': { astronaut: 'Élève', saboteur: 'Sorcier Noir' },
+        'mythic-realms': { astronaut: 'Humain', saboteur: 'Orque Maléfique' }
+      };
+      return fallbackNames[theme] || fallbackNames['default'];
+    }
+    
+    // V11: Fonction pour obtenir un nom de rôle traduit (avec support pluriel)
+    function tRole(roleKey, plural = false) {
+      const theme = localStorage.getItem('saboteur_theme') || 'default';
+      const lang = getCurrentLang();
+      
+      if (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.themeRoles) {
+        const themeRoles = TRANSLATIONS.themeRoles[theme] || TRANSLATIONS.themeRoles['default'];
+        if (themeRoles && themeRoles[roleKey]) {
+          const roleTranslations = themeRoles[roleKey];
+          if (plural) {
+            const pluralKey = lang + '_plural';
+            if (roleTranslations[pluralKey]) return roleTranslations[pluralKey];
+            if (roleTranslations['fr_plural']) return roleTranslations['fr_plural'];
+          }
+          if (roleTranslations[lang]) return roleTranslations[lang];
+          if (roleTranslations.fr) return roleTranslations.fr;
+        }
+      }
+      
+      // Fallback
+      const defaults = {
+        astronaut: plural ? 'Astronautes' : 'Astronaute',
+        saboteur: plural ? 'Saboteurs' : 'Saboteur'
+      };
+      return defaults[roleKey] || roleKey;
     }
 
     // ═══════════════════════════════════════════════════════════════════

@@ -22,75 +22,6 @@ const TRANSLATIONS = {
   },
 
   // ============================================================================
-  // AVANTAGES COMPTE GRATUIT (freeBenefits)
-  // ============================================================================
-  freeBenefits: {
-    title: {
-      fr: "Avantages du compte gratuit",
-      en: "Free account benefits",
-      es: "Ventajas de la cuenta gratuita",
-      it: "Vantaggi dell'account gratuito",
-      de: "Vorteile des kostenlosen Kontos",
-      pt: "Vantagens da conta gratuita",
-      nl: "Voordelen van het gratis account"
-    },
-    voiceMessages: {
-      fr: "Messages vocaux dans le chat",
-      en: "Voice messages in chat",
-      es: "Mensajes de voz en el chat",
-      it: "Messaggi vocali in chat",
-      de: "Sprachnachrichten im Chat",
-      pt: "Mensagens de voz no chat",
-      nl: "Spraakberichten in chat"
-    },
-    freeVideo: {
-      fr: "2 parties visio OFFERTES",
-      en: "2 FREE video games",
-      es: "2 partidas de video GRATIS",
-      it: "2 partite video GRATIS",
-      de: "2 KOSTENLOSE Videospiele",
-      pt: "2 jogos de vídeo GRÁTIS",
-      nl: "2 GRATIS videospellen"
-    },
-    freeAvatars: {
-      fr: "2 avatars IA OFFERTS",
-      en: "2 FREE AI avatars",
-      es: "2 avatares IA GRATIS",
-      it: "2 avatar IA GRATIS",
-      de: "2 KOSTENLOSE KI-Avatare",
-      pt: "2 avatares IA GRÁTIS",
-      nl: "2 GRATIS AI-avatars"
-    },
-    monthlyAvatars: {
-      fr: "Jusqu'à 30 avatars IA / mois",
-      en: "Up to 30 AI avatars / month",
-      es: "Hasta 30 avatares IA / mes",
-      it: "Fino a 30 avatar IA / mese",
-      de: "Bis zu 30 KI-Avatare / Monat",
-      pt: "Até 30 avatares IA / mês",
-      nl: "Tot 30 AI-avatars / maand"
-    },
-    stats: {
-      fr: "Stats & badges sauvegardés",
-      en: "Stats & badges saved",
-      es: "Estadísticas y medallas guardadas",
-      it: "Statistiche e badge salvati",
-      de: "Statistiken & Abzeichen gespeichert",
-      pt: "Estatísticas e medalhas salvas",
-      nl: "Statistieken & badges opgeslagen"
-    },
-    leaderboard: {
-      fr: "Accès aux classements",
-      en: "Leaderboard access",
-      es: "Acceso a clasificaciones",
-      it: "Accesso alle classifiche",
-      de: "Zugang zur Rangliste",
-      pt: "Acesso às classificações",
-      nl: "Toegang tot ranglijsten"
-    }
-  },
-
-  // ============================================================================
   // NOMS DES RÔLES PAR THÈME ET PAR LANGUE
   // Priorité: thème → langue (ex: Loup-Garou + Allemand = Werwolf)
   // ============================================================================
@@ -188,27 +119,27 @@ const TRANSLATIONS = {
     // ====== THÈME MYTHIQUE (mythic-realms) ======
     "mythic-realms": {
       saboteur: {
-        fr: "Titan", en: "Titan", es: "Titán", it: "Titano", de: "Titan", pt: "Titã", nl: "Titaan",
-        fr_plural: "Titans", en_plural: "Titans", es_plural: "Titanes", it_plural: "Titani", de_plural: "Titanen", pt_plural: "Titãs", nl_plural: "Titanen"
+        fr: "Orque Maléfique", en: "Evil Orc", es: "Orco Malvado", it: "Orco Malvagio", de: "Böser Ork", pt: "Orc Maligno", nl: "Kwaadaardige Ork",
+        fr_plural: "Orques Maléfiques", en_plural: "Evil Orcs", es_plural: "Orcos Malvados", it_plural: "Orchi Malvagi", de_plural: "Böse Orks", pt_plural: "Orcs Malignos", nl_plural: "Kwaadaardige Orken"
       },
       astronaut: {
-        fr: "Héros", en: "Hero", es: "Héroe", it: "Eroe", de: "Held", pt: "Herói", nl: "Held",
-        fr_plural: "Héros", en_plural: "Heroes", es_plural: "Héroes", it_plural: "Eroi", de_plural: "Helden", pt_plural: "Heróis", nl_plural: "Helden"
+        fr: "Humain", en: "Human", es: "Humano", it: "Umano", de: "Mensch", pt: "Humano", nl: "Mens",
+        fr_plural: "Humains", en_plural: "Humans", es_plural: "Humanos", it_plural: "Umani", de_plural: "Menschen", pt_plural: "Humanos", nl_plural: "Mensen"
       },
       doctor: {
         fr: "Guérisseur", en: "Healer", es: "Curandero", it: "Guaritore", de: "Heiler", pt: "Curandeiro", nl: "Genezer"
       },
       security: {
-        fr: "Vengeur", en: "Avenger", es: "Vengador", it: "Vendicatore", de: "Rächer", pt: "Vingador", nl: "Wreker"
+        fr: "Chevalier Noir", en: "Dark Knight", es: "Caballero Oscuro", it: "Cavaliere Nero", de: "Schwarzer Ritter", pt: "Cavaleiro Negro", nl: "Zwarte Ridder"
       },
       radar: {
-        fr: "Prophète", en: "Prophet", es: "Profeta", it: "Profeta", de: "Prophet", pt: "Profeta", nl: "Profeet"
+        fr: "Éclaireur", en: "Scout", es: "Explorador", it: "Esploratore", de: "Späher", pt: "Batedor", nl: "Verkenner"
       },
       ai_agent: {
-        fr: "Destin", en: "Fate", es: "Destino", it: "Destino", de: "Schicksal", pt: "Destino", nl: "Lot"
+        fr: "Elfe Charmeur", en: "Charming Elf", es: "Elfo Encantador", it: "Elfo Incantatore", de: "Bezaubernder Elf", pt: "Elfo Encantador", nl: "Charmante Elf"
       },
       engineer: {
-        fr: "Éclaireur", en: "Scout", es: "Explorador", it: "Esploratore", de: "Späher", pt: "Batedor", nl: "Verkenner"
+        fr: "Nain Espiègle", en: "Mischievous Dwarf", es: "Enano Travieso", it: "Nano Birichino", de: "Schelmischer Zwerg", pt: "Anão Travesso", nl: "Ondeugende Dwerg"
       },
       chameleon: {
         fr: "Polymorphe", en: "Polymorph", es: "Polimorfo", it: "Polimorfo", de: "Polymorph", pt: "Polimorfo", nl: "Polymorf"
@@ -921,42 +852,6 @@ const TRANSLATIONS = {
         pt: "CONFIRMAR SENHA",
         nl: "WACHTWOORD BEVESTIGEN"
       },
-      confirmEmail: {
-        fr: "CONFIRMER EMAIL",
-        en: "CONFIRM EMAIL",
-        es: "CONFIRMAR EMAIL",
-        it: "CONFERMA EMAIL",
-        de: "E-MAIL BESTÄTIGEN",
-        pt: "CONFIRMAR EMAIL",
-        nl: "E-MAIL BEVESTIGEN"
-      },
-      confirmEmailPlaceholder: {
-        fr: "Retape ton email",
-        en: "Retype your email",
-        es: "Vuelve a escribir tu email",
-        it: "Riscrivi la tua email",
-        de: "E-Mail erneut eingeben",
-        pt: "Digite seu email novamente",
-        nl: "Voer je e-mail opnieuw in"
-      },
-      confirmPasswordPlaceholder: {
-        fr: "Retape ton mot de passe",
-        en: "Retype your password",
-        es: "Vuelve a escribir tu contraseña",
-        it: "Riscrivi la tua password",
-        de: "Passwort erneut eingeben",
-        pt: "Digite sua senha novamente",
-        nl: "Voer je wachtwoord opnieuw in"
-      },
-      passwordMinChars: {
-        fr: "Minimum 6 caractères",
-        en: "Minimum 6 characters",
-        es: "Mínimo 6 caracteres",
-        it: "Minimo 6 caratteri",
-        de: "Mindestens 6 Zeichen",
-        pt: "Mínimo 6 caracteres",
-        nl: "Minimaal 6 tekens"
-      },
       loginButton: {
         fr: "🚀 CONNEXION",
         en: "🚀 LOGIN",
@@ -1225,24 +1120,6 @@ const TRANSLATIONS = {
         de: "🎨 MEINEN KI-AVATAR ERSTELLEN",
         pt: "🎨 CRIAR MEU AVATAR IA",
         nl: "🎨 MIJN AI-AVATAR MAKEN"
-      },
-      myStatsBadges: {
-        fr: "MES STATS & BADGES",
-        en: "MY STATS & BADGES",
-        es: "MIS STATS E INSIGNIAS",
-        de: "MEINE STATS & ABZEICHEN",
-        it: "LE MIE STATS & BADGE",
-        pt: "MINHAS STATS & INSÍGNIAS",
-        nl: "MIJN STATS & BADGES"
-      },
-      seeMyStats: {
-        fr: "📊 Voir mes Stats",
-        en: "📊 See my Stats",
-        es: "📊 Ver mis Estadísticas",
-        de: "📊 Meine Stats sehen",
-        it: "📊 Vedi le mie Statistiche",
-        pt: "📊 Ver minhas Estatísticas",
-        nl: "📊 Bekijk mijn Stats"
       },
       changePassword: {
         fr: "🔐 MODIFIER MOT DE PASSE",
@@ -3221,15 +3098,6 @@ const TRANSLATIONS = {
     
     // Actions
     actions: {
-      viewTutorial: {
-        fr: "📖 Tutoriel",
-        en: "📖 Tutorial",
-        es: "📖 Tutorial",
-        it: "📖 Tutorial",
-        de: "📖 Tutorial",
-        pt: "📖 Tutorial",
-        nl: "📖 Tutorial"
-      },
       vote: {
         fr: "Voter",
         en: "Vote",
@@ -3990,15 +3858,6 @@ const TRANSLATIONS = {
         pt: "🆕 Novo jogo (resetar stats)",
         nl: "🆕 Nieuw spel (statistieken resetten)"
       },
-      playerStats: {
-        fr: "📊 Stats Joueur",
-        en: "📊 Player Stats",
-        es: "📊 Stats del Jugador",
-        it: "📊 Statistiche Giocatore",
-        de: "📊 Spieler-Statistiken",
-        pt: "📊 Stats do Jogador",
-        nl: "📊 Speler Statistieken"
-      },
       viewTutorial: {
         fr: "📖 Voir le tutoriel rapide",
         en: "📖 View quick tutorial",
@@ -4047,15 +3906,6 @@ const TRANSLATIONS = {
         de: "🤝 VERBRECHERVEREINIGUNG",
         pt: "🤝 ASSOCIAÇÃO CRIMINOSA",
         nl: "🤝 CRIMINELE VERENIGING"
-      },
-      draw: {
-        fr: "⚖️ ÉGALITÉ",
-        en: "⚖️ DRAW",
-        es: "⚖️ EMPATE",
-        it: "⚖️ PAREGGIO",
-        de: "⚖️ UNENTSCHIEDEN",
-        pt: "⚖️ EMPATE",
-        nl: "⚖️ GELIJKSPEL"
       },
       gameAborted: {
         fr: "Partie interrompue — pas assez de joueurs",
@@ -5165,24 +5015,6 @@ const TRANSLATIONS = {
   // TUTORIEL
   // ============================================================================
   tutorial: {
-    previous: {
-      fr: "← Précédent",
-      en: "← Previous",
-      es: "← Anterior",
-      it: "← Precedente",
-      de: "← Zurück",
-      pt: "← Anterior",
-      nl: "← Vorige"
-    },
-    next: {
-      fr: "Suivant →",
-      en: "Next →",
-      es: "Siguiente →",
-      it: "Avanti →",
-      de: "Weiter →",
-      pt: "Próximo →",
-      nl: "Volgende →"
-    },
     welcome: {
       fr: "Bienvenue !",
       en: "Welcome!",
@@ -6246,6 +6078,218 @@ const TRANSLATIONS = {
         warrior_woman: { fr: "Guerrière", en: "Warrior Woman", es: "Guerrera", it: "Guerriera", de: "Kriegerin", pt: "Guerreira", nl: "Krijgsvrouw" },
         war_god: { fr: "Dieu de Guerre", en: "God of War", es: "Dios de la Guerra", it: "Dio della Guerra", de: "Kriegsgott", pt: "Deus da Guerra", nl: "Oorlogsgod" },
         elven_queen: { fr: "Reine Elfe", en: "Elven Queen", es: "Reina Elfa", it: "Regina Elfica", de: "Elfenkönigin", pt: "Rainha Élfica", nl: "Elfen Koningin" }
+      }
+    }
+  },
+
+  // ============================================================================
+  // PACK FAMILLE - MODAL ET GESTION
+  // ============================================================================
+  familyPack: {
+    // Titre et étapes
+    title: {
+      fr: "👨‍👩‍👧‍👦 Pack Famille",
+      en: "👨‍👩‍👧‍👦 Family Pack",
+      es: "👨‍👩‍👧‍👦 Pack Familiar",
+      it: "👨‍👩‍👧‍👦 Pacchetto Famiglia",
+      de: "👨‍👩‍👧‍👦 Familienpaket",
+      pt: "👨‍👩‍👧‍👦 Pacote Família",
+      nl: "👨‍👩‍👧‍👦 Gezinspakket"
+    },
+    
+    // Étape 1: Entrer le code
+    step1: {
+      description: {
+        fr: "Vous avez reçu un code Pack Famille par email après votre achat Stripe ? Entrez-le ci-dessous pour activer votre pack.",
+        en: "Did you receive a Family Pack code by email after your Stripe purchase? Enter it below to activate your pack.",
+        es: "¿Recibiste un código de Pack Familiar por correo después de tu compra en Stripe? Ingrésalo abajo para activar tu pack.",
+        it: "Hai ricevuto un codice Pacchetto Famiglia via email dopo il tuo acquisto su Stripe? Inseriscilo qui sotto per attivare il tuo pacchetto.",
+        de: "Haben Sie nach Ihrem Stripe-Kauf einen Familienpaket-Code per E-Mail erhalten? Geben Sie ihn unten ein, um Ihr Paket zu aktivieren.",
+        pt: "Você recebeu um código de Pacote Família por e-mail após sua compra no Stripe? Insira-o abaixo para ativar seu pacote.",
+        nl: "Heb je na je Stripe-aankoop een Gezinspakket-code per e-mail ontvangen? Voer deze hieronder in om je pakket te activeren."
+      },
+      codeLabel: {
+        fr: "CODE PACK FAMILLE",
+        en: "FAMILY PACK CODE",
+        es: "CÓDIGO PACK FAMILIAR",
+        it: "CODICE PACCHETTO FAMIGLIA",
+        de: "FAMILIENPAKET-CODE",
+        pt: "CÓDIGO PACOTE FAMÍLIA",
+        nl: "GEZINSPAKKET CODE"
+      },
+      codePlaceholder: {
+        fr: "FAM-XXXX-XXXX",
+        en: "FAM-XXXX-XXXX",
+        es: "FAM-XXXX-XXXX",
+        it: "FAM-XXXX-XXXX",
+        de: "FAM-XXXX-XXXX",
+        pt: "FAM-XXXX-XXXX",
+        nl: "FAM-XXXX-XXXX"
+      },
+      validateButton: {
+        fr: "✅ Valider le code",
+        en: "✅ Validate code",
+        es: "✅ Validar código",
+        it: "✅ Convalida codice",
+        de: "✅ Code bestätigen",
+        pt: "✅ Validar código",
+        nl: "✅ Valideer code"
+      },
+      cancelButton: {
+        fr: "❌ Annuler",
+        en: "❌ Cancel",
+        es: "❌ Cancelar",
+        it: "❌ Annulla",
+        de: "❌ Abbrechen",
+        pt: "❌ Cancelar",
+        nl: "❌ Annuleren"
+      },
+      noCodeYet: {
+        fr: "Pas encore de code ?",
+        en: "No code yet?",
+        es: "¿Aún no tienes código?",
+        it: "Non hai ancora un codice?",
+        de: "Noch kein Code?",
+        pt: "Ainda não tem código?",
+        nl: "Nog geen code?"
+      },
+      buyLink: {
+        fr: "Acheter un Pack Famille (9,99€/mois)",
+        en: "Buy a Family Pack (€9.99/month)",
+        es: "Comprar un Pack Familiar (9,99€/mes)",
+        it: "Acquista un Pacchetto Famiglia (9,99€/mese)",
+        de: "Familienpaket kaufen (9,99€/Monat)",
+        pt: "Comprar um Pacote Família (9,99€/mês)",
+        nl: "Koop een Gezinspakket (€9,99/maand)"
+      }
+    },
+    
+    // Étape 2: Entrer les emails
+    step2: {
+      codeValid: {
+        fr: "✅ Code valide !",
+        en: "✅ Valid code!",
+        es: "✅ ¡Código válido!",
+        it: "✅ Codice valido!",
+        de: "✅ Gültiger Code!",
+        pt: "✅ Código válido!",
+        nl: "✅ Geldige code!"
+      },
+      enterEmails: {
+        fr: "Entrez les 8 emails des membres de votre Pack Famille. Ils recevront un email d'invitation.",
+        en: "Enter the 8 emails of your Family Pack members. They will receive an invitation email.",
+        es: "Ingresa los 8 correos de los miembros de tu Pack Familiar. Recibirán un correo de invitación.",
+        it: "Inserisci le 8 email dei membri del tuo Pacchetto Famiglia. Riceveranno un'email di invito.",
+        de: "Geben Sie die 8 E-Mails der Mitglieder Ihres Familienpakets ein. Sie erhalten eine Einladungs-E-Mail.",
+        pt: "Insira os 8 e-mails dos membros do seu Pacote Família. Eles receberão um e-mail de convite.",
+        nl: "Voer de 8 e-mails in van de leden van je Gezinspakket. Ze ontvangen een uitnodigingsmail."
+      },
+      activateButton: {
+        fr: "🚀 Activer le Pack",
+        en: "🚀 Activate Pack",
+        es: "🚀 Activar Pack",
+        it: "🚀 Attiva Pacchetto",
+        de: "🚀 Paket aktivieren",
+        pt: "🚀 Ativar Pacote",
+        nl: "🚀 Activeer Pakket"
+      },
+      backButton: {
+        fr: "← Retour",
+        en: "← Back",
+        es: "← Volver",
+        it: "← Indietro",
+        de: "← Zurück",
+        pt: "← Voltar",
+        nl: "← Terug"
+      },
+      importantTitle: {
+        fr: "⚠️ Important :",
+        en: "⚠️ Important:",
+        es: "⚠️ Importante:",
+        it: "⚠️ Importante:",
+        de: "⚠️ Wichtig:",
+        pt: "⚠️ Importante:",
+        nl: "⚠️ Belangrijk:"
+      },
+      oneTimeUse: {
+        fr: "Ce code ne peut être utilisé qu'une seule fois",
+        en: "This code can only be used once",
+        es: "Este código solo se puede usar una vez",
+        it: "Questo codice può essere utilizzato solo una volta",
+        de: "Dieser Code kann nur einmal verwendet werden",
+        pt: "Este código só pode ser usado uma vez",
+        nl: "Deze code kan maar één keer worden gebruikt"
+      },
+      cancelable: {
+        fr: "Abonnement résiliable chaque mois",
+        en: "Subscription cancelable every month",
+        es: "Suscripción cancelable cada mes",
+        it: "Abbonamento cancellabile ogni mese",
+        de: "Abonnement monatlich kündbar",
+        pt: "Assinatura cancelável a cada mês",
+        nl: "Abonnement elke maand opzegbaar"
+      },
+      afterCancellation: {
+        fr: "À la résiliation : comptes → gratuit, avatars conservés 1 mois",
+        en: "After cancellation: accounts → free, avatars kept for 1 month",
+        es: "Tras la cancelación: cuentas → gratis, avatares guardados 1 mes",
+        it: "Dopo la cancellazione: account → gratuiti, avatar conservati 1 mese",
+        de: "Nach Kündigung: Konten → kostenlos, Avatare 1 Monat gespeichert",
+        pt: "Após o cancelamento: contas → gratuitas, avatares mantidos por 1 mês",
+        nl: "Na annulering: accounts → gratis, avatars 1 maand bewaard"
+      }
+    },
+    
+    // Étape 3: Confirmation
+    step3: {
+      activated: {
+        fr: "Pack Famille Activé !",
+        en: "Family Pack Activated!",
+        es: "¡Pack Familiar Activado!",
+        it: "Pacchetto Famiglia Attivato!",
+        de: "Familienpaket Aktiviert!",
+        pt: "Pacote Família Ativado!",
+        nl: "Gezinspakket Geactiveerd!"
+      },
+      invitationsSent: {
+        fr: "Tous les membres ont reçu un email d'invitation. Profitez de la vidéo illimitée en famille !",
+        en: "All members have received an invitation email. Enjoy unlimited video with your family!",
+        es: "Todos los miembros han recibido un correo de invitación. ¡Disfruta del video ilimitado en familia!",
+        it: "Tutti i membri hanno ricevuto un'email di invito. Goditi il video illimitato con la tua famiglia!",
+        de: "Alle Mitglieder haben eine Einladungs-E-Mail erhalten. Genießen Sie unbegrenztes Video mit Ihrer Familie!",
+        pt: "Todos os membros receberam um e-mail de convite. Aproveite o vídeo ilimitado com sua família!",
+        nl: "Alle leden hebben een uitnodigingsmail ontvangen. Geniet van onbeperkte video met je gezin!"
+      },
+      letsGoButton: {
+        fr: "🎮 C'est parti !",
+        en: "🎮 Let's go!",
+        es: "🎮 ¡Vamos!",
+        it: "🎮 Andiamo!",
+        de: "🎮 Los geht's!",
+        pt: "🎮 Vamos lá!",
+        nl: "🎮 Laten we gaan!"
+      }
+    },
+    
+    // Étape 4: Gestion (propriétaire)
+    step4: {
+      ownerMessage: {
+        fr: "✅ Vous êtes propriétaire de ce Pack Famille",
+        en: "✅ You are the owner of this Family Pack",
+        es: "✅ Eres el propietario de este Pack Familiar",
+        it: "✅ Sei il proprietario di questo Pacchetto Famiglia",
+        de: "✅ Sie sind der Besitzer dieses Familienpakets",
+        pt: "✅ Você é o proprietário deste Pacote Família",
+        nl: "✅ Je bent de eigenaar van dit Gezinspakket"
+      },
+      changesThisMonth: {
+        fr: "Changements ce mois :",
+        en: "Changes this month:",
+        es: "Cambios este mes:",
+        it: "Modifiche questo mese:",
+        de: "Änderungen diesen Monat:",
+        pt: "Mudanças este mês:",
+        nl: "Wijzigingen deze maand:"
       }
     }
   },
