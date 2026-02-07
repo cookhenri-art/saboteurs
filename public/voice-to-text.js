@@ -402,8 +402,13 @@
     let finalTranscript = '';
     let interimTranscript = '';
     
+    console.log('[VoiceToText] 📝 onresult event:', event.results.length, 'résultats');
+    
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const transcript = event.results[i][0].transcript;
+      const confidence = event.results[i][0].confidence;
+      
+      console.log('[VoiceToText] Résultat', i, ':', transcript, 'final:', event.results[i].isFinal, 'confidence:', confidence);
       
       if (event.results[i].isFinal) {
         finalTranscript += transcript;
@@ -412,14 +417,23 @@
       }
     }
     
+    // V11: Helper pour mettre à jour l'input (compatible mobile)
+    function updateInput(text) {
+      if (!chatInput) return;
+      chatInput.value = text;
+      // Force la mise à jour visuelle sur mobile
+      chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+      console.log('[VoiceToText] Input mis à jour:', text);
+    }
+    
     // Afficher le résultat intermédiaire dans l'input
     if (interimTranscript) {
-      chatInput.value = interimTranscript;
+      updateInput(interimTranscript);
     }
     
     // Résultat final
     if (finalTranscript) {
-      chatInput.value = finalTranscript;
+      updateInput(finalTranscript);
       console.log('[VoiceToText] ✅ Texte reconnu:', finalTranscript);
       
       // Focus sur l'input pour que l'utilisateur puisse modifier/envoyer
@@ -436,7 +450,7 @@
   }
 
   function onRecognitionError(event) {
-    console.error('[VoiceToText] Erreur:', event.error);
+    console.error('[VoiceToText] ❌ Erreur:', event.error, 'message:', event.message);
     
     let errorMessage = '';
     
@@ -444,18 +458,26 @@
       case 'not-allowed':
       case 'service-not-allowed':
         errorMessage = t('errorNoPermission');
+        console.error('[VoiceToText] Microphone non autorisé - vérifiez les permissions');
         break;
       case 'no-speech':
         errorMessage = t('errorNoSpeech');
         break;
       case 'network':
         errorMessage = t('errorNetwork');
+        console.error('[VoiceToText] Erreur réseau - la reconnaissance vocale nécessite une connexion internet');
+        break;
+      case 'audio-capture':
+        errorMessage = t('errorNoPermission');
+        console.error('[VoiceToText] Impossible de capturer l\'audio - microphone occupé ou non disponible');
         break;
       case 'aborted':
         // Ignoré - l'utilisateur a annulé
+        console.log('[VoiceToText] Reconnaissance annulée');
         return;
       default:
         errorMessage = t('errorNotSupported');
+        console.error('[VoiceToText] Erreur non gérée:', event.error);
     }
     
     if (errorMessage) {
