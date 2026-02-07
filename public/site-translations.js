@@ -911,7 +911,7 @@ const SITE_TRANSLATIONS = {
     // Powers
     power_champion: { fr: "Champion", en: "Champion", es: "Campeón", de: "Champion", it: "Campione", pt: "Campeão", nl: "Kampioen" },
     power_champion_desc: { fr: "Moyenne × Win Rate (6/8 pouvoirs)", en: "Average × Win Rate (6/8 powers)", es: "Promedio × Win Rate (6/8 poderes)", de: "Durchschnitt × Siegquote (6/8 Kräfte)", it: "Media × Win Rate (6/8 poteri)", pt: "Média × Win Rate (6/8 poderes)", nl: "Gemiddelde × Win Rate (6/8 krachten)" },
-    power_doctor: { fr: "Soigneur", en: "Healer", es: "Sanador", de: "Heiler", it: "Guaritore", pt: "Curador", nl: "Genezer" },
+    power_doctor: { fr: "Top Soigneur", en: "Top Healer", es: "Top Sanador", de: "Top Heiler", it: "Top Guaritore", pt: "Top Curador", nl: "Top Genezer" },
     power_doctor_desc: { fr: "Soins astro + potions mort saboteurs", en: "Astro heals + saboteur death potions", es: "Curación astro + pociones de muerte saboteadores", de: "Astro-Heilung + Saboteur-Todesränke", it: "Cure astro + pozioni morte sabotatori", pt: "Curas astro + poções morte sabotadores", nl: "Astro genezingen + saboteur doodsdrankjes" },
     // V11: Préfixes/suffixes pour descriptions dynamiques avec noms de rôles
     power_doctor_desc_prefix: { fr: "Soins", en: "Heals", es: "Curación", de: "Heilung", it: "Cure", pt: "Curas", nl: "Genezingen" },
@@ -928,9 +928,9 @@ const SITE_TRANSLATIONS = {
     power_resistant_desc: { fr: "Taux de survie en fin de partie", en: "Survival rate at end of game", es: "Tasa de supervivencia al final", de: "Überlebensrate am Spielende", it: "Tasso di sopravvivenza a fine partita", pt: "Taxa de sobrevivência no final", nl: "Overlevingspercentage aan het einde" },
     power_investigator: { fr: "Enquêteur", en: "Investigator", es: "Investigador", de: "Ermittler", it: "Investigatore", pt: "Investigador", nl: "Onderzoeker" },
     power_investigator_desc: { fr: "Votes justes vs saboteurs", en: "Correct votes vs saboteurs", es: "Votos correctos vs saboteadores", de: "Richtige Stimmen gegen Saboteure", it: "Voti corretti vs sabotatori", pt: "Votos corretos vs sabotadores", nl: "Correcte stemmen vs saboteurs" },
-    power_captain: { fr: "Capitaine", en: "Captain", es: "Capitán", de: "Kapitän", it: "Capitano", pt: "Capitão", nl: "Kapitein" },
+    power_captain: { fr: "Top Capitaine", en: "Top Captain", es: "Top Capitán", de: "Top Kapitän", it: "Top Capitano", pt: "Top Capitão", nl: "Top Kapitein" },
     power_captain_desc: { fr: "Départages + transferts pro-astro", en: "Tiebreaks + pro-astro transfers", de: "Stichentscheide + Pro-Astro-Transfers", es: "Desempates + transferencias pro-astro", it: "Spareggi + trasferimenti pro-astro", pt: "Desempates + transferências pro-astro", nl: "Stemmingen + pro-astro transfers" },
-    power_security: { fr: "Vengeance", en: "Revenge", es: "Venganza", de: "Rache", it: "Vendetta", pt: "Vingança", nl: "Wraak" },
+    power_security: { fr: "Top Vengeance", en: "Top Revenge", es: "Top Venganza", de: "Top Rache", it: "Top Vendetta", pt: "Top Vingança", nl: "Top Wraak" },
     power_security_desc: { fr: "Vengeance efficace vs saboteur", en: "Effective revenge vs saboteur", es: "Venganza efectiva vs saboteador", de: "Effektive Rache gegen Saboteur", it: "Vendetta efficace vs sabotatore", pt: "Vingança eficaz vs sabotador", nl: "Effectieve wraak vs saboteur" },
     power_streak: { fr: "Série de Victoires", en: "Win Streak", es: "Racha de Victorias", de: "Siegesserie", it: "Serie di Vittorie", pt: "Sequência de Vitórias", nl: "Winnende Reeks" },
     power_streak_desc: { fr: "Meilleure streak (tous rôles)", en: "Best streak (all roles)", es: "Mejor racha (todos los roles)", de: "Beste Serie (alle Rollen)", it: "Miglior serie (tutti i ruoli)", pt: "Melhor sequência (todos os papéis)", nl: "Beste reeks (alle rollen)" },
