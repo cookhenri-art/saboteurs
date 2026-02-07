@@ -329,16 +329,16 @@
   function ensureGameScreenSlot(playerId) {
     if (!playerId) return null;
     
-    // V3 GRILLE FIX: Ne pas créer la barre si le mode briefing est actif
-    const controller = window.videoModeCtrl;
-    const currentMode = controller?.getMode?.();
-    if (currentMode === 'SPLIT' || currentMode === 'ADVANCED_FOCUS') {
-      // En mode briefing, cacher la barre inline si elle existe
+    // D4 v5.4: Ne pas créer la barre si le mode SPLIT est actif
+    const controller = window.VideoModeController;
+    const currentMode = controller?.getState?.()?.currentMode;
+    if (currentMode === 'SPLIT') {
+      // En mode SPLIT, cacher la barre inline si elle existe
       const existingBar = document.getElementById('inlineVideoBar');
       if (existingBar) {
         existingBar.style.display = 'none';
       }
-      return null; // Ne pas créer de slot - le briefing gère les vidéos
+      return null; // Ne pas créer de slot - le SPLIT gère les vidéos
     }
     
     // Chercher ou créer le conteneur de vignettes dans le gameScreen
@@ -847,17 +847,6 @@
   function attachTrackToPlayer(playerId, track, isLocal) {
     if (!playerId || !track) return;
     
-    // V3 GRILLE FIX: Ne pas créer de vidéos inline quand le mode briefing est actif
-    // Le BriefingUI gère ses propres vidéos via onTrackStarted
-    const controller = window.videoModeCtrl;
-    const currentMode = controller?.getMode?.();
-    if (currentMode === 'SPLIT' || currentMode === 'ADVANCED_FOCUS') {
-      log("🚫 Skipping inline video - briefing mode active:", currentMode, "for:", playerId?.slice(0,8));
-      // On stocke quand même la track pour le registry
-      videoTracks.set(playerId, track);
-      return;
-    }
-    
     // D4 v5.5: Vérifier les permissions avant d'attacher
     if (!isLocal && !canReceiveFromPlayer(playerId)) {
       log("🚫 Blocked video track from:", playerId, "(permissions)");
@@ -1338,9 +1327,9 @@
       }
       
       // Réafficher la barre inline si on est en mode INLINE
-      const controller = window.videoModeCtrl;
-      const currentMode = controller?.getMode?.();
-      if (currentMode === 'INLINE' || currentMode === 'OFF') {
+      const controller = window.VideoModeController;
+      const currentMode = controller?.getState?.()?.currentMode;
+      if (currentMode === 'INLINE') {
         const inlineBar = document.getElementById('inlineVideoBar');
         if (inlineBar) inlineBar.style.display = 'flex';
       }
