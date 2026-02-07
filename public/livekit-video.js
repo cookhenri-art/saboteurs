@@ -743,6 +743,19 @@ class LiveKitVideoManager {
     // Phase privée où je ne suis pas concerné = tout couper
     // Phase normale = réactiver VIDÉO (pas audio), ne pas toucher au micro
     
+    // V11: Helper pour couper audio avec délai (laisser le son d'annonce jouer)
+    const cutAudioWithDelay = async () => {
+      // Attendre 1.5s pour laisser le son d'annonce de phase jouer
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (this._localAudioEnabled) {
+        try {
+          await this.room?.localParticipant?.setMicrophoneEnabled(false);
+          this._localAudioEnabled = false;
+        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
+      }
+      await this.deafenRemotes(true);
+    };
+    
     if (isPrivateSolo) {
       // Phase privée SOLO → couper micro/vidéo pour TOUT LE MONDE (y compris le concerné)
       if (this._localVideoEnabled) {
@@ -751,13 +764,8 @@ class LiveKitVideoManager {
           this._localVideoEnabled = false;
         } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
       }
-      if (this._localAudioEnabled) {
-        try {
-          await this.room?.localParticipant?.setMicrophoneEnabled(false);
-          this._localAudioEnabled = false;
-        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
-      }
-      await this.deafenRemotes(true);
+      // Couper audio avec délai pour laisser le son d'annonce jouer
+      cutAudioWithDelay();
     } else if (isPrivateNotInvolved) {
       // Phase privée GROUPE où je ne suis PAS concerné → tout couper
       if (this._localVideoEnabled) {
@@ -766,13 +774,8 @@ class LiveKitVideoManager {
           this._localVideoEnabled = false;
         } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
       }
-      if (this._localAudioEnabled) {
-        try {
-          await this.room?.localParticipant?.setMicrophoneEnabled(false);
-          this._localAudioEnabled = false;
-        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
-      }
-      await this.deafenRemotes(true);
+      // Couper audio avec délai pour laisser le son d'annonce jouer
+      cutAudioWithDelay();
     } else if (isPrivatePhase && privateStatus.iAmInvolved && privateStatus.allowCommunication) {
       // Phase privée GROUPE où je SUIS concerné (saboteurs) → activer pour communiquer
       await this.deafenRemotes(false);
