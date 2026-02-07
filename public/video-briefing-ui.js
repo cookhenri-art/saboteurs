@@ -922,10 +922,9 @@
         }
       });
       
-      // Si speakerZone vide ET pas mobile, y mettre le premier
-      if (!isMobile && speakerZone.children.length === 0 && mainZone.children.length > 0) {
-        speakerZone.appendChild(mainZone.firstElementChild);
-      }
+      // V11: Si speakerZone vide ET pas mobile, ne rien faire
+      // On laisse la speakerZone vide jusqu'à ce que quelqu'un parle
+      // (Avant on mettait le premier dedans, mais ça causait un bug d'affichage)
     } else {
       // V11: Mode MAX - grille simple
       filteredParticipants.forEach(p => {

@@ -1311,6 +1311,11 @@ body.video-split-active .header-banner::before {
   align-items: stretch;
 }
 
+/* V11: Cacher la speakerZone si elle est vide */
+.mode-split .video-grid-speaker:empty {
+  display: none;
+}
+
 .mode-split .video-grid-speaker .video-grid-item {
   width: 100% !important;
   height: 100% !important;

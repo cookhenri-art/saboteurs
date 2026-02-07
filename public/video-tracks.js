@@ -1300,12 +1300,13 @@
       if (peerKey && pid) peerToPlayerId.set(peerKey, pid);
       
       // V11: Rafraîchir la grille du briefing UI quand un participant rejoint
+      // Délai augmenté à 1000ms pour laisser les tracks arriver
       setTimeout(() => {
         if (window.VideoBriefingUI?.refreshParticipants) {
-          log("Refreshing briefing grid after participant joined:", pid);
+          console.log("[VideoTracks] Refreshing briefing grid after participant joined:", pid);
           window.VideoBriefingUI.refreshParticipants();
         }
-      }, 500);
+      }, 1000);
     });
 
     callObject.on("participant-updated", (ev) => {
