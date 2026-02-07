@@ -726,6 +726,8 @@
   
   // V11: Rafraîchir la grille de vidéos
   function refreshGridParticipants(participants) {
+    if (!gridContainer) return;
+    
     // Clear existing grid items
     gridContainer.innerHTML = '';
     gridElements.clear();
@@ -733,16 +735,57 @@
     // Cacher focus et thumbs, montrer grille
     if (focusWrapper) focusWrapper.style.display = 'none';
     if (thumbsSidebar) thumbsSidebar.style.display = 'none';
-    if (gridContainer) gridContainer.style.display = 'grid';
+    if (gridContainer) gridContainer.style.display = '';
     
-    // Create grid item for each participant
-    participants.forEach(p => {
-      const gridItem = createGridItem(p);
-      gridContainer.appendChild(gridItem);
-      gridElements.set(p.playerId, gridItem);
-    });
+    const isSplitMode = container && container.classList.contains('mode-split');
     
-    log('Grid refreshed with', participants.length, 'items');
+    if (isSplitMode) {
+      // V11: Mode SPLIT - créer 2 zones : main (gauche) et speaker (droite)
+      const mainZone = document.createElement('div');
+      mainZone.className = 'video-grid-main';
+      
+      const speakerZone = document.createElement('div');
+      speakerZone.className = 'video-grid-speaker';
+      
+      gridContainer.appendChild(mainZone);
+      gridContainer.appendChild(speakerZone);
+      
+      // Trouver le speaker actuel
+      const currentSpeaker = window.__currentActiveSpeaker;
+      
+      // Create grid item for each participant
+      participants.forEach(p => {
+        const gridItem = createGridItem(p);
+        gridElements.set(p.playerId, gridItem);
+        
+        // Placer dans la bonne zone
+        if (p.playerId === currentSpeaker) {
+          speakerZone.appendChild(gridItem);
+          gridItem.classList.add('is-speaking');
+          const badge = gridItem.querySelector('.badge-speaker');
+          if (badge) badge.style.display = 'inline-block';
+        } else {
+          mainZone.appendChild(gridItem);
+        }
+      });
+      
+      // Si pas de speaker ou speakerZone vide, mettre le premier dans la zone speaker
+      if (speakerZone.children.length === 0 && mainZone.children.length > 0) {
+        const firstItem = mainZone.firstElementChild;
+        if (firstItem) {
+          speakerZone.appendChild(firstItem);
+        }
+      }
+    } else {
+      // V11: Mode MAX - grille simple
+      participants.forEach(p => {
+        const gridItem = createGridItem(p);
+        gridContainer.appendChild(gridItem);
+        gridElements.set(p.playerId, gridItem);
+      });
+    }
+    
+    log('Grid refreshed with', participants.length, 'items, split mode:', isSplitMode);
   }
   
   // V11: Mode classique avec focus + thumbnails
@@ -1195,15 +1238,48 @@
     });
     
     // V11: Update grid items (mode SPLIT/MAX grille)
+    let speakerElement = null;
+    let previousSpeakerElement = null;
+    
     gridElements.forEach((el, id) => {
       const isSpeaking = id === speakerId;
+      const wasSpeaking = el.classList.contains('is-speaking');
+      
       el.classList.toggle('is-speaking', isSpeaking);
+      
       // Afficher/cacher le badge "PARLE"
       const gridBadge = el.querySelector('.badge-speaker');
       if (gridBadge) {
         gridBadge.style.display = isSpeaking ? 'inline-block' : 'none';
       }
+      
+      if (isSpeaking) {
+        speakerElement = el;
+      }
+      if (wasSpeaking && !isSpeaking) {
+        previousSpeakerElement = el;
+      }
     });
+    
+    // V11: En mode SPLIT, déplacer le speaker dans la zone speaker
+    const isSplitMode = container && container.classList.contains('mode-split');
+    if (isSplitMode && gridContainer) {
+      const mainZone = gridContainer.querySelector('.video-grid-main');
+      const speakerZone = gridContainer.querySelector('.video-grid-speaker');
+      
+      if (mainZone && speakerZone) {
+        // Déplacer l'ancien speaker vers la zone main
+        if (previousSpeakerElement && previousSpeakerElement.parentElement === speakerZone) {
+          mainZone.appendChild(previousSpeakerElement);
+        }
+        
+        // Déplacer le nouveau speaker vers la zone speaker
+        if (speakerElement && speakerElement.parentElement !== speakerZone) {
+          speakerZone.appendChild(speakerElement);
+          log('Speaker moved to speaker zone:', speakerId);
+        }
+      }
+    }
     
     // D5 NEW: Update player-item highlights in INLINE mode (lobby & game lists)
     updateInlineModeSpeakerHighlights(speakerId);
