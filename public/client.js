@@ -2276,6 +2276,7 @@ class AudioManager {
     this.loopAudio = null;
     this.token = null;
     this.lastCue = null;
+    this.lastLoopFile = null;  // V11: Track current loop file
     this.pendingCue = null;
     this.queuedCue = null;
     this.userUnlocked = false;
@@ -2421,10 +2422,32 @@ class AudioManager {
     this.audio = null;
     this.loopAudio = null;
   }
+  
+  // V11: Stopper uniquement le loop (appelé quand la phase change)
+  stopLoop() {
+    try {
+      if (this.loopAudio) { 
+        this.loopAudio.pause(); 
+        this.loopAudio.currentTime = 0; 
+        console.log('[Audio] Loop stopped');
+      }
+    } catch {}
+    this.loopAudio = null;
+  }
 
   play(cue, force=false) {
     this.lastCue = cue;
     const token = JSON.stringify([cue?.sequence || null, cue?.file || null, cue?.queueLoopFile || null, cue?.tts || null, cue?.ttsAfterSequence || null]);
+    
+    // V11: Toujours stopper le loop quand play() est appelé (changement de phase)
+    // Sauf si c'est exactement le même cue avec le même loop
+    const oldLoopFile = this.lastLoopFile || null;
+    const newLoopFile = cue?.queueLoopFile || null;
+    if (oldLoopFile !== newLoopFile) {
+      this.stopLoop();
+    }
+    this.lastLoopFile = newLoopFile;
+    
     if (!force && token === this.token) return;
 
     // If the lobby intro is currently playing, do not cut it: queue the next cue.
