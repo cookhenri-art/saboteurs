@@ -1641,16 +1641,18 @@
       const grid = document.getElementById('lbGrid');
       grid.innerHTML = `<div class="loading">${t('loading', 'Chargement...')}</div>`;
 
+      // Utiliser getPowerLabels() pour avoir les mêmes noms que Mon Profil
+      const powerLabels = getPowerLabels();
       const categories = [
-        ["H", `🏆 ${t('lb_champion', 'Champion')}`, t('lb_champion_desc', 'Classement global')],
-        ["A", `🧪 ${t('lb_doctor', 'Docteur')}`, t('lb_doctor_desc', 'Soins + potions')],
-        ["B", `🎭 ${t('lb_bluffer', 'Bluffer')}`, t('lb_bluffer_desc', 'Incognito saboteur')],
-        ["C", `🛡️ ${t('lb_resistant', 'Résistant')}`, t('lb_resistant_desc', 'Taux de survie')],
-        ["E", `🕵️ ${t('lb_investigator', 'Enquêteur')}`, t('lb_investigator_desc', 'Votes justes')],
-        ["F", `👑 ${t('lb_chief', 'Chef station')}`, t('lb_chief_desc', 'Décisions capitaine')],
-        ["G", `🔫 ${t('lb_security', 'Sécurité')}`, t('lb_security_desc', 'Vengeance')],
-        ["I", `🔥 ${t('lb_streak', 'Streak')}`, t('lb_streak_desc', 'Série victoires')],
-        ["D", `☠️ ${t('lb_exterminator', 'Exterminateur')}`, t('lb_exterminator_desc', 'Potions sur astronautes')]
+        ["H", `🏆 ${powerLabels.H[0]}`, powerLabels.H[1]],
+        ["A", `🧪 ${powerLabels.A[0]}`, powerLabels.A[1]],
+        ["B", `🎭 ${powerLabels.B[0]}`, powerLabels.B[1]],
+        ["C", `🛡️ ${powerLabels.C[0]}`, powerLabels.C[1]],
+        ["E", `🕵️ ${powerLabels.E[0]}`, powerLabels.E[1]],
+        ["F", `👑 ${powerLabels.F[0]}`, powerLabels.F[1]],
+        ["G", `🔫 ${powerLabels.G[0]}`, powerLabels.G[1]],
+        ["I", `🔥 ${powerLabels.I[0]}`, powerLabels.I[1]],
+        ["D", `☠️ ${powerLabels.D[0]}`, powerLabels.D[1]]
       ];
 
       // Charger le top 3 de chaque catégorie en parallèle
