@@ -718,10 +718,8 @@ class LiveKitVideoManager {
       reason: permissions.reason || ""
     };
 
-    // V11 ULTRA-SIMPLE: Ne pas reset userPref.audio - l'utilisateur contrôle son micro
-    if (phaseChanged) {
-      this.userPref = { video: null, audio: this.userPref.audio };
-    }
+    // V11: Ne pas reset userPref au changement de phase - l'utilisateur garde le contrôle
+    // (sauf si on passe en phase privée où les permissions serveur priment)
 
     // UI lock/unlock boutons
     this.setButtonEnabled(this.camButton, this.allowed.video,
@@ -752,7 +750,9 @@ class LiveKitVideoManager {
       await this.deafenRemotes(false);
     }
 
-    // V11 ULTRA-SIMPLE: Réactiver UNIQUEMENT la VIDÉO si autorisée
+    // V11: Réactiver vidéo ET audio si autorisés par le serveur
+    // C'est important pour les phases privées (saboteurs, agent IA) où les joueurs
+    // concernés doivent pouvoir communiquer entre eux
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try {
@@ -760,10 +760,13 @@ class LiveKitVideoManager {
         this._localVideoEnabled = desiredVideo;
       } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
     }
-    
-    // V11 ULTRA-SIMPLE: NE JAMAIS réactiver l'audio automatiquement
-    // L'utilisateur contrôle son micro manuellement
-    // Seule exception : phases privées gérées par video-tracks.js
+    if (this.allowed.audio) {
+      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
+      try {
+        await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
+        this._localAudioEnabled = desiredAudio;
+      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+    }
 
     // Message status
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");

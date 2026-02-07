@@ -41,10 +41,10 @@
     ],
     
     // Phases de nuit (PiP possible)
-    NIGHT_PHASES: ['NIGHT', 'NIGHT_SABOTEURS', 'SABOTEURS', 'DOCTOR', 'RADAR_OFFICER', 'SECURITY', 'ACTION'],
+    NIGHT_PHASES: ['NIGHT', 'NIGHT_SABOTEURS', 'SABOTEURS', 'DOCTOR', 'RADAR_OFFICER', 'SECURITY', 'ACTION', 'NIGHT_AI_AGENT', 'NIGHT_AI_EXCHANGE'],
     
-    // Phases privées (visio cachée)
-    PRIVATE_PHASES: ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE'],
+    // Phases privées (visio cachée pour les non-concernés, mais active pour les concernés)
+    PRIVATE_PHASES: ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE', 'NIGHT_AI_AGENT', 'NIGHT_AI_EXCHANGE'],
     
     // Debug
     DEBUG: true
@@ -260,9 +260,20 @@
       const phase = this.currentPhase;
       const playerCount = this.activePlayerCount;
       
-      // Phase privée = masqué
+      // V11: Phase privée - vérifier si on est concerné
       if (CONFIG.PRIVATE_PHASES.includes(phase)) {
-        this.setMode(VideoMode.HIDDEN);
+        // Utiliser getPrivatePhaseStatus pour savoir si on est concerné
+        const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: true, iAmInvolved: false };
+        
+        if (privateStatus.iAmInvolved) {
+          // On est concerné (ex: saboteur pendant NIGHT_SABOTEURS)
+          // Afficher en mode SPLIT pour communiquer avec les autres
+          this.log('Private phase but I am involved - showing SPLIT mode');
+          this.setMode(VideoMode.SPLIT);
+        } else {
+          // On n'est pas concerné - cacher la vidéo
+          this.setMode(VideoMode.HIDDEN);
+        }
         return;
       }
       
