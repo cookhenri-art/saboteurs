@@ -680,15 +680,15 @@
     // GRILLE 2x2: Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
     
-    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID' : 'FOCUS');
+    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID-2x2' : 'FOCUS');
     
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
     // Create thumbnail for each participant
+    // GRILLE 2x2: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
     participants.forEach(p => {
-      // GRILLE 2x2: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
       if (!isSplitMode && p.playerId === currentFocus) return; // Skip focused player in thumbs (mode MAX seulement)
       
       const thumb = createThumbnail(p);
@@ -788,7 +788,7 @@
       attachFocusVideo(playerId);
     }
     
-    // Update thumbnail highlights
+    // Update thumbnail highlights (marquer le speaker actif)
     thumbElements.forEach((el, id) => {
       el.classList.toggle('is-focused', id === playerId);
     });

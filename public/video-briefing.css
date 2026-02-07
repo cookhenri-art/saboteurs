@@ -130,42 +130,83 @@
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* GRILLE 2x2: Cacher le focus wrapper */
-.mode-split .video-focus-wrapper {
-  display: none;
+/* *** GRILLE 2x2: CACHER LE FOCUS WRAPPER *** */
+.video-briefing-container.mode-split .video-focus-wrapper {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
 
-/* Pour compatibilité si pas de grille */
 .mode-split .video-focus-main {
-  min-height: unset;
-  height: 100%;
+  display: none !important;
 }
 
-/* GRILLE 2x2: Sidebar devient grille pleine largeur */
-.mode-split .video-thumbs-sidebar {
-  width: 100%;
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 10px;
-  max-height: none;
-  overflow: visible;
-  padding: 0;
+/* *** GRILLE 2x2: SIDEBAR DEVIENT GRILLE PLEINE LARGEUR *** */
+.video-briefing-container.mode-split .video-thumbs-sidebar {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 1 100% !important;
+  
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-rows: repeat(2, 1fr) !important;
+  gap: 10px !important;
+  
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  flex-direction: unset !important;
 }
 
-/* GRILLE 2x2: Thumbnails remplissent les cellules */
-.mode-split .video-thumb {
-  width: 100%;
-  height: 100%;
+/* *** GRILLE 2x2: THUMBNAILS REMPLISSENT LES CELLULES *** */
+.video-briefing-container.mode-split .video-thumb {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  flex-shrink: 0 !important;
+  
+  border-radius: 12px;
+  border: 2px solid var(--thumb-border);
+  background: var(--thumb-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* *** GRILLE 2x2: VIDÉO DANS LES CELLULES *** */
+.video-briefing-container.mode-split .video-thumb video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* *** GRILLE 2x2: NOM DU JOUEUR *** */
+.video-briefing-container.mode-split .video-thumb .thumb-name {
+  font-size: 1rem !important;
+  padding: 10px 12px !important;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+}
+
+/* *** GRILLE 2x2: SPEAKER ACTIF *** */
+.video-briefing-container.mode-split .video-thumb.is-speaking {
+  border-color: var(--speaker-ring) !important;
+  box-shadow: 
+    0 0 0 3px var(--speaker-pulse),
+    0 0 30px var(--speaker-pulse) !important;
+  z-index: 5;
 }
 
 .mode-split .video-focus-name {
-  padding: 8px 12px;
-}
-
-.mode-split .video-focus-name .name {
-  font-size: 1rem;
+  display: none !important;
 }
 
 .mode-split .video-briefing-header {
@@ -697,32 +738,33 @@
     gap: 8px;
   }
   
-  /* GRILLE 2x2: Cacher le focus wrapper */
-  .mode-split .video-focus-wrapper {
-    display: none;
+  /* GRILLE 2x2: Cacher focus wrapper */
+  .video-briefing-container.mode-split .video-focus-wrapper {
+    display: none !important;
   }
   
-  /* GRILLE 2x2: Sidebar devient grille pleine largeur */
-  .mode-split .video-thumbs-sidebar {
-    width: 100%;
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 6px;
-    max-height: none;
-    overflow: visible;
+  /* GRILLE 2x2: Sidebar = grille pleine largeur */
+  .video-briefing-container.mode-split .video-thumbs-sidebar {
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules */
-  .mode-split .video-thumb {
-    width: 100%;
-    height: 100%;
+  /* GRILLE 2x2: Thumbs remplissent cellules */
+  .video-briefing-container.mode-split .video-thumb {
+    width: 100% !important;
+    height: 100% !important;
   }
   
   .mode-split .video-thumb .thumb-name {
-    font-size: 0.7rem;
-    padding: 4px 6px;
+    font-size: 0.75rem;
+    padding: 6px 8px;
   }
   
   .mode-split .video-focus-name .name {
@@ -1145,14 +1187,17 @@ body.video-split-active #topRightButtons {
     top: calc(35vh + 5px) !important;
   }
   
-  /* GRILLE 2x2: Mobile - garder la grille, juste réduire le gap */
-  .mode-split .video-thumbs-sidebar {
+  /* GRILLE 2x2: Mobile - garder la grille pleine largeur */
+  .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
-    gap: 6px !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
+    gap: 5px !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
-  .mode-split .video-thumb {
+  .video-briefing-container.mode-split .video-thumb {
     width: 100% !important;
     height: 100% !important;
   }
@@ -1167,13 +1212,9 @@ body.video-split-active #topRightButtons {
     font-size: 0.75rem !important;
   }
   
-  /* Focus name plus compact (pour compatibilité) */
+  /* Focus name caché en split */
   .mode-split .video-focus-name {
-    padding: 4px 8px !important;
-  }
-  
-  .mode-split .video-focus-name .name {
-    font-size: 0.85rem !important;
+    display: none !important;
   }
 }
 
@@ -1192,14 +1233,17 @@ body.video-split-active #topRightButtons {
     /* padding-top: calc(30vh + 10px) !important; SUPPRIMÉ V3.23 */
   }
   
-  /* GRILLE 2x2: Très petits écrans - garder la grille, réduire le gap */
-  .mode-split .video-thumbs-sidebar {
+  /* GRILLE 2x2: Très petits écrans - garder la grille */
+  .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
     gap: 4px !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
-  .mode-split .video-thumb {
+  .video-briefing-container.mode-split .video-thumb {
     width: 100% !important;
     height: 100% !important;
   }
@@ -1259,105 +1303,3 @@ body.video-split-active .header-banner::before {
   background-position: center bottom !important;
 }
 */
-
-/* ============================================
-   GRILLE 2x2 MODE SPLIT - V4.0
-   ============================================ 
-   En mode SPLIT, afficher 4 vidéos de taille égale
-   au lieu de 1 focus + 3 thumbnails
-*/
-
-/* CACHER le focus wrapper en mode SPLIT */
-.mode-split .video-focus-wrapper {
-  display: none !important;
-}
-
-/* Transformer la sidebar en grille 2x2 plein écran */
-.mode-split .video-thumbs-sidebar {
-  width: 100% !important;
-  height: 100% !important;
-  flex: 1 !important;
-  
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  grid-template-rows: 1fr 1fr !important;
-  gap: 10px !important;
-  
-  max-height: none !important;
-  overflow: visible !important;
-  padding: 0 !important;
-}
-
-/* Agrandir les thumbnails pour remplir chaque cellule */
-.mode-split .video-thumb {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  aspect-ratio: unset !important;
-  
-  border-radius: 12px;
-  border: 2px solid var(--thumb-border);
-}
-
-/* Vidéo dans les thumbnails en mode grille */
-.mode-split .video-thumb video {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
-/* Nom du joueur en mode grille - plus visible */
-.mode-split .video-thumb .thumb-name {
-  font-size: 0.9rem !important;
-  padding: 8px 10px !important;
-}
-
-/* Highlight du speaker actif dans la grille */
-.mode-split .video-thumb.is-speaking {
-  border-color: var(--speaker-ring) !important;
-  box-shadow: 
-    0 0 0 3px var(--speaker-pulse),
-    0 0 25px var(--speaker-pulse) !important;
-  z-index: 5;
-}
-
-/* Empty state pour grille */
-.mode-split .video-thumb.empty::after {
-  font-size: 2.5rem !important;
-}
-
-/* ============================================
-   GRILLE 2x2 - MOBILE
-   ============================================ */
-
-@media (max-width: 768px) {
-  .mode-split .video-thumbs-sidebar {
-    gap: 6px !important;
-  }
-  
-  .mode-split .video-thumb {
-    border-radius: 8px;
-  }
-  
-  .mode-split .video-thumb .thumb-name {
-    font-size: 0.75rem !important;
-    padding: 5px 8px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .mode-split .video-thumbs-sidebar {
-    gap: 4px !important;
-  }
-  
-  .mode-split .video-thumb {
-    border-radius: 6px;
-    border-width: 1px;
-  }
-  
-  .mode-split .video-thumb .thumb-name {
-    font-size: 0.65rem !important;
-    padding: 3px 6px !important;
-  }
-}
