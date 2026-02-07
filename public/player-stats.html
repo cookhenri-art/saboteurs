@@ -948,7 +948,7 @@
     <!-- View: Detailed (V11) -->
     <div id="viewDetailed" class="view">
       <div id="detailedContent">
-        <div class="loading">Chargement des statistiques détaillées...</div>
+        <div class="loading" data-i18n-site="stats.detailed_loading">Chargement des statistiques détaillées...</div>
       </div>
     </div>
   </div>
@@ -1842,7 +1842,7 @@
     function renderDetailed() {
       const container = document.getElementById('detailedContent');
       if (!meData || !meData.stats) {
-        container.innerHTML = '<div class="no-data-message">Connecte-toi pour voir tes statistiques détaillées</div>';
+        container.innerHTML = `<div class="no-data-message">${t('detailed_login_required', 'Connecte-toi pour voir tes statistiques détaillées')}</div>`;
         return;
       }
       
@@ -1914,21 +1914,21 @@
       // Helper pour calculer les pourcentages
       const pct = (num, total) => total > 0 ? Math.round((num / total) * 100) : 0;
       
-      // Générer le HTML
+      // Générer le HTML avec traductions
       container.innerHTML = `
         <!-- Camemberts Victoires/Défaites par rôle -->
         <div class="detailed-section">
-          <div class="detailed-section-title">📊 Répartition par rôle</div>
+          <div class="detailed-section-title">${t('detailed_role_distribution', '📊 Répartition par rôle')}</div>
           <div class="charts-row">
             <div class="chart-card">
-              <h3>🏆 Victoires par rôle</h3>
+              <h3>${t('detailed_wins_by_role', '🏆 Victoires par rôle')}</h3>
               <div class="chart-container">
                 <canvas id="winsChart"></canvas>
               </div>
               <div class="chart-legend" id="winsLegend"></div>
             </div>
             <div class="chart-card">
-              <h3>💀 Défaites par rôle</h3>
+              <h3>${t('detailed_losses_by_role', '💀 Défaites par rôle')}</h3>
               <div class="chart-container">
                 <canvas id="lossesChart"></canvas>
               </div>
@@ -1939,21 +1939,21 @@
         
         <!-- Stats détaillées -->
         <div class="detailed-section">
-          <div class="detailed-section-title">🎯 Statistiques de combat</div>
+          <div class="detailed-section-title">${t('detailed_combat_stats', '🎯 Statistiques de combat')}</div>
           <div class="stats-grid">
             
             <!-- Combat VS Saboteurs -->
             <div class="stat-card">
-              <div class="stat-card-title">🎯 Combat VS Saboteurs</div>
+              <div class="stat-card-title">${t('detailed_combat_vs', '🎯 Combat VS Saboteurs')}</div>
               <div class="stat-row">
-                <span class="stat-label">Votes corrects</span>
+                <span class="stat-label">${t('detailed_correct_votes', 'Votes corrects')}</span>
                 <span class="stat-value good">${correctVotes}/${totalVotes} (${pct(correctVotes, totalVotes)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(correctVotes, totalVotes)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Votes faux</span>
+                <span class="stat-label">${t('detailed_wrong_votes', 'Votes faux')}</span>
                 <span class="stat-value bad">${wrongVotes}/${totalVotes} (${pct(wrongVotes, totalVotes)}%)</span>
               </div>
               <div class="stat-bar-container">
@@ -1963,16 +1963,16 @@
             
             <!-- Chef de Sécurité -->
             <div class="stat-card">
-              <div class="stat-card-title">🔫 Chef de Sécurité</div>
+              <div class="stat-card-title">${t('detailed_security', '🔫 Chef de Sécurité')}</div>
               <div class="stat-row">
-                <span class="stat-label">Saboteurs éliminés</span>
+                <span class="stat-label">${t('detailed_sab_eliminated', 'Saboteurs éliminés')}</span>
                 <span class="stat-value good">${revengeKillsSab}/${totalRevengeShots} (${pct(revengeKillsSab, totalRevengeShots)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(revengeKillsSab, totalRevengeShots)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Astronautes éliminés (err)</span>
+                <span class="stat-label">${t('detailed_astro_eliminated_err', 'Astronautes éliminés (err)')}</span>
                 <span class="stat-value bad">${revengeKillsInn}/${totalRevengeShots} (${pct(revengeKillsInn, totalRevengeShots)}%)</span>
               </div>
               <div class="stat-bar-container">
@@ -1982,57 +1982,57 @@
             
             <!-- Docteur -->
             <div class="stat-card">
-              <div class="stat-card-title">💊 Docteur / Sorcière</div>
+              <div class="stat-card-title">${t('detailed_doctor', '💊 Docteur / Sorcière')}</div>
               <div class="stat-row">
-                <span class="stat-label">Potion fatale OK (saboteur)</span>
+                <span class="stat-label">${t('detailed_fatal_potion_ok', 'Potion fatale OK (saboteur)')}</span>
                 <span class="stat-value good">${doctorKillsSab}/${totalDoctorKills} (${pct(doctorKillsSab, totalDoctorKills)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(doctorKillsSab, totalDoctorKills)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Potion fatale err (astronaute)</span>
+                <span class="stat-label">${t('detailed_fatal_potion_err', 'Potion fatale err (astronaute)')}</span>
                 <span class="stat-value bad">${doctorKillsInn}/${totalDoctorKills} (${pct(doctorKillsInn, totalDoctorKills)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar bad" style="width: ${pct(doctorKillsInn, totalDoctorKills)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Potions de vie utilisées</span>
+                <span class="stat-label">${t('detailed_life_potions', 'Potions de vie utilisées')}</span>
                 <span class="stat-value">${doctorSaves}</span>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Non sauvés (opportunités manquées)</span>
+                <span class="stat-label">${t('detailed_not_saved', 'Non sauvés (opportunités manquées)')}</span>
                 <span class="stat-value">${doctorMissed}/${doctorNotSavedOpp}</span>
               </div>
             </div>
             
             <!-- Actions du Capitaine -->
             <div class="stat-card">
-              <div class="stat-card-title">👑 Actions du Capitaine</div>
+              <div class="stat-card-title">${t('detailed_captain', '👑 Actions du Capitaine')}</div>
               <div class="stat-row">
-                <span class="stat-label">Départage OK (tué saboteur)</span>
+                <span class="stat-label">${t('detailed_tiebreak_ok', 'Départage OK (tué saboteur)')}</span>
                 <span class="stat-value good">${mayorOk}/${mayorTotal} (${pct(mayorOk, mayorTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(mayorOk, mayorTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Départage KO (tué astronaute)</span>
+                <span class="stat-label">${t('detailed_tiebreak_ko', 'Départage KO (tué astronaute)')}</span>
                 <span class="stat-value bad">${mayorKo}/${mayorTotal} (${pct(mayorKo, mayorTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar bad" style="width: ${pct(mayorKo, mayorTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Transfert OK (à astronaute)</span>
+                <span class="stat-label">${t('detailed_transfer_ok', 'Transfert OK (à astronaute)')}</span>
                 <span class="stat-value good">${captainTransferToAst}/${captainTransferTotal} (${pct(captainTransferToAst, captainTransferTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(captainTransferToAst, captainTransferTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">Transfert KO (à saboteur)</span>
+                <span class="stat-label">${t('detailed_transfer_ko', 'Transfert KO (à saboteur)')}</span>
                 <span class="stat-value bad">${captainTransferToSab}/${captainTransferTotal} (${pct(captainTransferToSab, captainTransferTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
@@ -2045,16 +2045,16 @@
         
         <!-- Tableau des victoires par rôle -->
         <div class="detailed-section">
-          <div class="detailed-section-title">📈 Détail par rôle</div>
+          <div class="detailed-section-title">${t('detailed_role_table', '📈 Détail par rôle')}</div>
           <div class="stat-card">
             <table style="width:100%; border-collapse:collapse;">
               <thead>
                 <tr style="border-bottom: 2px solid var(--border-soft);">
-                  <th style="text-align:left; padding:12px 8px; color:var(--text-muted);">Rôle</th>
-                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Parties</th>
-                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Victoires</th>
-                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Défaites</th>
-                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Win Rate</th>
+                  <th style="text-align:left; padding:12px 8px; color:var(--text-muted);">${t('detailed_table_role', 'Rôle')}</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">${t('detailed_table_games', 'Parties')}</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">${t('detailed_table_wins', 'Victoires')}</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">${t('detailed_table_losses', 'Défaites')}</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">${t('detailed_table_winrate', 'Win Rate')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -2095,7 +2095,7 @@
       
       if (!canvas || data.length === 0) {
         if (legendContainer) {
-          legendContainer.innerHTML = '<span style="color:var(--text-muted);">Aucune donnée</span>';
+          legendContainer.innerHTML = `<span style="color:var(--text-muted);">${t('detailed_no_data', 'Aucune donnée')}</span>`;
         }
         return;
       }
