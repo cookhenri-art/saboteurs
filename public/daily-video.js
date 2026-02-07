@@ -1137,12 +1137,11 @@ background: rgba(10, 14, 39, 0.95);
       reason: permissions.reason || ""
     };
 
-    // Si la phase change, on remet les overrides utilisateur à zéro,
-    // afin que les nouvelles règles s'appliquent directement.
-    // V11: DÉSACTIVÉ - On respecte maintenant le choix manuel de l'utilisateur
-    // if (phaseChanged) {
-    //   this.userPref = { video: null, audio: null };
-    // }
+    // Si la phase change, on remet les overrides utilisateur à zéro (vidéo seulement)
+    // V11: L'audio est géré séparément via VideoTracksRegistry
+    if (phaseChanged) {
+      this.userPref = { video: null, audio: this.userPref.audio };
+    }
 
     // UI lock/unlock
     this.setButtonEnabled(this.camButton, this.allowed.video, this.allowed.video ? "" : "Caméra interdite: " + (this.allowed.reason || "phase"));
@@ -1163,20 +1162,19 @@ background: rgba(10, 14, 39, 0.95);
       await this.deafenRemotes(false);
     }
 
-    // V11: NE PLUS réactiver automatiquement l'AUDIO
-    // La gestion audio est centralisée dans video-integration-client.js
-    // MAIS on réactive la VIDÉO normalement
+    // Réactiver vidéo si autorisé
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try { await this.callFrame.setLocalVideo(desiredVideo); } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
     }
-    // V11: Audio géré par video-integration-client.js uniquement
-    /*
+    
+    // V11: Réactiver audio si autorisé ET si l'utilisateur n'a pas manuellement coupé
     if (this.allowed.audio) {
-      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
+      // Vérifier via VideoTracksRegistry si l'utilisateur a manuellement coupé
+      const userMutedAudio = window.VideoTracksRegistry?.getUserMutedAudio?.() || false;
+      const desiredAudio = userMutedAudio ? false : ((this.userPref.audio !== null) ? this.userPref.audio : true);
       try { await this.callFrame.setLocalAudio(desiredAudio); } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
     }
-    */
 
     // Message de statut (optionnel)
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");
