@@ -731,18 +731,20 @@ class LiveKitVideoManager {
     const shouldOverlay = !this.allowed.video && !this.allowed.audio;
     this.setOverlay(shouldOverlay, this.allowed.reason);
 
-    // === ENFORCE : couper si interdit ===
-    if (!this.allowed.video) {
+    // === ENFORCE : couper si interdit (seulement si pas déjà coupé) ===
+    if (!this.allowed.video && this._localVideoEnabled) {
       try {
         await this.room?.localParticipant?.setCameraEnabled(false);
         this._localVideoEnabled = false;
       } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
     }
     if (!this.allowed.audio) {
-      try {
-        await this.room?.localParticipant?.setMicrophoneEnabled(false);
-        this._localAudioEnabled = false;
-      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
+      if (this._localAudioEnabled) {
+        try {
+          await this.room?.localParticipant?.setMicrophoneEnabled(false);
+          this._localAudioEnabled = false;
+        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
+      }
       // 🔇 DEAFEN : couper l'audio distant (phase privée / nuit silencieuse)
       await this.deafenRemotes(true);
     } else {
@@ -751,21 +753,26 @@ class LiveKitVideoManager {
     }
 
     // V11: Réactiver vidéo ET audio si autorisés par le serveur
-    // C'est important pour les phases privées (saboteurs, agent IA) où les joueurs
-    // concernés doivent pouvoir communiquer entre eux
+    // MAIS seulement si l'état doit changer (évite NotReadableError)
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
-      try {
-        await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
-        this._localVideoEnabled = desiredVideo;
-      } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
+      // Ne changer que si l'état est différent
+      if (this._localVideoEnabled !== desiredVideo) {
+        try {
+          await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
+          this._localVideoEnabled = desiredVideo;
+        } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
+      }
     }
     if (this.allowed.audio) {
       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
-      try {
-        await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
-        this._localAudioEnabled = desiredAudio;
-      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+      // Ne changer que si l'état est différent
+      if (this._localAudioEnabled !== desiredAudio) {
+        try {
+          await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
+          this._localAudioEnabled = desiredAudio;
+        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+      }
     }
 
     // Message status

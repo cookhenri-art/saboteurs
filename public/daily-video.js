@@ -1160,15 +1160,24 @@ background: rgba(10, 14, 39, 0.95);
     }
 
     // V11: Réactiver vidéo ET audio si autorisés par le serveur
-    // C'est important pour les phases privées (saboteurs, agent IA) où les joueurs
-    // concernés doivent pouvoir communiquer entre eux
+    // MAIS seulement si l'état doit changer (évite NotReadableError)
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
-      try { await this.callFrame.setLocalVideo(desiredVideo); } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
+      try {
+        const currentVideo = await this.callFrame.localVideo();
+        if (currentVideo !== desiredVideo) {
+          await this.callFrame.setLocalVideo(desiredVideo);
+        }
+      } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
     }
     if (this.allowed.audio) {
       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
-      try { await this.callFrame.setLocalAudio(desiredAudio); } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
+      try {
+        const currentAudio = await this.callFrame.localAudio();
+        if (currentAudio !== desiredAudio) {
+          await this.callFrame.setLocalAudio(desiredAudio);
+        }
+      } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
     }
 
     // Message de statut (optionnel)
