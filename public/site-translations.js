@@ -841,8 +841,53 @@ const SITE_TRANSLATIONS = {
     // Tabs
     tab_profile: { fr: "👤 Mon Profil", en: "👤 My Profile", es: "👤 Mi Perfil", de: "👤 Mein Profil", it: "👤 Il Mio Profilo", pt: "👤 Meu Perfil", nl: "👤 Mijn Profiel" },
     tab_postgame: { fr: "🏆 Fin de Partie", en: "🏆 End Game", es: "🏆 Fin de Partida", de: "🏆 Spielende", it: "🏆 Fine Partita", pt: "🏆 Fim de Jogo", nl: "🏆 Einde Spel" },
+    tab_detailed: { fr: "📊 Détaillé", en: "📊 Detailed", es: "📊 Detallado", de: "📊 Detailliert", it: "📊 Dettagliato", pt: "📊 Detalhado", nl: "📊 Gedetailleerd" },
     tab_leaderboards: { fr: "📈 Classements", en: "📈 Leaderboards", es: "📈 Clasificaciones", de: "📈 Ranglisten", it: "📈 Classifiche", pt: "📈 Classificações", nl: "📈 Ranglijsten" },
     tab_archives: { fr: "📅 Archives", en: "📅 Archives", es: "📅 Archivos", de: "📅 Archiv", it: "📅 Archivi", pt: "📅 Arquivos", nl: "📅 Archieven" },
+    
+    // V11: Onglet Détaillé - Sections
+    detailed_loading: { fr: "Chargement des statistiques détaillées...", en: "Loading detailed statistics...", es: "Cargando estadísticas detalladas...", de: "Lade detaillierte Statistiken...", it: "Caricamento statistiche dettagliate...", pt: "Carregando estatísticas detalhadas...", nl: "Gedetailleerde statistieken laden..." },
+    detailed_login_required: { fr: "Connecte-toi pour voir tes statistiques détaillées", en: "Log in to see your detailed statistics", es: "Inicia sesión para ver tus estadísticas detalladas", de: "Melde dich an, um deine detaillierten Statistiken zu sehen", it: "Accedi per vedere le tue statistiche dettagliate", pt: "Faça login para ver suas estatísticas detalhadas", nl: "Log in om je gedetailleerde statistieken te zien" },
+    detailed_role_distribution: { fr: "📊 Répartition par rôle", en: "📊 Distribution by role", es: "📊 Distribución por rol", de: "📊 Verteilung nach Rolle", it: "📊 Distribuzione per ruolo", pt: "📊 Distribuição por papel", nl: "📊 Verdeling per rol" },
+    detailed_wins_by_role: { fr: "🏆 Victoires par rôle", en: "🏆 Wins by role", es: "🏆 Victorias por rol", de: "🏆 Siege nach Rolle", it: "🏆 Vittorie per ruolo", pt: "🏆 Vitórias por papel", nl: "🏆 Overwinningen per rol" },
+    detailed_losses_by_role: { fr: "💀 Défaites par rôle", en: "💀 Losses by role", es: "💀 Derrotas por rol", de: "💀 Niederlagen nach Rolle", it: "💀 Sconfitte per ruolo", pt: "💀 Derrotas por papel", nl: "💀 Verliezen per rol" },
+    detailed_combat_stats: { fr: "🎯 Statistiques de combat", en: "🎯 Combat statistics", es: "🎯 Estadísticas de combate", de: "🎯 Kampfstatistiken", it: "🎯 Statistiche di combattimento", pt: "🎯 Estatísticas de combate", nl: "🎯 Gevechtsstatistieken" },
+    detailed_role_table: { fr: "📈 Détail par rôle", en: "📈 Detail by role", es: "📈 Detalle por rol", de: "📈 Detail nach Rolle", it: "📈 Dettaglio per ruolo", pt: "📈 Detalhe por papel", nl: "📈 Detail per rol" },
+    detailed_no_data: { fr: "Aucune donnée", en: "No data", es: "Sin datos", de: "Keine Daten", it: "Nessun dato", pt: "Sem dados", nl: "Geen gegevens" },
+    
+    // V11: Onglet Détaillé - Combat VS Saboteurs
+    detailed_combat_vs: { fr: "🎯 Combat VS Saboteurs", en: "🎯 Combat VS Saboteurs", es: "🎯 Combate VS Saboteadores", de: "🎯 Kampf VS Saboteure", it: "🎯 Combattimento VS Sabotatori", pt: "🎯 Combate VS Sabotadores", nl: "🎯 Gevecht VS Saboteurs" },
+    detailed_correct_votes: { fr: "Votes corrects", en: "Correct votes", es: "Votos correctos", de: "Richtige Stimmen", it: "Voti corretti", pt: "Votos corretos", nl: "Correcte stemmen" },
+    detailed_wrong_votes: { fr: "Votes faux", en: "Wrong votes", es: "Votos incorrectos", de: "Falsche Stimmen", it: "Voti sbagliati", pt: "Votos errados", nl: "Foute stemmen" },
+    
+    // V11: Onglet Détaillé - Chef de Sécurité
+    detailed_security: { fr: "🔫 Chef de Sécurité", en: "🔫 Security Chief", es: "🔫 Jefe de Seguridad", de: "🔫 Sicherheitschef", it: "🔫 Capo Sicurezza", pt: "🔫 Chefe de Segurança", nl: "🔫 Beveiligingschef" },
+    detailed_sab_eliminated: { fr: "Saboteurs éliminés", en: "Saboteurs eliminated", es: "Saboteadores eliminados", de: "Saboteure eliminiert", it: "Sabotatori eliminati", pt: "Sabotadores eliminados", nl: "Saboteurs geëlimineerd" },
+    detailed_astro_eliminated_err: { fr: "Astronautes éliminés (err)", en: "Astronauts eliminated (err)", es: "Astronautas eliminados (err)", de: "Astronauten eliminiert (Fehler)", it: "Astronauti eliminati (err)", pt: "Astronautas eliminados (err)", nl: "Astronauten geëlimineerd (fout)" },
+    
+    // V11: Onglet Détaillé - Docteur
+    detailed_doctor: { fr: "💊 Docteur / Sorcière", en: "💊 Doctor / Witch", es: "💊 Doctor / Bruja", de: "💊 Arzt / Hexe", it: "💊 Dottore / Strega", pt: "💊 Doutor / Bruxa", nl: "💊 Dokter / Heks" },
+    detailed_fatal_potion_ok: { fr: "Potion fatale OK (saboteur)", en: "Fatal potion OK (saboteur)", es: "Poción fatal OK (saboteador)", de: "Todestrank OK (Saboteur)", it: "Pozione fatale OK (sabotatore)", pt: "Poção fatal OK (sabotador)", nl: "Dodelijke drank OK (saboteur)" },
+    detailed_fatal_potion_err: { fr: "Potion fatale err (astronaute)", en: "Fatal potion err (astronaut)", es: "Poción fatal err (astronauta)", de: "Todestrank Fehler (Astronaut)", it: "Pozione fatale err (astronauta)", pt: "Poção fatal err (astronauta)", nl: "Dodelijke drank fout (astronaut)" },
+    detailed_life_potions: { fr: "Potions de vie utilisées", en: "Life potions used", es: "Pociones de vida usadas", de: "Lebenstränke verwendet", it: "Pozioni vita usate", pt: "Poções de vida usadas", nl: "Levensdrankjes gebruikt" },
+    detailed_not_saved: { fr: "Non sauvés (opportunités manquées)", en: "Not saved (missed opportunities)", es: "No salvados (oportunidades perdidas)", de: "Nicht gerettet (verpasste Gelegenheiten)", it: "Non salvati (opportunità mancate)", pt: "Não salvos (oportunidades perdidas)", nl: "Niet gered (gemiste kansen)" },
+    
+    // V11: Onglet Détaillé - Actions du Capitaine
+    detailed_captain: { fr: "👑 Actions du Capitaine", en: "👑 Captain Actions", es: "👑 Acciones del Capitán", de: "👑 Kapitänsaktionen", it: "👑 Azioni del Capitano", pt: "👑 Ações do Capitão", nl: "👑 Kapitein Acties" },
+    detailed_tiebreak_ok: { fr: "Départage OK (tué saboteur)", en: "Tiebreak OK (killed saboteur)", es: "Desempate OK (mató saboteador)", de: "Stichabstimmung OK (Saboteur getötet)", it: "Spareggio OK (ucciso sabotatore)", pt: "Desempate OK (matou sabotador)", nl: "Stemminguitslag OK (saboteur gedood)" },
+    detailed_tiebreak_ko: { fr: "Départage KO (tué astronaute)", en: "Tiebreak KO (killed astronaut)", es: "Desempate KO (mató astronauta)", de: "Stichabstimmung KO (Astronaut getötet)", it: "Spareggio KO (ucciso astronauta)", pt: "Desempate KO (matou astronauta)", nl: "Stemminguitslag KO (astronaut gedood)" },
+    detailed_transfer_ok: { fr: "Transfert OK (à astronaute)", en: "Transfer OK (to astronaut)", es: "Transferencia OK (a astronauta)", de: "Transfer OK (an Astronaut)", it: "Trasferimento OK (a astronauta)", pt: "Transferência OK (para astronauta)", nl: "Transfer OK (naar astronaut)" },
+    detailed_transfer_ko: { fr: "Transfert KO (à saboteur)", en: "Transfer KO (to saboteur)", es: "Transferencia KO (a saboteador)", de: "Transfer KO (an Saboteur)", it: "Trasferimento KO (a sabotatore)", pt: "Transferência KO (para sabotador)", nl: "Transfer KO (naar saboteur)" },
+    
+    // V11: Onglet Détaillé - Tableau par rôle
+    detailed_table_role: { fr: "Rôle", en: "Role", es: "Rol", de: "Rolle", it: "Ruolo", pt: "Papel", nl: "Rol" },
+    detailed_table_games: { fr: "Parties", en: "Games", es: "Partidas", de: "Spiele", it: "Partite", pt: "Partidas", nl: "Wedstrijden" },
+    detailed_table_wins: { fr: "Victoires", en: "Wins", es: "Victorias", de: "Siege", it: "Vittorie", pt: "Vitórias", nl: "Overwinningen" },
+    detailed_table_losses: { fr: "Défaites", en: "Losses", es: "Derrotas", de: "Niederlagen", it: "Sconfitte", pt: "Derrotas", nl: "Verliezen" },
+    detailed_table_winrate: { fr: "Win Rate", en: "Win Rate", es: "Win Rate", de: "Siegquote", it: "Win Rate", pt: "Win Rate", nl: "Winstpercentage" },
+    
+    // V11: Bouton stats complètes (game.html)
+    full_stats_button: { fr: "📊 Mes stats complètes", en: "📊 My full stats", es: "📊 Mis stats completas", de: "📊 Meine vollständigen Stats", it: "📊 Le mie stats complete", pt: "📊 Minhas stats completas", nl: "📊 Mijn volledige stats" },
     
     // Profile
     loading: { fr: "Chargement...", en: "Loading...", es: "Cargando...", de: "Laden...", it: "Caricamento...", pt: "Carregando...", nl: "Laden..." },
