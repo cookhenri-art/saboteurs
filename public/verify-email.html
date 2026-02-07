@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-site="email_verification.title">Vérification Email - RORONOA GAMES</title>
+  <link rel="stylesheet" href="roronoa-games.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      font-family: 'Rajdhani', sans-serif;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+    .verify-icon { font-size: 5rem; margin-bottom: 1rem; }
+    .verify-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #6B9D3A; margin-bottom: 1rem; }
+    .verify-message { font-size: 1.2rem; color: #aaa; margin-bottom: 2rem; max-width: 500px; }
+    .verify-message.success { color: #27ae60; }
+    .verify-message.error { color: #e74c3c; }
+    .btn { background: #6B9D3A; color: #fff; padding: 1rem 2rem; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; }
+    .btn:hover { background: #5a8a2f; transform: translateY(-2px); }
+    .loader { width: 50px; height: 50px; border: 3px solid #333; border-top-color: #6B9D3A; border-radius: 50%; animation: spin 1s linear infinite; margin: 2rem auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .lang-selector-wrap { position: absolute; top: 1rem; right: 1rem; }
+    .language-selector { background: rgba(0,0,0,0.4); border: 1px solid #6B9D3A; border-radius: 6px; padding: 6px 10px; color: #fff; font-size: 13px; cursor: pointer; }
+    .language-selector option { background: #1a1a2e; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="lang-selector-wrap" id="lang-selector-wrap"></div>
+  
+  <div id="content">
+    <div class="verify-icon">📧</div>
+    <h1 class="verify-title" data-i18n-site="email_verification.title">Vérification de l'email</h1>
+    <p class="verify-message" id="verify-message" data-i18n-site="email_verification.verifying">Vérification en cours...</p>
+    <div class="loader" id="loader"></div>
+    <a href="/" class="btn" id="btn-home" style="display: none;" data-i18n-site="payment.back_to_home">🏠 Retour à l'accueil</a>
+  </div>
+
+  <script src="site-translations.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var wrap = document.getElementById("lang-selector-wrap");
+      if (wrap) wrap.innerHTML = createLanguageSelector();
+      
+      // Vérification email
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      
+      if (token) {
+        fetch('/api/auth/verify-email?token=' + token)
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('btn-home').style.display = 'inline-block';
+            const msg = document.getElementById('verify-message');
+            if (data.success) {
+              document.querySelector('.verify-icon').textContent = '✅';
+              msg.className = 'verify-message success';
+              msg.setAttribute('data-i18n-site', 'email_verification.success');
+              applySiteTranslations();
+            } else {
+              document.querySelector('.verify-icon').textContent = '❌';
+              msg.className = 'verify-message error';
+              msg.setAttribute('data-i18n-site', 'email_verification.error');
+              applySiteTranslations();
+            }
+          })
+          .catch(err => {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('btn-home').style.display = 'inline-block';
+            const msg = document.getElementById('verify-message');
+            document.querySelector('.verify-icon').textContent = '❌';
+            msg.className = 'verify-message error';
+            msg.textContent = 'Erreur de connexion au serveur.';
+          });
+      } else {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('btn-home').style.display = 'inline-block';
+        const msg = document.getElementById('verify-message');
+        msg.className = 'verify-message error';
+        msg.textContent = 'Token manquant.';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Compte - RORONOA GAMES</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Couleurs Roronoa Games - Style Zoro */
+      --green-dark: #2D5016;
+      --green-main: #4A7C28;
+      --green-bright: #6B9D3A;
+      --green-glow: rgba(107, 157, 58, 0.3);
+      
+      --gold: #FFD700;
+      --gold-dark: #FFA500;
+      --black: #000000;
+      --dark: #0a0a0a;
+      --darker: #151515;
+      --gray: #333;
+      --light-gray: #666;
+      --white: #ffffff;
+      --off-white: #f5f5f5;
+      
+      --danger: #e74c3c;
+      --danger-dark: #c0392b;
+      --success: #27ae60;
+      
+      --font-title: 'Orbitron', sans-serif;
+      --font-text: 'Rajdhani', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: var(--font-text);
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    /* ========================================
+       HEADER
+       ======================================== */
+    
+    .header {
+      background: rgba(0, 0, 0, 0.95);
+      border-bottom: 2px solid var(--green-main);
+      box-shadow: 0 0 20px var(--green-glow);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+    
+    .logo-accent {
+      color: var(--green-bright);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-header {
+      background: transparent;
+      border: 2px solid var(--green-main);
+      color: var(--green-bright);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-family: var(--font-text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+    
+    .btn-header:hover {
+      background: var(--green-main);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .btn-logout {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    
+    .btn-logout:hover {
+      background: var(--danger);
+      color: var(--white);
+    }
+    
+    /* ========================================
+       MAIN CONTAINER
+       ======================================== */
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .page-title {
+      font-family: var(--font-title);
+      font-size: 2.5rem;
+      color: var(--green-bright);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px var(--green-glow);
+    }
+    
+    .page-subtitle {
+      color: var(--light-gray);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .page-subtitle strong {
+      color: var(--green-bright);
+    }
+    
+    /* ========================================
+       TABS
+       ======================================== */
+    
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      border-bottom: 2px solid var(--gray);
+      padding-bottom: 1rem;
+    }
+    
+    .tab {
+      background: transparent;
+      border: none;
+      color: var(--light-gray);
+      padding: 1rem 1.5rem;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: var(--font-text);
+      font-size: 1rem;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .tab:hover {
+      color: var(--green-bright);
+      background: rgba(107, 157, 58, 0.1);
+    }
+    
+    .tab.active {
+      color: var(--green-bright);
+      background: rgba(107, 157, 58, 0.15);
+    }
+    
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--green-bright);
+      border-radius: 2px;
+    }
+    
+    /* ========================================
+       SECTIONS
+       ======================================== */
+    
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* ========================================
+       CARDS
+       ======================================== */
+    
+    .card {
+      background: linear-gradient(135deg, rgba(45, 80, 22, 0.1) 0%, rgba(74, 124, 40, 0.1) 100%);
+      border: 1px solid rgba(107, 157, 58, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(107, 157, 58, 0.2);
+    }
+    
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      color: var(--green-bright);
+    }
+    
+    /* ========================================
+       FORMS
+       ======================================== */
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--off-white);
+      font-weight: 600;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      padding-right: 3rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--gray);
+      border-radius: 8px;
+      color: var(--white);
+      font-family: var(--font-text);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green-bright);
+      box-shadow: 0 0 10px var(--green-glow);
+    }
+    
+    .form-group input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--light-gray);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    
+    .toggle-password:hover {
+      color: var(--green-bright);
+    }
+    
+    /* ========================================
+       BUTTONS
+       ======================================== */
+    
+    .btn {
+      background: linear-gradient(135deg, var(--green-main) 0%, var(--green-bright) 100%);
+      border: none;
+      color: var(--white);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px var(--green-glow);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--green-main);
+      color: var(--green-bright);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--green-main);
+      color: var(--white);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    }
+    
+    .btn-danger:hover {
+      box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+    }
+    
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: var(--black);
+    }
+    
+    .btn-gold:hover {
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+    }
+    
+    .btn-small {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+    
+    /* ========================================
+       SUBSCRIPTION CARDS
+       ======================================== */
+    
+    .subscription-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .subscription-card {
+      background: linear-gradient(135deg, rgba(45, 80, 22, 0.15) 0%, rgba(74, 124, 40, 0.15) 100%);
+      border: 2px solid rgba(107, 157, 58, 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .subscription-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--green-bright);
+      box-shadow: 0 10px 30px var(--green-glow);
+    }
+    
+    .subscription-card.active {
+      border-color: var(--green-bright);
+      box-shadow: 0 0 30px var(--green-glow);
+    }
+    
+    .subscription-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--green-bright);
+      color: var(--white);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    
+    .subscription-badge.inactive {
+      background: var(--gray);
+    }
+    
+    .subscription-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .subscription-name {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--green-bright);
+      margin-bottom: 0.5rem;
+    }
+    
+    .subscription-price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    
+    .subscription-price span {
+      font-size: 1rem;
+      color: var(--light-gray);
+    }
+    
+    .subscription-features {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+    
+    .subscription-features li {
+      padding: 0.5rem 0;
+      color: var(--off-white);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .subscription-features li::before {
+      content: "⚔️";
+      font-size: 0.9rem;
+    }
+    
+    .subscription-dates {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+    
+    .subscription-dates p {
+      margin-bottom: 0.4rem;
+      color: var(--light-gray);
+    }
+    
+    .subscription-dates strong {
+      color: var(--green-bright);
+    }
+    
+    .subscription-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    /* ========================================
+       STATS GRID
+       ======================================== */
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, rgba(45, 80, 22, 0.2) 0%, rgba(74, 124, 40, 0.2) 100%);
+      border: 1px solid rgba(107, 157, 58, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-family: var(--font-title);
+      font-size: 2rem;
+      color: var(--green-bright);
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      color: var(--light-gray);
+      font-size: 0.9rem;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--gray);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-main), var(--green-bright));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    /* ========================================
+       HISTORY TABLE
+       ======================================== */
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    
+    .history-table th,
+    .history-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gray);
+    }
+    
+    .history-table th {
+      background: rgba(107, 157, 58, 0.1);
+      color: var(--green-bright);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    
+    .history-table tr:hover {
+      background: rgba(107, 157, 58, 0.05);
+    }
+    
+    .invoice-link {
+      color: var(--green-bright);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .invoice-link:hover {
+      color: var(--gold);
+      text-decoration: underline;
+    }
+    
+    /* ========================================
+       ALERTS
+       ======================================== */
+    
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      animation: fadeIn 0.3s;
+    }
+    
+    .alert-success {
+      background: rgba(39, 174, 96, 0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+    
+    .alert-error {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    
+    /* ========================================
+       EMPTY STATE
+       ======================================== */
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--light-gray);
+    }
+    
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    /* ========================================
+       LOADER
+       ======================================== */
+    
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+    }
+    
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--gray);
+      border-top-color: var(--green-bright);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* ========================================
+       FAMILY CODE
+       ======================================== */
+    
+    .family-code-box {
+      background: rgba(255, 215, 0, 0.1);
+      border: 2px dashed var(--gold);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .family-code-label {
+      font-size: 0.9rem;
+      color: var(--light-gray);
+      margin-bottom: 0.5rem;
+    }
+    
+    .family-code-value {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+    
+    /* ========================================
+       GALERIE AVATARS
+       ======================================== */
+    
+    .avatars-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    
+    .avatar-item {
+      position: relative;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(107, 157, 58, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .avatar-item.avatar-unavailable {
+      border-color: rgba(255, 68, 68, 0.5);
+    }
+    
+    .avatar-item.avatar-unavailable::after {
+      content: "⚠️ Image expirée";
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      background: rgba(255, 68, 68, 0.8);
+      color: white;
+      padding: 5px;
+      font-size: 0.75rem;
+    }
+    
+    .avatar-item:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(107, 157, 58, 0.3);
+    }
+    
+    .avatar-item img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .avatar-actions {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.5rem;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .avatar-item:hover .avatar-actions {
+      opacity: 1;
+    }
+    
+    .avatar-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .avatar-btn-download {
+      background: var(--accent);
+      color: #fff;
+    }
+    
+    .avatar-btn-download:hover {
+      background: #5a8a2f;
+    }
+    
+    .avatar-date {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      color: #aaa;
+    }
+    
+    .loading-spinner {
+      text-align: center;
+      padding: 2rem;
+      color: #888;
+    }
+    
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .page-title {
+        font-size: 1.8rem;
+      }
+      
+      .page-subtitle {
+        font-size: 1rem;
+      }
+      
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        justify-content: center;
+      }
+      
+      .tab {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        flex: 1 1 auto;
+        min-width: fit-content;
+      }
+      
+      .subscription-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .header-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      
+      .btn-header {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .form-group input {
+        padding: 0.8rem;
+      }
+      
+      .avatars-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 0.5rem;
+      }
+      
+      .avatar-actions {
+        opacity: 1;
+        padding: 0.3rem;
+      }
+      
+      .avatar-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.75rem;
+      }
+      
+      .subscription-card {
+        padding: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .tabs {
+        gap: 0.2rem;
+      }
+      
+      .tab {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.75rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .avatars-gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+      
+      .tabs {
+        gap: 0.25rem;
+      }
+      
+      .tab {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+      }
+      
+      .subscription-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .header-actions {
+        justify-content: center;
+      }
+    }
+    /* Language Selector */
+    .lang-selector-wrap {
+      display: inline-block;
+      margin-left: 10px;
+    }
+    .language-selector {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--green-main);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    .language-selector:hover {
+      background: rgba(107, 157, 58, 0.3);
+      border-color: var(--green-bright);
+    }
+    .language-selector option {
+      background: #1a1a2e;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <a href="/" class="logo">RORONOA <span class="logo-accent">GAMES</span></a>
+      <div class="header-actions">
+        <a href="/" class="btn-header" data-i18n-site="nav.home">⚔️ Accueil</a>
+        <button class="btn-header btn-logout" onclick="logout()" data-i18n-site="nav.logout">🚪 Déconnexion</button>
+        <div class="lang-selector-wrap" id="lang-selector-wrap"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1 class="page-title" data-i18n-site="account.page_title_h1">⚔️ Mon Compte</h1>
+    <p class="page-subtitle">Bienvenue, <strong id="user-name">Chargement...</strong></p>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="showSection('profile', this)" data-i18n-site="account.tab_profile">👤 Profil</button>
+      <button class="tab" onclick="showSection('avatars', this)" data-i18n-site="account.tab_avatars">🎨 Avatars</button>
+      <button class="tab" onclick="window.location.href='/player-stats.html'" data-i18n-site="account.tab_stats">📊 Stats</button>
+      <button class="tab" onclick="showSection('subscriptions', this)" data-i18n-site="account.tab_subscriptions">💎 Abonnements</button>
+      <button class="tab" onclick="showSection('credits', this)" data-i18n-site="account.tab_credits">📦 Crédits</button>
+      <button class="tab" onclick="showSection('referrals', this)" data-i18n-site="referral.tab_title">👥 Parrainage</button>
+      <button class="tab" onclick="showSection('history', this)" data-i18n-site="account.tab_history">📜 Historique</button>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: PROFIL
+         ========================================== -->
+    <div id="section-profile" class="section active">
+      <!-- Infos utilisateur -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.personal_info">👤 Informations personnelles</h2>
+        </div>
+        
+        <div id="alert-profile"></div>
+        
+        <form onsubmit="updateProfile(event)">
+          <div class="form-group">
+            <label data-i18n-site="account.label_email">Email</label>
+            <input type="email" id="profile-email" disabled>
+          </div>
+          
+          <div class="form-group">
+            <label data-i18n-site="account.label_username">Pseudo</label>
+            <input type="text" id="profile-username" required>
+          </div>
+          
+          <div class="form-group">
+            <label data-i18n-site="account.label_account_type">Type de compte</label>
+            <input type="text" id="profile-type" disabled>
+          </div>
+          
+          <button type="submit" class="btn" data-i18n-site="account.btn_save">💾 Sauvegarder</button>
+        </form>
+      </div>
+      
+      <!-- Changer mot de passe -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.change_password_title">🔒 Changer le mot de passe</h2>
+        </div>
+        
+        <div id="alert-password"></div>
+        
+        <form id="form-password" onsubmit="updatePassword(event)">
+          <div class="form-group">
+            <label data-i18n-site="account.label_current_password">Mot de passe actuel</label>
+            <div class="input-wrapper">
+              <input type="password" id="current-password" required>
+              <button type="button" class="toggle-password" onclick="togglePassword('current-password', this)">👁️</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label data-i18n-site="account.label_new_password">Nouveau mot de passe</label>
+            <div class="input-wrapper">
+              <input type="password" id="new-password" required minlength="6">
+              <button type="button" class="toggle-password" onclick="togglePassword('new-password', this)">👁️</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label data-i18n-site="account.label_confirm_password">Confirmer le nouveau mot de passe</label>
+            <div class="input-wrapper">
+              <input type="password" id="confirm-password" required minlength="6">
+              <button type="button" class="toggle-password" onclick="togglePassword('confirm-password', this)">👁️</button>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn" data-i18n-site="account.btn_change_password">🔐 Modifier le mot de passe</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: MES AVATARS
+         ========================================== -->
+    <div id="section-avatars" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.my_avatars_title">🎨 Mes Avatars IA</h2>
+          <span class="credits-badge" id="avatar-count-badge">0 avatars</span>
+        </div>
+        
+        <p style="color: #aaa; margin-bottom: 1.5rem;" data-i18n-site="account.avatars_description">
+          Vos avatars générés par IA sont disponibles ici. Vous pouvez les télécharger pour les utiliser dans d'autres jeux ou applications.
+        </p>
+        
+        <div id="avatars-gallery" class="avatars-gallery">
+          <div class="loading-spinner" data-i18n-site="account.loading">Chargement...</div>
+        </div>
+        
+        <div id="no-avatars" style="display: none; text-align: center; padding: 3rem; color: #888;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🎨</div>
+          <p data-i18n-site="account.no_avatars">Vous n'avez pas encore d'avatar.</p>
+          <p style="margin-top: 0.5rem;">
+            <a href="https://saboteurs-2.onrender.com" target="_blank" style="color: #6B9D3A;" onclick="addTokenToLink(event)" data-i18n-site="account.create_first_avatar">Créez votre premier avatar dans le jeu →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: ABONNEMENTS
+         ========================================== -->
+    <div id="section-subscriptions" class="section">
+      <div class="subscription-grid">
+        <!-- Premium -->
+        <div class="subscription-card" id="card-premium">
+          <span class="subscription-badge inactive" id="premium-badge" data-i18n-site="account.not_active">Non actif</span>
+          <div class="subscription-icon">⚔️</div>
+          <h3 class="subscription-name" data-i18n-site="account.pack_premium">Pack Premium</h3>
+          <div class="subscription-price">1,49€ <span>/mois</span></div>
+          <ul class="subscription-features">
+            <li data-i18n-site="account.feat_unlimited_video">Vidéo illimitée</li>
+            <li data-i18n-site="account.feat_30_avatars">30 avatars IA / mois</li>
+            <li data-i18n-site="account.feat_all_themes">Tous les thèmes</li>
+            <li data-i18n-site="account.feat_premium_badge">Badge Premium</li>
+            <li data-i18n-site="account.feat_priority_support">Support prioritaire</li>
+          </ul>
+          
+          <div class="subscription-dates" id="premium-dates" style="display: none;">
+            <p>📅 Début : <strong id="premium-start">-</strong></p>
+            <p>🔄 Prochain prélèvement : <strong id="premium-next">-</strong></p>
+            <p>📊 Statut : <strong id="premium-status-text">Actif</strong></p>
+          </div>
+          
+          <div class="subscription-actions">
+            <button class="btn" id="btn-premium" onclick="managePremium()" data-i18n-site="account.btn_subscribe">S'abonner</button>
+            <button class="btn btn-danger btn-small" id="btn-cancel-premium" data-i18n-site="account.btn_cancel" style="display: none;" onclick="cancelSubscription('premium')">❌ Résilier l'abonnement</button>
+          </div>
+        </div>
+        
+        <!-- Pack Famille -->
+        <div class="subscription-card" id="card-family">
+          <span class="subscription-badge inactive" id="family-badge" data-i18n-site="account.not_active">Non actif</span>
+          <div class="subscription-icon">👨‍👩‍👧‍👦</div>
+          <h3 class="subscription-name" data-i18n-site="account.pack_family">Pack Famille</h3>
+          <div class="subscription-price">9,99€ <span>/mois</span></div>
+          <ul class="subscription-features">
+            <li data-i18n-site="account.feat_8_accounts">Jusqu'à 8 comptes</li>
+            <li data-i18n-site="account.feat_video_all">Vidéo illimitée pour tous</li>
+            <li data-i18n-site="account.feat_30_avatars_each">30 avatars IA / mois chacun</li>
+            <li data-i18n-site="account.feat_all_themes">Tous les thèmes</li>
+            <li data-i18n-site="account.feat_member_management">Gestion des membres</li>
+          </ul>
+          
+          <div class="subscription-dates" id="family-dates" style="display: none;">
+            <p>📅 Début : <strong id="family-start">-</strong></p>
+            <p>🔄 Prochain prélèvement : <strong id="family-next">-</strong></p>
+            <p>📊 Statut : <strong id="family-status-text">Actif</strong></p>
+          </div>
+          
+          <div id="family-code-section" style="display: none;">
+            <div class="family-code-box">
+              <p class="family-code-label" data-i18n-site="account.family_code_share">Code famille à partager :</p>
+              <p class="family-code-value" id="family-code">-</p>
+            </div>
+          </div>
+          
+          <div class="subscription-actions" style="margin-top: 1rem;">
+            <button class="btn btn-gold" id="btn-family" onclick="manageFamily()" data-i18n-site="account.btn_subscribe">S'abonner</button>
+            <button class="btn btn-danger btn-small" id="btn-cancel-family" data-i18n-site="account.btn_cancel" style="display: none;" onclick="cancelSubscription('family')">❌ Résilier l'abonnement</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Portail de paiement -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.manage_payments">📋 Gérer mes paiements</h2>
+        </div>
+        <p style="color: var(--light-gray); margin-bottom: 1rem;" data-i18n-site="account.billing_portal_desc">
+          Accédez au portail Stripe pour modifier votre moyen de paiement, télécharger vos factures ou gérer votre abonnement.
+        </p>
+        <button class="btn btn-secondary" onclick="openBillingPortal()" data-i18n-site="account.btn_billing_portal">🔗 Accéder au portail de paiement</button>
+      </div>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: CRÉDITS & PACKS
+         ========================================== -->
+    <div id="section-credits" class="section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🎬</div>
+          <div class="stat-value" id="video-credits">0</div>
+          <div class="stat-label" data-i18n-site="account.video_credits">Crédits Vidéo</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">🎨</div>
+          <div class="stat-value" id="bonus-avatars">0</div>
+          <div class="stat-label" data-i18n-site="account.bonus_avatars">Avatars Bonus</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-value" id="monthly-avatars">0/2</div>
+          <div class="stat-label" data-i18n-site="account.monthly_avatars">Avatars ce mois</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-avatars" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pack 50+50 -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.pack_5050_title">🎁 Pack 50+50</h2>
+        </div>
+        <p style="color: var(--light-gray); margin-bottom: 1rem;" data-i18n-site="account.pack_5050_desc">
+          Achat unique : <strong style="color: var(--green-bright);">50 crédits vidéo</strong> + <strong style="color: var(--green-bright);">50 avatars bonus</strong>
+        </p>
+        <p style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--off-white);" data-i18n-site="account.pack_5050_ideal">
+          Idéal pour compléter votre abonnement ou offrir en cadeau !
+        </p>
+        <div class="subscription-price" style="margin-bottom: 1rem;">4,99€ <span>unique</span></div>
+        
+        <!-- Champ Code Promo -->
+        <div style="margin-bottom: 1rem; padding: 12px; background: rgba(107, 157, 58, 0.1); border: 1px dashed var(--green-main); border-radius: 8px;">
+          <label style="color: var(--green-bright); font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9em;" data-i18n-site="account.promo_label">🎁 Code promo ?</label>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="pack-promo-code" data-i18n-site="account.promo_placeholder" placeholder="Entre ton code" style="padding: 8px 12px; border: 2px solid #333; border-radius: 6px; background: rgba(0,0,0,0.3); color: #fff; font-size: 13px; text-transform: uppercase; width: 140px;" />
+            <button onclick="validatePackPromoCode()" style="padding: 8px 14px; background: var(--green-main); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;" data-i18n-site="account.promo_validate">Valider</button>
+          </div>
+          <p id="pack-promo-status" style="margin-top: 6px; font-size: 12px; color: #aaa; min-height: 16px;"></p>
+        </div>
+        
+        <button class="btn btn-gold" onclick="buyPack()" data-i18n-site="account.btn_buy_pack">🛒 Acheter le Pack</button>
+      </div>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: HISTORIQUE
+         ========================================== -->
+    <div id="section-history" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="account.purchase_history">📜 Historique des achats</h2>
+        </div>
+        <div id="history-content">
+          <div class="loader">
+            <div class="loader-spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ==========================================
+         SECTION: PARRAINAGE
+         ========================================== -->
+    <div id="section-referrals" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n-site="referral.program_title">👥 Programme de Parrainage</h2>
+        </div>
+        
+        <div style="padding: 20px;">
+          <!-- Code parrain -->
+          <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(0,212,255,0.3);">
+            <h3 style="color: #00d4ff; margin: 0 0 10px 0; font-size: 14px;" data-i18n-site="referral.your_code">🎁 TON CODE PARRAIN</h3>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+              <div id="my-referral-code" style="font-size: 28px; font-weight: bold; color: #4ade80; letter-spacing: 3px; font-family: monospace;">
+                --------
+              </div>
+              <button onclick="copyReferralCode()" class="btn" style="background: #4ade80; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold;" data-i18n-site="referral.copy">
+                📋 Copier
+              </button>
+              <button onclick="shareReferralLink()" class="btn" style="background: #00d4ff; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold;" data-i18n-site="referral.share_link">
+                🔗 Partager le lien
+              </button>
+            </div>
+            <p style="color: #888; font-size: 12px; margin-top: 15px;" data-i18n-site="referral.code_description">
+              Partage ce code avec tes amis. Quand ils s'inscrivent et font leur 1er achat, tu reçois une récompense !
+            </p>
+          </div>
+          
+          <!-- Lien de partage -->
+          <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 25px;">
+            <h4 style="color: #fff; margin: 0 0 10px 0; font-size: 13px;" data-i18n-site="referral.your_link">🔗 Ton lien de parrainage</h4>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <code id="referral-link" style="background: #0a0a15; padding: 10px 15px; border-radius: 8px; color: #4ade80; font-size: 12px; flex: 1; min-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" data-i18n-site="referral.loading">
+                Chargement...
+              </code>
+              <button onclick="copyReferralLink()" class="btn" style="background: #333; color: #fff; padding: 8px 15px; border-radius: 6px; font-size: 12px;" data-i18n-site="referral.copy">
+                📋 Copier
+              </button>
+            </div>
+          </div>
+          
+          <!-- Stats -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+              <div id="referral-stat-completed" style="font-size: 32px; font-weight: bold; color: #4ade80;">0</div>
+              <div style="color: #888; font-size: 12px;" data-i18n-site="referral.stat_completed">Parrainages validés</div>
+            </div>
+            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+              <div id="referral-stat-pending" style="font-size: 32px; font-weight: bold; color: #fbbf24;">0</div>
+              <div style="color: #888; font-size: 12px;" data-i18n-site="referral.stat_pending">En attente d'achat</div>
+            </div>
+            <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+              <div id="referral-stat-total" style="font-size: 32px; font-weight: bold; color: #00d4ff;">0</div>
+              <div style="color: #888; font-size: 12px;" data-i18n-site="referral.stat_total">Total invités</div>
+            </div>
+          </div>
+          
+          <!-- Comment ça marche -->
+          <div style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 20px;">
+            <h4 style="color: #00d4ff; margin: 0 0 15px 0;" data-i18n-site="referral.how_it_works">❓ Comment ça marche ?</h4>
+            <ol style="color: #ccc; margin: 0; padding-left: 20px; line-height: 1.8;">
+              <li data-i18n-site="referral.step1">Partage ton code ou lien avec un ami</li>
+              <li data-i18n-site="referral.step2">Ton ami s'inscrit sur Saboteur avec ton code</li>
+              <li><span data-i18n-site="referral.step3">Quand ton ami fait son 1er achat, le parrainage est</span> <strong style="color: #4ade80;" data-i18n-site="referral.step3_validated">validé</strong></li>
+              <li data-i18n-site="referral.step4">Tu reçois ta récompense automatiquement ! 🎉</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    
+    const TOKEN_KEY = 'saboteur_token';
+    const USER_KEY = 'saboteur_user';
+    let currentUser = null;
+    
+    // ==========================================
+    // INIT
+    // ==========================================
+    
+    async function init() {
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      if (!token) {
+        // Rediriger vers la page d'accueil si pas connecté
+        alert('Vous devez être connecté pour accéder à cette page.');
+        window.location.href = '/?login=required';
+        return;
+      }
+      
+      await loadUserData();
+    }
+    
+    async function loadUserData() {
+      try {
+        const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+        const response = await fetch('/api/account/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            alert('Session expirée. Veuillez vous reconnecter.');
+            logout();
+            return;
+          }
+          throw new Error('Erreur chargement profil');
+        }
+        
+        currentUser = await response.json();
+        console.log('User data loaded:', currentUser);
+        
+        // Mettre à jour l'interface
+        updateProfileUI();
+        updateSubscriptionsUI();
+        updateCreditsUI();
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('alert-profile', '❌ Erreur de chargement du profil', 'error');
+      }
+    }
+    
+    // ==========================================
+    // UI UPDATES
+    // ==========================================
+    
+    function updateProfileUI() {
+      if (!currentUser) return;
+      
+      document.getElementById('user-name').textContent = currentUser.username || 'Utilisateur';
+      document.getElementById('profile-email').value = currentUser.email || '';
+      document.getElementById('profile-username').value = currentUser.username || '';
+      
+      // Type de compte lisible
+      const typeLabels = {
+        'free': '🆓 Gratuit',
+        'subscriber': '⚔️ Premium',
+        'family': '👨‍👩‍👧‍👦 Famille',
+        'pack': '📦 Pack',
+        'admin': '👑 Administrateur',
+        'client_site': '🌐 Client Site'
+      };
+      document.getElementById('profile-type').value = typeLabels[currentUser.account_type] || currentUser.account_type || 'Gratuit';
+    }
+    
+    function updateSubscriptionsUI() {
+      if (!currentUser) return;
+      
+      const accountType = currentUser.account_type || 'free';
+      
+      // Premium
+      if (accountType === 'subscriber' || accountType === 'admin') {
+        document.getElementById('card-premium').classList.add('active');
+        document.getElementById('premium-badge').textContent = '✓ ACTIF';
+        document.getElementById('premium-badge').classList.remove('inactive');
+        document.getElementById('btn-premium').textContent = '⚙️ Gérer l\'abonnement';
+        document.getElementById('btn-cancel-premium').style.display = 'block';
+        document.getElementById('premium-dates').style.display = 'block';
+        
+        if (currentUser.subscription_start) {
+          document.getElementById('premium-start').textContent = formatDate(currentUser.subscription_start);
+        } else {
+          document.getElementById('premium-start').textContent = 'Non disponible';
+        }
+        
+        if (currentUser.subscription_next || currentUser.current_period_end) {
+          document.getElementById('premium-next').textContent = formatDate(currentUser.subscription_next || currentUser.current_period_end);
+        } else {
+          document.getElementById('premium-next').textContent = 'Non disponible';
+        }
+        
+        // 🆕 Afficher avertissement si résiliation programmée
+        if (currentUser.subscription_ends_at) {
+          const endDate = new Date(currentUser.subscription_ends_at);
+          const endDateStr = endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+          
+          // Créer ou mettre à jour l'avertissement
+          let warningEl = document.getElementById('subscription-ending-warning');
+          if (!warningEl) {
+            warningEl = document.createElement('div');
+            warningEl.id = 'subscription-ending-warning';
+            warningEl.style.cssText = 'background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; padding: 15px; border-radius: 10px; margin-top: 15px; text-align: center; font-weight: bold;';
+            document.getElementById('card-premium').appendChild(warningEl);
+          }
+          warningEl.innerHTML = `⚠️ Votre abonnement prendra fin le <strong>${endDateStr}</strong><br><small style="font-weight: normal;">Vous conserverez l'accès jusqu'à cette date</small>`;
+        }
+      }
+      
+      // Famille
+      if (accountType === 'family' || currentUser.family_pack_id) {
+        document.getElementById('card-family').classList.add('active');
+        document.getElementById('family-badge').textContent = '✓ ACTIF';
+        document.getElementById('family-badge').classList.remove('inactive');
+        document.getElementById('btn-family').textContent = '⚙️ Gérer le Pack Famille';
+        document.getElementById('btn-cancel-family').style.display = 'block';
+        document.getElementById('family-dates').style.display = 'block';
+        
+        if (currentUser.family_code || currentUser.pack_code) {
+          document.getElementById('family-code-section').style.display = 'block';
+          document.getElementById('family-code').textContent = currentUser.family_code || currentUser.pack_code;
+        }
+        
+        if (currentUser.family_start) {
+          document.getElementById('family-start').textContent = formatDate(currentUser.family_start);
+        }
+        
+        if (currentUser.family_next) {
+          document.getElementById('family-next').textContent = formatDate(currentUser.family_next);
+        }
+      }
+    }
+    
+    function updateCreditsUI() {
+      if (!currentUser) return;
+      
+      // Crédits vidéo
+      const videoCredits = currentUser.video_credits || 0;
+      document.getElementById('video-credits').textContent = videoCredits >= 999999 ? '∞' : videoCredits;
+      
+      // Avatars bonus
+      document.getElementById('bonus-avatars').textContent = currentUser.bonus_avatars || 0;
+      
+      // Avatars mensuels
+      const avatarsUsed = currentUser.avatars_used || currentUser.monthly_avatars_used || 0;
+      const avatarsLimit = getAvatarLimit(currentUser.account_type);
+      
+      if (avatarsLimit === Infinity) {
+        document.getElementById('monthly-avatars').textContent = `${avatarsUsed} / ∞`;
+        document.getElementById('progress-avatars').style.width = '0%';
+      } else {
+        document.getElementById('monthly-avatars').textContent = `${avatarsUsed} / ${avatarsLimit}`;
+        const progress = (avatarsUsed / avatarsLimit) * 100;
+        document.getElementById('progress-avatars').style.width = `${Math.min(progress, 100)}%`;
+      }
+    }
+    
+    function getAvatarLimit(accountType) {
+      switch(accountType) {
+        case 'subscriber':
+        case 'family':
+          return 30; // 30 avatars/mois pour Premium et Famille
+        case 'admin':
+          return Infinity;
+        case 'pack':
+        default:
+          return 2; // Pack seul ou Gratuit = 2/mois (les bonus s'ajoutent à côté)
+      }
+    }
+    
+    // ==========================================
+    // TABS
+    // ==========================================
+    
+    function showSection(sectionName, tabElement) {
+      // Masquer toutes les sections
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      
+      // Afficher la section demandée
+      document.getElementById(`section-${sectionName}`).classList.add('active');
+      tabElement.classList.add('active');
+      
+      // Charger les données spécifiques
+      if (sectionName === 'history') {
+        loadHistory();
+      } else if (sectionName === 'avatars') {
+        loadAvatars();
+      } else if (sectionName === 'referrals') {
+        loadReferralData();
+      }
+    }
+    
+    // ==========================================
+    // PARRAINAGE
+    // ==========================================
+    
+    // Simple toast notification
+    function showToast(message, type = 'success') {
+      // Créer le toast
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+        background: ${type === 'success' ? '#4ade80' : '#ef4444'};
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      // Supprimer après 3s
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    function loadReferralData() {
+      if (!currentUser) return;
+      
+      // Le code est dans currentUser.user.referralCode (structure API)
+      const userData = currentUser.user || currentUser;
+      const code = userData.referralCode || userData.referral_code;
+      console.log('[Parrainage] Code reçu:', code);
+      if (code && code !== 'null' && code !== 'undefined') {
+        document.getElementById('my-referral-code').textContent = code;
+        document.getElementById('referral-link').textContent = `https://saboteurs.roronoa-games.com/?ref=${code}`;
+      } else {
+        document.getElementById('my-referral-code').textContent = 'Non généré';
+        document.getElementById('referral-link').textContent = 'Code non disponible';
+      }
+      
+      // Afficher les stats
+      const stats = userData.referralStats || { total: 0, completed: 0, pending: 0 };
+      document.getElementById('referral-stat-completed').textContent = stats.completed || 0;
+      document.getElementById('referral-stat-pending').textContent = stats.pending || 0;
+      document.getElementById('referral-stat-total').textContent = stats.total || 0;
+    }
+    
+    function copyReferralCode() {
+      const code = document.getElementById('my-referral-code').textContent;
+      if (code && code !== '--------') {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast('✅ Code copié !', 'success');
+        }).catch(() => {
+          showToast('❌ Erreur de copie', 'error');
+        });
+      }
+    }
+    
+    function copyReferralLink() {
+      const link = document.getElementById('referral-link').textContent;
+      if (link && !link.includes('Chargement')) {
+        navigator.clipboard.writeText(link).then(() => {
+          showToast('✅ Lien copié !', 'success');
+        }).catch(() => {
+          showToast('❌ Erreur de copie', 'error');
+        });
+      }
+    }
+    
+    function shareReferralLink() {
+      const userData = currentUser?.user || currentUser;
+      const code = userData?.referralCode || userData?.referral_code;
+      if (!code) return;
+      
+      const link = `https://saboteurs.roronoa-games.com/?ref=${code}`;
+      const text = `🎮 Rejoins-moi sur Saboteur ! Utilise mon code parrain ${code} pour t'inscrire : ${link}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: 'Saboteur - Code Parrain',
+          text: text,
+          url: link
+        }).catch(() => {});
+      } else {
+        // Fallback: copier dans le presse-papiers
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('✅ Lien copié ! Partage-le avec tes amis', 'success');
+        });
+      }
+    }
+    
+    // ==========================================
+    // TOGGLE PASSWORD
+    // ==========================================
+    
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        button.textContent = '👁️';
+      }
+    }
+    
+    // ==========================================
+    // PROFILE
+    // ==========================================
+    
+    async function updateProfile(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('profile-username').value;
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/account/update-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ username })
+        });
+        
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Erreur mise à jour');
+        }
+        
+        showAlert('alert-profile', '✅ Profil mis à jour avec succès !', 'success');
+        await loadUserData();
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('alert-profile', `❌ ${error.message}`, 'error');
+      }
+    }
+    
+    async function updatePassword(event) {
+      event.preventDefault();
+      
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      
+      if (newPassword !== confirmPassword) {
+        showAlert('alert-password', '❌ Les mots de passe ne correspondent pas', 'error');
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        showAlert('alert-password', '❌ Le mot de passe doit contenir au moins 6 caractères', 'error');
+        return;
+      }
+      
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/account/update-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Mot de passe actuel incorrect');
+        }
+        
+        showAlert('alert-password', '✅ Mot de passe modifié avec succès !', 'success');
+        document.getElementById('form-password').reset();
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('alert-password', `❌ ${error.message}`, 'error');
+      }
+    }
+    
+    // ==========================================
+    // SUBSCRIPTIONS
+    // ==========================================
+    
+    async function managePremium() {
+      const accountType = currentUser?.account_type || 'free';
+      
+      if (accountType === 'subscriber' || accountType === 'admin') {
+        openBillingPortal();
+      } else {
+        await startCheckout('subscription');
+      }
+    }
+    
+    async function manageFamily() {
+      const accountType = currentUser?.account_type || 'free';
+      
+      if (accountType === 'family' || currentUser?.family_pack_id) {
+        openBillingPortal();
+      } else {
+        await startCheckout('family');
+      }
+    }
+    
+    async function cancelSubscription(type) {
+      const typeName = type === 'premium' ? 'Premium' : 'Pack Famille';
+      
+      if (!confirm(`⚠️ Êtes-vous sûr de vouloir résilier votre abonnement ${typeName} ?\n\nVotre abonnement restera actif jusqu'à la fin de la période en cours.`)) {
+        return;
+      }
+      
+      // Rediriger vers le portail Stripe pour la résiliation
+      openBillingPortal();
+    }
+    
+    async function openBillingPortal() {
+      // Vérifier si l'utilisateur a un compte Stripe associé
+      if (!currentUser?.stripeCustomerId) {
+        alert('ℹ️ Vous n\'avez pas encore de compte de paiement associé.\n\nCelui-ci sera créé automatiquement lors de votre premier achat.');
+        return;
+      }
+      
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/stripe/create-portal-session', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Erreur portail de paiement');
+        }
+        
+        const { url } = await response.json();
+        // Ouvrir dans nouvelle fenêtre
+        window.open(url, '_blank');
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('❌ ' + error.message);
+      }
+    }
+    
+    // ==========================================
+    // PACKS
+    // ==========================================
+    
+    async function buyPack() {
+      const promoInput = document.getElementById('pack-promo-code');
+      const promoCode = promoInput ? promoInput.value.trim().toUpperCase() : '';
+      await startCheckout('pack', promoCode);
+    }
+    
+    // Valider un code promo pour le pack
+    async function validatePackPromoCode() {
+      const input = document.getElementById('pack-promo-code');
+      const status = document.getElementById('pack-promo-status');
+      
+      if (!input || !status) return;
+      
+      const code = input.value.trim().toUpperCase();
+      
+      if (!code) {
+        status.innerHTML = '<span style="color: #ff6b6b;">❌ Code invalide</span>';
+        return;
+      }
+      
+      status.innerHTML = '<span style="color: #aaa;">🔄 Vérification...</span>';
+      
+      try {
+        const response = await fetch('/api/stripe/validate-promo?code=' + encodeURIComponent(code));
+        const data = await response.json();
+        
+        if (data.valid) {
+          const discount = data.percent_off ? `-${data.percent_off}%` : `-${(data.amount_off / 100).toFixed(2)}€`;
+          status.innerHTML = `<span style="color: var(--green-bright);">✅ Code valide ! Réduction : <strong>${discount}</strong></span>`;
+          input.style.borderColor = 'var(--green-bright)';
+        } else {
+          status.innerHTML = '<span style="color: #ff6b6b;">❌ Code invalide ou expiré</span>';
+          input.style.borderColor = '#ff6b6b';
+        }
+      } catch (error) {
+        status.innerHTML = '<span style="color: #ff6b6b;">❌ Erreur de vérification</span>';
+      }
+    }
+    
+    /**
+     * Démarrer un checkout Stripe (même logique que index.html)
+     * @param {string} priceType - 'subscription', 'family', ou 'pack'
+     * @param {string} promoCode - Code promo optionnel
+     */
+    async function startCheckout(priceType, promoCode = '') {
+      if (!currentUser) {
+        alert('Erreur: Utilisateur non chargé. Rechargez la page.');
+        return;
+      }
+      
+      try {
+        // Construire l'URL avec les paramètres
+        let checkoutUrl = '/api/stripe/create-checkout-session?';
+        if (priceType === 'subscription') {
+          checkoutUrl += 'subscription=premium';
+        } else if (priceType === 'family') {
+          checkoutUrl += 'subscription=family';
+        } else if (priceType === 'pack') {
+          checkoutUrl += 'pack=50';
+        }
+        
+        if (promoCode) {
+          checkoutUrl += '&promoCode=' + encodeURIComponent(promoCode);
+        }
+        
+        const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+        const response = await fetch(checkoutUrl, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.url) {
+          // Ouvrir dans une nouvelle fenêtre pour ne pas perdre le site
+          window.open(data.url, '_blank');
+        } else {
+          alert('❌ ' + (data.error || 'Erreur Stripe'));
+        }
+        
+      } catch (error) {
+        console.error('Erreur checkout:', error);
+        alert('❌ Erreur de connexion');
+      }
+    }
+    
+    // ==========================================
+    // HISTORY
+    // ==========================================
+    
+    async function loadHistory() {
+      const historyContent = document.getElementById('history-content');
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/account/history', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) throw new Error('Erreur chargement historique');
+        
+        const data = await response.json();
+        
+        if (!data.purchases || data.purchases.length === 0) {
+          historyContent.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <p data-i18n-site="account.no_purchases">Aucun achat pour le moment</p>
+              <p style="margin-top: 0.5rem; font-size: 0.9rem;" data-i18n-site="account.future_purchases">Vos futurs achats apparaîtront ici.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = `
+          <div class="table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Produit</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                  <th>Facture</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        data.purchases.forEach(purchase => {
+          const statusDisplay = (purchase.status === 'paid' || purchase.status === 'Payé') 
+            ? '✅ Payé' 
+            : '⏳ En attente';
+          
+          html += `
+            <tr>
+              <td>${formatDate(purchase.date)}</td>
+              <td>${escapeHtml(purchase.product)}</td>
+              <td>${escapeHtml(purchase.amount)}</td>
+              <td>${statusDisplay}</td>
+              <td>
+                ${purchase.invoice_url ? `<a href="${purchase.invoice_url}" target="_blank" class="invoice-link">📄 Télécharger</a>` : '-'}
+              </td>
+            </tr>
+          `;
+        });
+        
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        historyContent.innerHTML = html;
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        historyContent.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">❌</div>
+            <p>Erreur de chargement de l'historique</p>
+            <button class="btn btn-secondary btn-small" style="margin-top: 1rem;" onclick="loadHistory()">🔄 Réessayer</button>
+          </div>
+        `;
+      }
+    }
+    
+    // ==========================================
+    // AVATARS
+    // ==========================================
+    
+    let avatarsLoaded = false;
+    
+    async function loadAvatars() {
+      // Éviter de recharger si déjà chargé
+      if (avatarsLoaded) return;
+      
+      const gallery = document.getElementById('avatars-gallery');
+      const noAvatars = document.getElementById('no-avatars');
+      const countBadge = document.getElementById('avatar-count-badge');
+      const token = localStorage.getItem(TOKEN_KEY) || localStorage.getItem('token');
+      
+      try {
+        const response = await fetch('/api/avatars/my-avatars', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) throw new Error('Erreur chargement avatars');
+        
+        const data = await response.json();
+        
+        if (!data.avatars || data.avatars.length === 0) {
+          gallery.style.display = 'none';
+          noAvatars.style.display = 'block';
+          countBadge.textContent = '0 avatars';
+          avatarsLoaded = true;
+          return;
+        }
+        
+        // Mettre à jour le compteur
+        countBadge.textContent = `${data.avatars.length} avatar${data.avatars.length > 1 ? 's' : ''}`;
+        
+        // Générer la galerie
+        let html = '';
+        data.avatars.forEach(avatar => {
+          const date = new Date(avatar.created_at).toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: 'short'
+          });
+          
+          // Utiliser url ou image_url
+          const avatarUrl = avatar.url || avatar.image_url || '';
+          
+          html += `
+            <div class="avatar-item">
+              <span class="avatar-date">${date}</span>
+              <img src="${avatarUrl}" 
+                   alt="Avatar" 
+                   loading="lazy" 
+                   onerror="this.onerror=null; this.src='/assets/default-avatar.png'; this.parentElement.classList.add('avatar-unavailable');"
+                   style="background: #1a1a2e;">
+              <div class="avatar-actions">
+                <button class="avatar-btn avatar-btn-download" onclick="downloadAvatar('${avatarUrl}', '${avatar.id}')" title="Télécharger">
+                  ⬇️ Télécharger
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        
+        gallery.innerHTML = html;
+        noAvatars.style.display = 'none';
+        avatarsLoaded = true;
+        
+      } catch (error) {
+        console.error('Erreur avatars:', error);
+        gallery.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #f44;">
+            <p>Erreur de chargement des avatars</p>
+            <button class="btn btn-secondary btn-small" style="margin-top: 1rem;" onclick="avatarsLoaded = false; loadAvatars();">🔄 Réessayer</button>
+          </div>
+        `;
+      }
+    }
+    
+    async function downloadAvatar(url, id) {
+      try {
+        // Télécharger directement depuis l'URL (la même qui affiche l'image)
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error('Image non disponible');
+        }
+        
+        // Convertir en blob et télécharger
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        // Déterminer l'extension
+        const ext = url.includes('.webp') ? 'webp' : url.includes('.jpg') ? 'jpg' : 'png';
+        link.download = `avatar-roronoa-${id || Date.now()}.${ext}`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+        
+      } catch (error) {
+        console.error('Erreur téléchargement:', error);
+        alert('❌ Impossible de télécharger cet avatar.\n\nEssayez : clic droit sur l\'image > Enregistrer l\'image sous...');
+      }
+    }
+    
+    // ==========================================
+    // AUTH
+    // ==========================================
+    
+    function logout() {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    }
+    
+    // ==========================================
+    // UTILITIES
+    // ==========================================
+    
+    function showAlert(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      
+      // Scroll vers l'alerte
+      container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+    
+    function formatDate(timestamp) {
+      if (!timestamp) return '-';
+      
+      try {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) return '-';
+        
+        return date.toLocaleDateString('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      } catch (e) {
+        return '-';
+      }
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // ==========================================
+    // FONCTION POUR PASSER LE TOKEN VERS L'APP
+    // ==========================================
+    
+    function addTokenToLink(event) {
+      const token = localStorage.getItem('token') || localStorage.getItem('saboteur_token');
+      if (token) {
+        event.preventDefault();
+        const url = event.target.href || event.target.closest('a').href;
+        window.open(url + '?auth_token=' + encodeURIComponent(token), '_blank');
+      }
+    }
+    
+    // ==========================================
+    // INIT
+    // ==========================================
+    
+    init();
+  </script>
+
+<!-- 🔔 Script Notifications & Offres Auto -->
+<script>
+// Vérifier les notifications et offres au chargement
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(checkUserNotificationsAuto, 2000);
+  setTimeout(checkAvailableOffersAuto, 3000);
+});
+
+// Récupérer et afficher les notifications non lues
+async function checkUserNotificationsAuto() {
+  const token = localStorage.getItem('saboteur_token') || localStorage.getItem('token');
+  if (!token) return;
+  
+  try {
+    const response = await fetch('/api/notifications', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const notifications = await response.json();
+    if (notifications && notifications.length > 0) {
+      notifications.forEach(notif => showNotifPopup(notif.message, notif.type || 'info'));
+    }
+  } catch (error) { console.log('[Notifications] Erreur:', error); }
+}
+
+// Vérifier les offres automatiques disponibles
+async function checkAvailableOffersAuto() {
+  const token = localStorage.getItem('saboteur_token') || localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('saboteur_user') || '{}');
+  if (!token || !user.id) return;
+  
+  // Vérifier si on a déjà montré le popup récemment (1 fois par jour max)
+  const lastOfferCheck = localStorage.getItem('last_offer_check');
+  const now = Date.now();
+  if (lastOfferCheck && now - parseInt(lastOfferCheck) < 24 * 60 * 60 * 1000) return;
+  
+  try {
+    const response = await fetch('/api/stripe/auto-discounts', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    
+    if (data.discounts && data.discounts.length > 0) {
+      const offer = data.discounts[0];
+      
+      // Limiter à 3 affichages max par offre
+      const offerKey = `offer_popup_count_${offer.id || offer.name}`;
+      const popupCount = parseInt(localStorage.getItem(offerKey) || '0');
+      
+      if (popupCount >= 3) {
+        console.log('[Offers] Popup déjà affiché 3 fois, ignoré');
+        return;
+      }
+      
+      const discount = offer.percent_off ? `-${offer.percent_off}%` : `-${(offer.amount_off / 100).toFixed(2)}€`;
+      showOfferPopupAuto(`🎉 Offre spéciale !`, `Tu as droit à <strong>${discount}</strong> sur ton prochain achat !`, offer.name);
+      
+      // Incrémenter le compteur
+      localStorage.setItem(offerKey, (popupCount + 1).toString());
+      localStorage.setItem('last_offer_check', now.toString());
+    }
+  } catch (error) { console.log('[Offers] Erreur:', error); }
+}
+
+// Afficher un pop-up de notification
+function showNotifPopup(message, type = 'info') {
+  const colors = { info: '#00ffff', success: '#00ff88', reward: '#ffd700', welcome_offers: '#00ff88' };
+  const color = colors[type] || colors.info;
+  
+  const popup = document.createElement('div');
+  popup.innerHTML = `<div style="position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.9);border:2px solid ${color};border-radius:12px;padding:15px 20px;max-width:350px;z-index:10001;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:slideInRight 0.3s ease;">
+    <button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:5px;right:10px;background:none;border:none;color:#888;cursor:pointer;font-size:18px;">✕</button>
+    <p style="color:#fff;margin:0;padding-right:20px;">${message}</p>
+  </div>`;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 8000);
+}
+
+// Afficher un pop-up d'offre spéciale
+function showOfferPopupAuto(title, message, offerName) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10001;';
+  overlay.className = 'offer-overlay';
+  
+  const popup = document.createElement('div');
+  popup.innerHTML = `<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #00ff88;border-radius:20px;padding:30px;max-width:400px;z-index:10002;box-shadow:0 0 50px rgba(0,255,136,0.3);text-align:center;">
+    <button onclick="this.parentElement.parentElement.remove();document.querySelector('.offer-overlay')?.remove();" style="position:absolute;top:10px;right:15px;background:none;border:none;color:#888;cursor:pointer;font-size:24px;">✕</button>
+    <div style="font-size:50px;margin-bottom:15px;">🎁</div>
+    <h3 style="color:#00ff88;margin-bottom:10px;">${title}</h3>
+    <p style="color:#fff;margin-bottom:5px;">${message}</p>
+    <p style="color:#aaa;font-size:0.85em;margin-bottom:20px;">${offerName}</p>
+    <button onclick="this.parentElement.parentElement.remove();document.querySelector('.offer-overlay')?.remove();" style="padding:12px 30px;background:linear-gradient(90deg,#00ff88,#00cc6a);color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:16px;">👍 Compris !</button>
+  </div>`;
+  
+  overlay.onclick = () => { popup.remove(); overlay.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
+// CSS animation
+if (!document.getElementById('notif-styles-auto')) {
+  const style = document.createElement('style');
+  style.id = 'notif-styles-auto';
+  style.textContent = '@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}';
+  document.head.appendChild(style);
+}
+</script>
+
+<!-- 🌍 Site Translations -->
+<script src="site-translations.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var wrap = document.getElementById("lang-selector-wrap");
+    if (wrap) wrap.innerHTML = createLanguageSelector();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - RORONOA GAMES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/roronoa-games.css">
+  <style>
+    /* Page en mode modal plein écran */
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.98);
+    }
+
+    /* Le modal est toujours visible */
+    .modal {
+      display: flex !important;
+      position: relative;
+      background: transparent;
+    }
+
+    .modal-overlay {
+      display: none;
+    }
+
+    /* Ajustements du modal content */
+    .modal-content {
+      animation: modalSlideIn 0.5s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Logo dans le header */
+    .modal-logo {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      color: var(--white);
+    }
+
+    .modal-logo .accent {
+      color: var(--green-bright);
+    }
+
+    /* Alert messages */
+    .alert {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+      text-align: center;
+    }
+
+    .alert.show { display: block; }
+    .alert.info { background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold); color: var(--gold); }
+    .alert.success { background: rgba(107, 157, 58, 0.15); border: 1px solid var(--green-bright); color: var(--green-bright); }
+    .alert.error { background: rgba(244, 67, 54, 0.15); border: 1px solid #f44336; color: #f44336; }
+
+    /* Form groups avec labels */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--green-bright);
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* Input wrapper pour le toggle password */
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper input {
+      padding-right: 50px;
+      margin-bottom: 0;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--green-bright);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 5px;
+      opacity: 0.7;
+      transition: all 0.3s;
+    }
+
+    .password-toggle:hover {
+      opacity: 1;
+      color: var(--gold);
+    }
+
+    /* Forgot password link */
+    .forgot-link {
+      text-align: right;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+
+    .forgot-link a {
+      color: var(--light-gray);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .forgot-link a:hover {
+      color: var(--green-bright);
+    }
+
+    /* Button avec loader */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green-main) 0%, var(--green-bright) 100%);
+      color: var(--white);
+      padding: 1rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+      width: 100%;
+      position: relative;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--green-glow);
+    }
+
+    .btn-primary:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-primary.loading .btn-text { display: none; }
+    .btn-primary.loading .spinner { display: block; }
+
+    /* Auth form adjustments */
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+    }
+
+    /* Auth footer */
+    .auth-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray);
+    }
+
+    .auth-footer p {
+      font-size: 0.85rem;
+    }
+
+    .auth-footer a {
+      color: var(--green-bright);
+    }
+
+    /* Back to site link */
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .back-link a {
+      color: var(--light-gray);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .back-link a:hover {
+      color: var(--green-bright);
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .modal-content {
+        padding: 1.5rem;
+        margin: 10px;
+      }
+
+      .modal-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .auth-tab {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Modal Login (style identique à index-site.html) -->
+  <div class="modal">
+    <div class="modal-content">
+      
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-logo">⚔️ <span class="accent">RORONOA</span> GAMES</div>
+        <h2>Connexion</h2>
+        <p>Accédez à votre compte</p>
+      </div>
+
+      <!-- Alert -->
+      <div id="alert" class="alert"></div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Connexion</button>
+        <button class="auth-tab" onclick="switchTab('register')">Inscription</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" placeholder="votre@email.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <div class="input-wrapper">
+            <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)" title="Voir le mot de passe">👁️</button>
+          </div>
+          <div class="forgot-link">
+            <a href="#" onclick="handleForgotPassword(event)">Mot de passe oublié ?</a>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="login-btn">
+          <span class="btn-text">Se Connecter</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="register-username">Pseudo</label>
+          <input type="text" id="register-username" name="username" placeholder="VotrePseudo" required autocomplete="username" minlength="3">
+        </div>
+
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" name="email" placeholder="votre@email.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="register-password">Mot de passe</label>
+          <div class="input-wrapper">
+            <input type="password" id="register-password" name="password" placeholder="Minimum 6 caractères" required autocomplete="new-password" minlength="6">
+            <button type="button" class="password-toggle" onclick="togglePassword('register-password', this)" title="Voir le mot de passe">👁️</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="register-confirm">Confirmer le mot de passe</label>
+          <div class="input-wrapper">
+            <input type="password" id="register-confirm" name="confirm" placeholder="••••••••" required autocomplete="new-password">
+            <button type="button" class="password-toggle" onclick="togglePassword('register-confirm', this)" title="Voir le mot de passe">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="register-btn">
+          <span class="btn-text">Créer mon compte</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        <p style="text-align: center; color: var(--light-gray);">
+          En vous inscrivant, vous acceptez nos <a href="#">CGU</a>
+        </p>
+      </div>
+
+      <!-- Back link -->
+      <div class="back-link">
+        <a href="/">← Retour au site</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const TOKEN_KEY = 'saboteur_token';
+    const USER_KEY = 'saboteur_user';
+
+    // ==========================================
+    // ALERTS
+    // ==========================================
+    function showAlert(message, type = 'error') {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert ${type} show`;
+      
+      if (type === 'success') {
+        setTimeout(() => alert.classList.remove('show'), 5000);
+      }
+    }
+
+    function hideAlert() {
+      document.getElementById('alert').classList.remove('show');
+    }
+
+    // Check URL params for messages
+    (function checkUrlMessage() {
+      const params = new URLSearchParams(window.location.search);
+      const message = params.get('message');
+      const type = params.get('type') || 'info';
+      if (message) showAlert(decodeURIComponent(message), type);
+    })();
+
+    // ==========================================
+    // TAB SWITCHING
+    // ==========================================
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((t, i) => {
+        t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+      });
+      document.getElementById('login-form').classList.toggle('active', tab === 'login');
+      document.getElementById('register-form').classList.toggle('active', tab === 'register');
+      hideAlert();
+    }
+
+    // ==========================================
+    // PASSWORD TOGGLE
+    // ==========================================
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+    async function handleLogin(event) {
+      event.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        showAlert('Veuillez remplir tous les champs', 'error');
+        return;
+      }
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success && data.token) {
+          localStorage.setItem(TOKEN_KEY, data.token);
+          localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+          showAlert('Connexion réussie ! Redirection...', 'success');
+
+          setTimeout(() => {
+            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/';
+            window.location.href = redirect;
+          }, 1000);
+        } else {
+          showAlert(data.error || 'Email ou mot de passe incorrect', 'error');
+          btn.classList.remove('loading');
+          btn.disabled = false;
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('Erreur de connexion au serveur', 'error');
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    // ==========================================
+    // REGISTER
+    // ==========================================
+    async function handleRegister(event) {
+      event.preventDefault();
+      const btn = document.getElementById('register-btn');
+      const username = document.getElementById('register-username').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirm = document.getElementById('register-confirm').value;
+
+      if (!username || !email || !password || !confirm) {
+        showAlert('Veuillez remplir tous les champs', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showAlert('Le mot de passe doit contenir au moins 6 caractères', 'error');
+        return;
+      }
+
+      if (password !== confirm) {
+        showAlert('Les mots de passe ne correspondent pas', 'error');
+        return;
+      }
+
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          if (data.token) {
+            localStorage.setItem(TOKEN_KEY, data.token);
+            localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+          }
+
+          showAlert('Inscription réussie ! Vérifiez votre email.', 'success');
+
+          setTimeout(() => {
+            switchTab('login');
+            document.getElementById('login-email').value = email;
+          }, 2000);
+        } else {
+          showAlert(data.error || 'Erreur lors de l\'inscription', 'error');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('Erreur de connexion au serveur', 'error');
+      }
+
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+
+    // ==========================================
+    // FORGOT PASSWORD
+    // ==========================================
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+
+      if (!email) {
+        showAlert('Saisissez d\'abord votre email ci-dessus', 'info');
+        document.getElementById('login-email').focus();
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showAlert('Email de réinitialisation envoyé ! Vérifiez votre boîte mail.', 'success');
+        } else {
+          showAlert(data.error || 'Erreur lors de l\'envoi', 'error');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('Erreur de connexion au serveur', 'error');
+      }
+    }
+
+    // ==========================================
+    // CHECK IF ALREADY LOGGED IN
+    // ==========================================
+    (function checkAuth() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          if (Date.now() < payload.exp * 1000) {
+            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/';
+            window.location.href = redirect;
+          } else {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+          }
+        } catch (e) {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+        }
+      }
+    })();
+
+    // Focus on email field
+    document.getElementById('login-email').focus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les Saboteurs - RORONOA GAMES</title>
+  <link rel="stylesheet" href="roronoa-games.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <h1 class="logo">RORONOA <span class="logo-accent">GAMES</span></h1>
+        <div class="logo-subtitle">三刀流 • Santōryū Style</div>
+      </div>
+      <div class="nav-links">
+        <a href="index-site.html#accueil" data-i18n-site="nav.home">Accueil</a>
+        <a href="index-site.html#a-propos" data-i18n-site="nav.about">À Propos</a>
+        <a href="products.html" class="active" data-i18n-site="nav.products">Produits</a>
+        <a href="index-site.html#contact" data-i18n-site="nav.contact">Contact</a>
+        <button class="btn-login" onclick="openLoginModal()" data-i18n-site="nav.login">Se Connecter</button>
+        <div class="lang-selector-wrap" id="lang-selector-wrap"></div>
+      </div>
+      <div class="nav-mobile-toggle" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Product Hero -->
+  <section class="product-hero">
+    <div class="container">
+      <div class="product-hero-content">
+        <div class="product-badge" data-i18n-site="products.hero_badge">Notre Jeu Phare</div>
+        <h1 class="product-title" data-i18n-site="products.hero_title">LES SABOTEURS</h1>
+        <p class="product-tagline" data-i18n-site="products.hero_tagline">Infiltration • Déduction • Multijoueur</p>
+        
+        <div class="product-cta">
+          <a href="https://saboteurs-2.onrender.com" target="_blank" class="btn btn-primary btn-large" onclick="goToGameWithToken(event)" data-i18n-site="products.play_now">
+            🎮 Jouer Maintenant
+          </a>
+          <button class="btn btn-outline btn-large" onclick="openPacksModal()" data-i18n-site="products.discover_packs">
+            💎 Découvrir les Packs
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Description -->
+  <section class="game-desc">
+    <div class="container">
+      <div class="desc-content">
+        <h2 data-i18n-site="products.the_game">Le Jeu</h2>
+        <p>
+          <strong>Les Saboteurs</strong> est un jeu de déduction sociale multijoueur qui plonge 
+          les joueurs dans une station spatiale en perdition. Certains sont des astronautes 
+          innocents cherchant à survivre, d'autres sont des saboteurs infiltrés déterminés 
+          à saboter la mission.
+        </p>
+        <p>
+          Inspiré des meilleurs jeux sociaux, Les Saboteurs offre une expérience unique avec 
+          vidéo intégrée, multiples univers thématiques, et un système de progression addictif.
+        </p>
+        
+        <div class="desc-features">
+          <div class="feature-box">
+            <div class="feature-icon">👥</div>
+            <h3 data-i18n-site="products.feature_players">6-12 Joueurs</h3>
+            <p data-i18n-site="products.feature_players_desc">6-9 sur mobile / 6-12 sur PC</p>
+          </div>
+          
+          <div class="feature-box">
+            <div class="feature-icon">🎭</div>
+            <h3 data-i18n-site="products.feature_themes">Thèmes & Rôles</h3>
+            <p data-i18n-site="products.feature_themes_desc">4 univers, rôles variés et spéciaux</p>
+          </div>
+          
+          <div class="feature-box">
+            <div class="feature-icon">📹</div>
+            <h3 data-i18n-site="products.feature_video">Visio Intégrée</h3>
+            <p data-i18n-site="products.feature_video_desc">Sans téléchargement, mobile & PC</p>
+          </div>
+          
+          <div class="feature-box">
+            <div class="feature-icon">⏱️</div>
+            <h3 data-i18n-site="products.feature_duration">15-45 Minutes</h3>
+            <p data-i18n-site="products.feature_duration_desc">Parties rapides et dynamiques</p>
+          </div>
+          
+          <div class="feature-box">
+            <div class="feature-icon">🌍</div>
+            <h3 data-i18n-site="products.feature_languages">7 Langues</h3>
+            <p>FR, EN, ES, IT, DE, PT, JA</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Themes Section -->
+  <section class="themes">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge" data-i18n-site="products.themes_badge">Univers</div>
+        <h2 class="section-title" data-i18n-site="products.themes_title">4 Thèmes Immersifs</h2>
+      </div>
+      
+      <div class="themes-grid">
+        <!-- Spatial -->
+        <div class="theme-card">
+          <div class="theme-icon">🚀</div>
+          <h3 data-i18n-site="products.theme_space_title">Infiltration Spatiale</h3>
+          <p data-i18n-site="products.theme_space_desc">
+            L'univers classique : une station spatiale, des astronautes, des saboteurs.
+            Réparez la station avant qu'il ne soit trop tard !
+          </p>
+          <div class="theme-features">
+            <span>🔧 Tâches techniques</span>
+            <span>🚨 Sabotages critiques</span>
+            <span>📡 Communications radio</span>
+          </div>
+        </div>
+        
+        <!-- Loup-Garou -->
+        <div class="theme-card">
+          <div class="theme-icon">🐺</div>
+          <h3 data-i18n-site="products.theme_werewolf_title">Loup-Garou</h3>
+          <p data-i18n-site="products.theme_werewolf_desc">
+            Un village médiéval hanté par les loups-garous. Villageois contre créatures 
+            de la nuit dans une bataille épique pour la survie.
+          </p>
+          <div class="theme-features">
+            <span>🌙 Cycle jour/nuit</span>
+            <span>🔮 Pouvoirs spéciaux</span>
+            <span>🏘️ Village mystérieux</span>
+          </div>
+        </div>
+        
+        <!-- Sorciers -->
+        <div class="theme-card">
+          <div class="theme-icon">🧙</div>
+          <h3 data-i18n-site="products.theme_wizard_title">Académie des Sorciers</h3>
+          <p data-i18n-site="products.theme_wizard_desc">
+            Une école de magie infiltrée par des sorciers noirs. Maîtrisez la magie 
+            et démasquez les traîtres avant qu'ils ne corrompent l'académie.
+          </p>
+          <div class="theme-features">
+            <span>✨ Sorts magiques</span>
+            <span>📚 Bibliothèque ancienne</span>
+            <span>🎓 Salles de classe</span>
+          </div>
+        </div>
+        
+        <!-- Mythique -->
+        <div class="theme-card">
+          <div class="theme-icon">⚔️</div>
+          <h3 data-i18n-site="products.theme_mythic_title">Royaumes Mythiques</h3>
+          <p data-i18n-site="products.theme_mythic_desc">
+            Un royaume fantasy menacé par des créatures corrompues. Chevaliers, 
+            mages et traîtres s'affrontent pour le contrôle du royaume.
+          </p>
+          <div class="theme-features">
+            <span>🏰 Château royal</span>
+            <span>🗡️ Armes légendaires</span>
+            <span>🐉 Créatures mythiques</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge" data-i18n-site="products.pricing_badge">Nos Offres</div>
+        <h2 class="section-title" data-i18n-site="products.pricing_title">Plans Tarifaires</h2>
+      </div>
+      
+      <div class="pricing-grid">
+        <!-- Free -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3 data-i18n-site="products.plan_free_name">Gratuit</h3>
+            <div class="price">
+              <span class="currency" data-i18n-site="products.plan_free_price">0€</span>
+              <span class="period" data-i18n-site="products.plan_free_period">/mois</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li data-i18n-site="products.plan_free_feat1">✅ Parties illimitées</li>
+            <li data-i18n-site="products.plan_free_feat2">✅ 2 avatars IA/mois</li>
+            <li data-i18n-site="products.plan_free_feat3">✅ 2 parties vidéo/mois</li>
+            <li data-i18n-site="products.plan_free_feat4">✅ Tous les thèmes</li>
+            <li data-i18n-site="products.plan_free_feat5">✅ Mode hors ligne</li>
+          </ul>
+        </div>
+        
+        <!-- Pack -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3 data-i18n-site="products.plan_pack_name">Pack 50+50</h3>
+            <div class="price">
+              <span class="currency" data-i18n-site="products.plan_pack_price">4,99€</span>
+              <span class="period" data-i18n-site="products.plan_pack_period">unique</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li data-i18n-site="products.plan_pack_feat1">✅ 50 avatars IA</li>
+            <li data-i18n-site="products.plan_pack_feat2">✅ 50 crédits vidéo</li>
+            <li data-i18n-site="products.plan_pack_feat3">✅ Valables 12 mois</li>
+            <li data-i18n-site="products.plan_pack_feat4">✅ Tous les avantages Free</li>
+            <li data-i18n-site="products.plan_pack_feat5">✅ Support prioritaire</li>
+          </ul>
+        </div>
+        
+        <!-- Premium -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge" data-i18n-site="products.plan_premium_badge">Le Plus Populaire</div>
+          <div class="pricing-header">
+            <h3 data-i18n-site="products.plan_premium_name">Premium</h3>
+            <div class="price">
+              <span class="currency" data-i18n-site="products.plan_premium_price">1,49€</span>
+              <span class="period" data-i18n-site="packs.premium_period">/mois</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li data-i18n-site="products.plan_premium_feat1">✅ Avatars IA illimités</li>
+            <li data-i18n-site="products.plan_premium_feat2">✅ Parties vidéo illimitées</li>
+            <li data-i18n-site="products.plan_premium_feat3">✅ Badge exclusif</li>
+            <li data-i18n-site="products.plan_premium_feat4">✅ Accès anticipé nouveautés</li>
+            <li data-i18n-site="products.plan_premium_feat5">✅ Support VIP 24/7</li>
+          </ul>
+        </div>
+        
+        <!-- Family -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3 data-i18n-site="products.plan_family_name">Pack Famille</h3>
+            <div class="price">
+              <span class="currency" data-i18n-site="products.plan_family_price">9,99€</span>
+              <span class="period" data-i18n-site="packs.premium_period">/mois</span>
+            </div>
+          </div>
+          <ul class="pricing-features">
+            <li data-i18n-site="products.plan_family_feat1">✅ Jusqu'à 9 comptes</li>
+            <li data-i18n-site="products.plan_family_feat2">✅ Avantages Premium pour tous</li>
+            <li data-i18n-site="products.plan_family_feat3">✅ Gestion centralisée</li>
+            <li data-i18n-site="products.plan_family_feat4">✅ Économie de 60%</li>
+            <li data-i18n-site="products.plan_family_feat5">✅ Support prioritaire</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2 data-i18n-site="products.cta_title">Prêt à Jouer ?</h2>
+        <p data-i18n-site="products.cta_subtitle">Rejoignez des milliers de joueurs dans l'aventure la plus intense !</p>
+        <div class="cta-buttons">
+          <a href="https://saboteurs-2.onrender.com" target="_blank" class="btn btn-primary btn-large" onclick="goToGameWithToken(event)" data-i18n-site="products.play_now">
+            🎮 Jouer Maintenant
+          </a>
+          <button class="btn btn-outline btn-large" onclick="openPacksModal()" data-i18n-site="products.cta_offers">
+            💎 Voir les Offres Premium
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>RORONOA <span>GAMES</span></h3>
+          <p data-i18n-site="products.footer_creator">Créateur d'expériences vidéoludiques</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4 data-i18n-site="footer.quick_links">Navigation</h4>
+            <a href="index-site.html#accueil" data-i18n-site="nav.home">Accueil</a>
+            <a href="index-site.html#a-propos" data-i18n-site="nav.about">À Propos</a>
+            <a href="products.html" data-i18n-site="nav.products">Produits</a>
+            <a href="index-site.html#contact" data-i18n-site="nav.contact">Contact</a>
+          </div>
+          <div class="footer-column">
+            <h4 data-i18n-site="footer.legal">Légal</h4>
+            <a href="/mentions-legales.html" data-i18n-site="footer.legal_notice">Mentions Légales</a>
+            <a href="/cgu.html" data-i18n-site="footer.terms_of_service">CGU</a>
+            <a href="/politique-confidentialite.html" data-i18n-site="footer.privacy_policy">Confidentialité</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p data-i18n-site="footer.copyright">&copy; 2026 RORONOA GAMES. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal Login (même que index-site.html) -->
+  <div id="modal-login" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="closeLoginModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeLoginModal()">×</button>
+      
+      <div class="modal-header">
+        <h2 data-i18n-site="auth.login_title">Connexion</h2>
+        <p data-i18n-site="auth.login_subtitle">Accédez à votre compte RORONOA GAMES</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Connexion</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Inscription</button>
+      </div>
+      
+      <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+        <input type="email" name="email" placeholder="Email" data-i18n-site="auth.email_placeholder" required>
+        <input type="password" name="password" placeholder="Mot de passe" data-i18n-site="auth.password_placeholder" required>
+        <button type="submit" class="btn btn-primary">Se Connecter</button>
+      </form>
+      
+      <form id="register-form" class="auth-form" style="display: none;" onsubmit="handleRegister(event)">
+        <input type="text" name="username" placeholder="Pseudo" data-i18n-site="auth.username_placeholder" required>
+        <input type="email" name="email" placeholder="Email" data-i18n-site="auth.email_placeholder" required>
+        <input type="password" name="password" placeholder="Mot de passe" data-i18n-site="auth.password_placeholder" required>
+        <input type="password" name="confirm_password" placeholder="Confirmer mot de passe" data-i18n-site="auth.confirm_password_placeholder" required>
+        <button type="submit" class="btn btn-primary">S'Inscrire</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="roronoa-games.js"></script>
+
+<!-- Modal Packs Premium -->
+<div id="modal-packs" class="modal" style="display: none;">
+  <div class="modal-overlay" onclick="closePacksModal()"></div>
+  <div class="modal-content" style="max-width: 1100px; max-height: 90vh; overflow-y: auto;">
+    <button class="modal-close" onclick="closePacksModal()">×</button>
+    
+    <div class="modal-header" style="text-align: center;">
+      <h2 style="color: var(--green-bright); margin: 0;">💎 Nos Packs Premium</h2>
+      <p style="color: #aaa; margin-top: 10px;">Compte vérifié requis pour accéder aux packs</p>
+    </div>
+    
+    <div class="packs-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 40px; padding: 0 20px;">
+      
+      <!-- Pack 50+50 -->
+      <div class="pack-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--green-main); border-radius: 15px; padding: 30px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <div class="pack-badge" style="position: absolute; top: 15px; right: 15px; background: var(--green-bright); color: #000; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+          PONCTUEL
+        </div>
+        
+        <div class="pack-icon" style="font-size: 56px; margin-bottom: 20px;">🎮</div>
+        <h3 style="color: var(--green-bright); margin: 0 0 15px 0; font-size: 24px;">Pack 50+50</h3>
+        
+        <div class="pack-price" style="font-size: 42px; font-weight: bold; color: #fff; margin: 20px 0;">
+          4,99€
+          <span style="font-size: 16px; color: #aaa; font-weight: normal; display: block; margin-top: 5px;">une fois</span>
+        </div>
+        
+        <ul style="list-style: none; padding: 0; margin: 25px 0; color: #ccc; line-height: 2; text-align: left; width: 100%;">
+          <li style="padding: 5px 0;">✅ 50 crédits vidéo</li>
+          <li style="padding: 5px 0;">✅ 50 avatars IA</li>
+          <li style="padding: 5px 0;">✅ Valables 12 mois</li>
+          <li style="padding: 5px 0;">✅ Tous les thèmes</li>
+          <li style="padding: 5px 0;">✅ Support prioritaire</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="buyPack('pack50', event)" style="width: 100%; margin-top: auto; padding: 15px; font-size: 16px; font-weight: bold; background: var(--green-main); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+          🛒 Acheter maintenant
+        </button>
+      </div>
+      
+      <!-- Premium -->
+      <div class="pack-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 3px solid var(--green-bright); border-radius: 15px; padding: 30px; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(107, 157, 58, 0.3); display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <div class="pack-badge" style="position: absolute; top: 15px; right: 15px; background: gold; color: #000; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+          ⭐ POPULAIRE
+        </div>
+        
+        <div class="pack-icon" style="font-size: 56px; margin-bottom: 20px;">🌟</div>
+        <h3 style="color: var(--green-bright); margin: 0 0 15px 0; font-size: 24px;">Premium</h3>
+        
+        <div class="pack-price" style="font-size: 42px; font-weight: bold; color: #fff; margin: 20px 0;">
+          1,49€
+          <span style="font-size: 16px; color: #aaa; font-weight: normal; display: block; margin-top: 5px;">/mois</span>
+        </div>
+        
+        <ul style="list-style: none; padding: 0; margin: 25px 0; color: #ccc; line-height: 2; text-align: left; width: 100%;">
+          <li style="padding: 5px 0;">✅ Visio illimitée</li>
+          <li style="padding: 5px 0;">✅ 30 avatars IA/mois</li>
+          <li style="padding: 5px 0;">✅ 4 thèmes complets</li>
+          <li style="padding: 5px 0;">✅ Badge exclusif</li>
+          <li style="padding: 5px 0;">✅ Support VIP 24/7</li>
+          <li style="padding: 5px 0;">✅ Accès anticipé nouveautés</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="buyPack('premium', event)" style="width: 100%; margin-top: auto; padding: 15px; font-size: 16px; font-weight: bold; background: var(--green-bright); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+          🚀 S'abonner
+        </button>
+      </div>
+      
+      <!-- Pack Famille -->
+      <div class="pack-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid var(--green-main); border-radius: 15px; padding: 30px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center;">
+        <div class="pack-badge" style="position: absolute; top: 15px; right: 15px; background: #ff6b6b; color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+          FAMILLE
+        </div>
+        
+        <div class="pack-icon" style="font-size: 56px; margin-bottom: 20px;">👨‍👩‍👧‍👦</div>
+        <h3 style="color: var(--green-bright); margin: 0 0 15px 0; font-size: 24px;">Pack Famille</h3>
+        
+        <div class="pack-price" style="font-size: 42px; font-weight: bold; color: #fff; margin: 20px 0;">
+          9,99€
+          <span style="font-size: 16px; color: #aaa; font-weight: normal; display: block; margin-top: 5px;">/mois</span>
+        </div>
+        
+        <ul style="list-style: none; padding: 0; margin: 25px 0; color: #ccc; line-height: 2; text-align: left; width: 100%;">
+          <li style="padding: 5px 0;">✅ Jusqu'à 9 comptes</li>
+          <li style="padding: 5px 0;">✅ Visio illimitée pour tous</li>
+          <li style="padding: 5px 0;">✅ 30 avatars/mois par utilisateur</li>
+          <li style="padding: 5px 0;">✅ 4 thèmes complets</li>
+          <li style="padding: 5px 0;">✅ Gestion centralisée</li>
+          <li style="padding: 5px 0;">✅ Économie de 85%</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="buyPack('family', event)" style="width: 100%; margin-top: auto; padding: 15px; font-size: 16px; font-weight: bold; background: var(--green-main); color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+          👨‍👩‍👧‍👦 S'abonner en famille
+        </button>
+      </div>
+      
+    </div>
+    
+    <!-- Champ Code Promo -->
+    <div class="promo-code-section" style="margin-top: 30px; padding: 20px; background: rgba(107, 157, 58, 0.1); border: 1px dashed var(--green-main); border-radius: 10px; text-align: center;">
+      <label style="color: var(--green-bright); font-weight: bold; display: block; margin-bottom: 10px;">🎁 Tu as un code promo ?</label>
+      <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <input type="text" id="promo-code-input" placeholder="Entre ton code ici" style="padding: 12px 20px; border: 2px solid #333; border-radius: 8px; background: #1a1a2e; color: #fff; font-size: 14px; text-transform: uppercase; width: 200px;" />
+        <button onclick="validatePromoCode()" style="padding: 12px 20px; background: var(--green-main); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Valider</button>
+      </div>
+      <p id="promo-code-status" style="margin-top: 10px; font-size: 13px; color: #aaa;"></p>
+    </div>
+    
+    <div class="modal-footer" style="margin-top: 40px; padding: 25px 20px; border-top: 1px solid #333; text-align: center; color: #aaa;">
+      <p style="margin: 0; font-size: 16px;">
+        💡 <strong>Compte vérifié requis</strong> pour accéder aux packs. 
+        <a href="#" onclick="closePacksModal(); openLoginModal(); return false;" style="color: var(--green-bright); text-decoration: none;">Se connecter</a> ou 
+        <a href="#" onclick="closePacksModal(); openLoginModal(); return false;" style="color: var(--green-bright); text-decoration: none;">créer un compte</a>.
+      </p>
+      <p style="margin-top: 20px; font-size: 14px; color: #888;">
+        🔒 Paiement sécurisé via Stripe • 💳 CB, Apple Pay, Google Pay acceptés • 🔄 Annulation à tout moment
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Empêcher le scroll horizontal sur mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Styles pour le modal packs V2 */
+.packs-grid {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pack-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 550px;
+}
+
+.pack-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(107, 157, 58, 0.3);
+}
+
+.pack-card .btn {
+  transition: all 0.3s ease;
+}
+
+.pack-card .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(107, 157, 58, 0.5);
+  filter: brightness(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .packs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  .modal-content {
+    max-width: 95% !important;
+    margin: 20px auto !important;
+  }
+  
+  .pack-card {
+    min-height: auto;
+  }
+  
+  /* Header responsive */
+  .header .container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header .logo {
+    font-size: 1.5rem !important;
+  }
+  
+  .header nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .header nav a {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  /* Product hero */
+  .product-header {
+    padding: 2rem 1rem;
+  }
+  
+  .product-title {
+    font-size: 2rem !important;
+  }
+  
+  .product-subtitle {
+    font-size: 1rem;
+  }
+  
+  /* Pricing grid */
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .pricing-card {
+    padding: 1.5rem;
+  }
+  
+  .pricing-card .price .currency {
+    font-size: 2rem;
+  }
+  
+  /* Features grid */
+  .desc-features {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+  }
+  
+  .feature-box {
+    padding: 1rem;
+  }
+  
+  .feature-box h3 {
+    font-size: 0.9rem;
+  }
+  
+  .feature-box p {
+    font-size: 0.75rem;
+  }
+  
+  /* Description section */
+  .product-description {
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+  
+  .desc-content {
+    padding: 1rem;
+  }
+  
+  .desc-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  /* Screenshots/Gallery */
+  .screenshot-gallery {
+    flex-direction: column;
+  }
+  
+  /* Footer responsive */
+  .footer-content {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .footer-column {
+    text-align: center;
+  }
+  
+  /* Section titles */
+  .section-title {
+    font-size: 1.5rem !important;
+    padding: 0 1rem;
+  }
+  
+  /* CTA */
+  .cta-section {
+    padding: 2rem 1rem;
+  }
+  
+  .cta-section h2 {
+    font-size: 1.5rem;
+  }
+  
+  /* Modal login responsive */
+  #modal-login .modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  /* Modal packs responsive */
+  #modal-packs .modal-content {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin: 10px auto !important;
+    padding: 15px !important;
+    max-height: 85vh !important;
+  }
+  
+  #modal-packs .modal-header h2 {
+    font-size: 1.3rem !important;
+  }
+  
+  #modal-packs .modal-header p {
+    font-size: 0.85rem !important;
+  }
+  
+  #modal-packs .packs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+    padding: 0 5px !important;
+    margin-top: 20px !important;
+  }
+  
+  #modal-packs .pack-card {
+    padding: 20px 15px !important;
+  }
+  
+  #modal-packs .pack-icon {
+    font-size: 40px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  #modal-packs .pack-card h3 {
+    font-size: 1.2rem !important;
+  }
+  
+  #modal-packs .pack-price {
+    font-size: 28px !important;
+    margin: 10px 0 !important;
+  }
+  
+  #modal-packs .pack-card ul {
+    margin: 15px 0 !important;
+    font-size: 0.9rem !important;
+  }
+  
+  #modal-packs .pack-card ul li {
+    padding: 3px 0 !important;
+  }
+  
+  #modal-packs .pack-badge {
+    font-size: 10px !important;
+    padding: 3px 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-title {
+    font-size: 1.6rem !important;
+  }
+  
+  .header .logo {
+    font-size: 1.3rem !important;
+  }
+  
+  .header nav a {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .desc-features {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .pricing-card .price .currency {
+    font-size: 1.8rem;
+  }
+  
+  .pricing-features li {
+    font-size: 0.85rem;
+  }
+  
+  .pack-price {
+    font-size: 32px !important;
+  }
+  
+  /* Modal packs pour très petits écrans */
+  #modal-packs .modal-content {
+    padding: 10px !important;
+  }
+  
+  #modal-packs .pack-card {
+    padding: 15px 10px !important;
+  }
+  
+  #modal-packs .pack-icon {
+    font-size: 32px !important;
+  }
+  
+  #modal-packs .pack-price {
+    font-size: 24px !important;
+  }
+  
+  #modal-packs .pack-card ul {
+    font-size: 0.85rem !important;
+    line-height: 1.6 !important;
+  }
+}
+</style>
+
+<script>
+// ============================================================================
+// FONCTIONS MODAL PACKS V2
+// ============================================================================
+
+function openPacksModal() {
+  document.getElementById('modal-packs').style.display = 'flex';
+  document.body.style.overflow = 'hidden'; // Empêcher scroll
+}
+
+function closePacksModal() {
+  document.getElementById('modal-packs').style.display = 'none';
+  document.body.style.overflow = 'auto'; // Réactiver scroll
+}
+
+// Fonction pour valider un code promo
+async function validatePromoCode() {
+  const input = document.getElementById('promo-code-input');
+  const status = document.getElementById('promo-code-status');
+  const code = input.value.trim().toUpperCase();
+  
+  if (!code) {
+    status.innerHTML = '<span style="color: #ff6b6b;">⚠️ Entre un code promo</span>';
+    return;
+  }
+  
+  status.innerHTML = '<span style="color: #aaa;">🔄 Vérification...</span>';
+  
+  try {
+    const response = await fetch('/api/stripe/validate-promo?code=' + encodeURIComponent(code));
+    const data = await response.json();
+    
+    if (data.valid) {
+      const discount = data.percent_off ? `-${data.percent_off}%` : `-${(data.amount_off / 100).toFixed(2)}€`;
+      status.innerHTML = `<span style="color: var(--green-bright);">✅ Code valide ! Réduction : <strong>${discount}</strong></span>`;
+      input.style.borderColor = 'var(--green-bright)';
+    } else {
+      status.innerHTML = '<span style="color: #ff6b6b;">❌ Code invalide ou expiré</span>';
+      input.style.borderColor = '#ff6b6b';
+    }
+  } catch (error) {
+    status.innerHTML = '<span style="color: #ff6b6b;">❌ Erreur de vérification</span>';
+  }
+}
+
+// Fonction d'achat de pack
+async function buyPack(packType, evt) {
+  // Vérifier si l'utilisateur est connecté
+  const token = localStorage.getItem('token') || localStorage.getItem('saboteur_token');
+  
+  // Récupérer le bouton cliqué
+  const button = evt ? evt.target : null;
+  let originalText = '';
+  
+  if (!token) {
+    // Pas connecté → Ouvrir le modal de connexion
+    closePacksModal();
+    if (typeof openLoginModal === 'function') {
+      openLoginModal();
+    } else {
+      alert('⚠️ Vous devez être connecté pour acheter un pack.\n\nCréez un compte ou connectez-vous pour continuer.');
+    }
+    return;
+  }
+  
+  // Vérifier si l'utilisateur a vérifié son email
+  try {
+    const response = await fetch('/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Non authentifié');
+    }
+    
+    const data = await response.json();
+    const user = data.user; // L'API renvoie { user: {...}, limits: {...} }
+    
+    if (!user || !user.emailVerified) {
+      alert('⚠️ Veuillez vérifier votre email avant d\'acheter un pack.\n\nUn email de vérification vous a été envoyé lors de votre inscription.\n\nVérifiez votre boîte de réception et vos spams.');
+      return;
+    }
+    
+    // Afficher un loader
+    if (button) {
+      originalText = button.innerHTML;
+      button.innerHTML = '⏳ Chargement...';
+      button.disabled = true;
+    }
+    
+    // Récupérer le code promo s'il y en a un
+    const promoCodeInput = document.getElementById('promo-code-input');
+    const promoCode = promoCodeInput ? promoCodeInput.value.trim().toUpperCase() : '';
+    
+    // Rediriger vers Stripe selon le type de pack
+    let checkoutUrl;
+    
+    switch(packType) {
+      case 'pack50':
+        checkoutUrl = '/api/stripe/create-checkout-session?pack=50';
+        break;
+      case 'premium':
+        checkoutUrl = '/api/stripe/create-checkout-session?subscription=premium';
+        break;
+      case 'family':
+        checkoutUrl = '/api/stripe/create-checkout-session?subscription=family';
+        break;
+      default:
+        if (button) {
+          button.innerHTML = originalText;
+          button.disabled = false;
+        }
+        alert('Pack inconnu');
+        return;
+    }
+    
+    // Ajouter le code promo à l'URL si présent
+    if (promoCode) {
+      checkoutUrl += '&promoCode=' + encodeURIComponent(promoCode);
+    }
+    
+    // Créer la session Stripe
+    const checkoutResponse = await fetch(checkoutUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!checkoutResponse.ok) {
+      const errorData = await checkoutResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Erreur lors de la création de la session de paiement');
+    }
+    
+    const checkoutData = await checkoutResponse.json();
+    
+    if (!checkoutData.url) {
+      throw new Error(checkoutData.error || 'URL de paiement non reçue');
+    }
+    
+    // Rediriger vers Stripe
+    window.location.href = checkoutData.url;
+    
+  } catch (error) {
+    console.error('Erreur:', error);
+    alert('❌ Erreur lors de l\'achat: ' + (error.message || 'Veuillez réessayer ou contacter le support.'));
+    
+    // Réactiver le bouton
+    if (button && originalText) {
+      button.innerHTML = originalText;
+      button.disabled = false;
+    }
+  }
+}
+
+// Fermer le modal si on clique en dehors
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('modal-packs');
+  if (modal && e.target === modal) {
+    closePacksModal();
+  }
+});
+
+// Fermer avec Échap
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('modal-packs');
+    if (modal && modal.style.display === 'flex') {
+      closePacksModal();
+    }
+  }
+});
+</script>
+
+<!-- 🎮 Script pour passer le token vers l'app -->
+<script>
+function goToGameWithToken(event) {
+  const token = localStorage.getItem('token') || localStorage.getItem('saboteur_token');
+  if (token) {
+    event.preventDefault();
+    const url = 'https://saboteurs-2.onrender.com?auth_token=' + encodeURIComponent(token);
+    window.open(url, '_blank');
+  }
+}
+</script>
+
+<!-- 🔐 Auth Check Script - Vérifie connexion avant paiements -->
+<script src="/js/auth-check.js"></script>
+
+
+<!-- 🔔 Script Notifications & Offres Auto -->
+<script>
+// Vérifier les notifications et offres au chargement
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(checkUserNotificationsAuto, 2000);
+  setTimeout(checkAvailableOffersAuto, 3000);
+});
+
+// Récupérer et afficher les notifications non lues
+async function checkUserNotificationsAuto() {
+  const token = localStorage.getItem('saboteur_token') || localStorage.getItem('token');
+  if (!token) return;
+  
+  try {
+    const response = await fetch('/api/notifications', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const notifications = await response.json();
+    if (notifications && notifications.length > 0) {
+      notifications.forEach(notif => showNotifPopup(notif.message, notif.type || 'info'));
+    }
+  } catch (error) { console.log('[Notifications] Erreur:', error); }
+}
+
+// Vérifier les offres automatiques disponibles
+async function checkAvailableOffersAuto() {
+  const token = localStorage.getItem('saboteur_token') || localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('saboteur_user') || '{}');
+  if (!token || !user.id) return;
+  
+  const lastOfferCheck = localStorage.getItem('last_offer_check');
+  const now = Date.now();
+  if (lastOfferCheck && now - parseInt(lastOfferCheck) < 24 * 60 * 60 * 1000) return;
+  
+  try {
+    const response = await fetch('/api/stripe/auto-discounts', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    
+    if (data.discounts && data.discounts.length > 0) {
+      const offer = data.discounts[0];
+      const discount = offer.percent_off ? `-${offer.percent_off}%` : `-${(offer.amount_off / 100).toFixed(2)}€`;
+      showOfferPopupAuto(`🎉 Offre spéciale !`, `Tu as droit à <strong>${discount}</strong> sur ton prochain achat !`, offer.name);
+      localStorage.setItem('last_offer_check', now.toString());
+    }
+  } catch (error) { console.log('[Offers] Erreur:', error); }
+}
+
+// Afficher un pop-up de notification
+function showNotifPopup(message, type = 'info') {
+  const colors = { info: '#00ffff', success: '#00ff88', reward: '#ffd700', welcome_offers: '#00ff88' };
+  const color = colors[type] || colors.info;
+  
+  const popup = document.createElement('div');
+  popup.innerHTML = `<div style="position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.9);border:2px solid ${color};border-radius:12px;padding:15px 20px;max-width:350px;z-index:10001;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:slideInRight 0.3s ease;">
+    <button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:5px;right:10px;background:none;border:none;color:#888;cursor:pointer;font-size:18px;">✕</button>
+    <p style="color:#fff;margin:0;padding-right:20px;">${message}</p>
+  </div>`;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 8000);
+}
+
+// Afficher un pop-up d'offre spéciale
+function showOfferPopupAuto(title, message, offerName) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10001;';
+  overlay.className = 'offer-overlay';
+  
+  const popup = document.createElement('div');
+  popup.innerHTML = `<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #00ff88;border-radius:20px;padding:30px;max-width:400px;z-index:10002;box-shadow:0 0 50px rgba(0,255,136,0.3);text-align:center;">
+    <button onclick="this.parentElement.parentElement.remove();document.querySelector('.offer-overlay')?.remove();" style="position:absolute;top:10px;right:15px;background:none;border:none;color:#888;cursor:pointer;font-size:24px;">✕</button>
+    <div style="font-size:50px;margin-bottom:15px;">🎁</div>
+    <h3 style="color:#00ff88;margin-bottom:10px;">${title}</h3>
+    <p style="color:#fff;margin-bottom:5px;">${message}</p>
+    <p style="color:#aaa;font-size:0.85em;margin-bottom:20px;">${offerName}</p>
+    <button onclick="this.parentElement.parentElement.remove();document.querySelector('.offer-overlay')?.remove();" style="padding:12px 30px;background:linear-gradient(90deg,#00ff88,#00cc6a);color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:16px;">👍 Compris !</button>
+  </div>`;
+  
+  overlay.onclick = () => { popup.remove(); overlay.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
+// CSS animation
+if (!document.getElementById('notif-styles-auto')) {
+  const style = document.createElement('style');
+  style.id = 'notif-styles-auto';
+  style.textContent = '@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}';
+  document.head.appendChild(style);
+}
+</script>
+
+<!-- 🌍 Site Translations -->
+<script src="site-translations.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var wrap = document.getElementById("lang-selector-wrap");
+    if (wrap) wrap.innerHTML = createLanguageSelector();
+  });
+</script>
+</body>
+</html>
