@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats & Badges — Saboteur</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    :root {
+      --neon-main: #00ffff;
+      --neon-glow: rgba(0, 255, 255, 0.4);
+      --bg-card: rgba(0, 0, 0, 0.35);
+      --border-soft: rgba(255, 255, 255, 0.12);
+      --text-main: #fff;
+      --text-muted: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Thèmes adaptatifs */
+    body.theme-werewolf {
+      --neon-main: #ff6b35;
+      --neon-glow: rgba(255, 107, 53, 0.4);
+    }
+    body.theme-wizard-academy {
+      --neon-main: #a855f7;
+      --neon-glow: rgba(168, 85, 247, 0.4);
+    }
+    body.theme-mythic-realms {
+      --neon-main: #fbbf24;
+      --neon-glow: rgba(251, 191, 36, 0.4);
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0f0f23 100%);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Shell principal */
+    .stats-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .stats-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stats-header h1 {
+      font-family: 'Orbitron', 'Segoe UI', sans-serif;
+      letter-spacing: 2px;
+      font-size: 1.4rem;
+      color: var(--neon-main);
+      text-shadow: 0 0 20px var(--neon-glow);
+      margin: 0;
+    }
+
+    .stats-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-stats {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-stats:hover {
+      border-color: var(--neon-main);
+      box-shadow: 0 0 15px var(--neon-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-stats.primary {
+      background: linear-gradient(135deg, var(--neon-main), rgba(0, 150, 150, 0.8));
+      color: #000;
+      border-color: var(--neon-main);
+    }
+
+    /* Onglets */
+    .stats-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .stats-tab {
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .stats-tab.active {
+      border-color: var(--neon-main);
+      background: rgba(0, 255, 255, 0.12);
+      color: var(--neon-main);
+      box-shadow: 0 0 20px var(--neon-glow);
+    }
+
+    .stats-tab:hover:not(.active) {
+      border-color: rgba(255, 255, 255, 0.3);
+      color: var(--text-main);
+    }
+
+    /* Profile Hero */
+    .profile-hero {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .profile-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid var(--neon-main);
+      box-shadow: 0 0 25px var(--neon-glow);
+      object-fit: cover;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .profile-avatar.emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(30,30,50,0.5));
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .profile-status {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .profile-main-badge {
+      text-align: center;
+    }
+
+    .main-badge-img {
+      width: 80px;
+      height: auto;
+      filter: drop-shadow(0 0 15px var(--neon-glow));
+    }
+
+    .main-badge-rank {
+      font-weight: 900;
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: var(--neon-main);
+    }
+
+    /* Badge Counters */
+    .badge-counters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .badge-counter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+    }
+
+    .badge-counter img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+
+    .badge-counter .count {
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    .badge-counter .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Power Grid */
+    .power-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .power-card {
+      background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.2));
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .power-card:hover {
+      border-color: var(--neon-main);
+      box-shadow: 0 0 20px var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    .power-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .power-icon {
+      font-size: 1.8rem;
+    }
+
+    .power-title {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .power-desc {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+
+    .power-badge {
+      min-width: 100px;
+      text-align: right;
+    }
+
+    /* Progress Circle */
+    .progress-circle {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      margin-left: auto;
+    }
+
+    .progress-circle svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-circle .bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 6;
+    }
+
+    .progress-circle .fg {
+      fill: none;
+      stroke: var(--neon-main);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.8s ease;
+      filter: drop-shadow(0 0 6px var(--neon-glow));
+    }
+
+    .progress-circle .value {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    .power-rank {
+      text-align: right;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .power-rank strong {
+      color: var(--neon-main);
+    }
+
+    /* Badge Tiers */
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tier-badge img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tier-bronze {
+      background: linear-gradient(135deg, rgba(205,127,50,0.35), rgba(0,0,0,0.2));
+      border: 1px solid rgba(205,127,50,0.6);
+      color: #cd7f32;
+    }
+
+    .tier-iron {
+      background: linear-gradient(135deg, rgba(128,128,128,0.35), rgba(0,0,0,0.2));
+      border: 1px solid rgba(128,128,128,0.6);
+      color: #9ca3af;
+    }
+
+    .tier-silver {
+      background: linear-gradient(135deg, rgba(192,192,192,0.35), rgba(0,0,0,0.2));
+      border: 1px solid rgba(192,192,192,0.6);
+      color: #c0c0c0;
+    }
+
+    .tier-gold {
+      background: linear-gradient(135deg, rgba(255,215,0,0.35), rgba(0,0,0,0.2));
+      border: 1px solid rgba(255,215,0,0.7);
+      color: #ffd700;
+    }
+
+    .tier-platinum {
+      background: linear-gradient(135deg, rgba(160,240,255,0.35), rgba(0,0,0,0.2));
+      border: 1px solid rgba(160,240,255,0.7);
+      color: #a0f0ff;
+    }
+
+    .tier-locked {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-muted);
+    }
+
+    /* Shimmer animation for gold/platinum */
+    @keyframes shimmer {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
+    }
+
+    .tier-gold::after, .tier-platinum::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 50%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      transform: translateX(-120%);
+      animation: shimmer 2.5s linear infinite;
+    }
+
+    .tier-platinum::after {
+      animation-duration: 2s;
+    }
+
+    /* Leaderboard */
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+
+    .lb-table th, .lb-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .lb-table th {
+      background: rgba(0, 0, 0, 0.3);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .lb-table tr.me {
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    .lb-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Leaderboard Grid */
+    .lb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .lb-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lb-card:hover {
+      border-color: var(--neon-main);
+      box-shadow: 0 0 20px var(--neon-glow);
+    }
+
+    .lb-card-title {
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .lb-card-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .lb-card-count {
+      font-size: 0.9rem;
+      color: var(--neon-main);
+    }
+
+    /* Views */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #1a1a2e, #0f0f23);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .profile-hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .profile-main-badge {
+        margin-top: 16px;
+      }
+
+      .power-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .badge-counters {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stats-shell">
+    <!-- Header -->
+    <div class="stats-header">
+      <h1 data-i18n-site="stats.page_title">📊 STATS & BADGES</h1>
+      <div class="stats-actions">
+        <button id="btnBackToGame" class="btn-stats primary" style="display:none;" onclick="backToGame()" data-i18n-site="stats.back_to_game">
+          🎮 Retour à la partie
+        </button>
+        <button class="btn-stats" onclick="showExplanations()" data-i18n-site="stats.explanations">❓ Explications</button>
+        <a href="/" class="btn-stats" data-i18n-site="stats.home">🏠 Accueil</a>
+        <button class="btn-stats" onclick="refreshAll()" data-i18n-site="stats.refresh">🔄 Actualiser</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="stats-tabs">
+      <button class="stats-tab active" data-view="profile" onclick="switchTab('profile')" data-i18n-site="stats.tab_profile">👤 Mon Profil</button>
+      <button class="stats-tab" data-view="postgame" onclick="switchTab('postgame')" data-i18n-site="stats.tab_postgame">🏆 Fin de Partie</button>
+      <button class="stats-tab" data-view="leaderboards" onclick="switchTab('leaderboards')" data-i18n-site="stats.tab_leaderboards">📈 Classements</button>
+      <button class="stats-tab" data-view="archives" onclick="switchTab('archives')" data-i18n-site="stats.tab_archives">📅 Archives</button>
+    </div>
+
+    <!-- View: Profile -->
+    <div id="viewProfile" class="view active">
+      <!-- Profile Hero -->
+      <div class="profile-hero">
+        <div id="profileAvatarContainer">
+          <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar" />
+        </div>
+        <div class="profile-info">
+          <div class="profile-name" id="profileName" data-i18n-site="stats.loading">Chargement...</div>
+          <div class="profile-status" id="profileStatus" data-i18n-site="stats.login_to_see_stats">Connecte-toi pour voir tes stats</div>
+        </div>
+        <div class="profile-main-badge" id="profileMainBadge">
+          <img class="main-badge-img" src="/images/badges/fer.png" alt="Badge" id="mainBadgeImg" />
+          <div class="main-badge-rank" id="mainBadgeRank">—</div>
+        </div>
+      </div>
+
+      <!-- Badge Counters -->
+      <div class="badge-counters" id="badgeCounters">
+        <div class="badge-counter">
+          <img src="/images/badges/platine.png" alt="Platine" />
+          <span class="count" id="countPlatine">0</span>
+          <span class="label" data-i18n-site="stats.badge_platinum">Platine</span>
+        </div>
+        <div class="badge-counter">
+          <img src="/images/badges/or.png" alt="Or" />
+          <span class="count" id="countOr">0</span>
+          <span class="label" data-i18n-site="stats.badge_gold">Or</span>
+        </div>
+        <div class="badge-counter">
+          <img src="/images/badges/argent.png" alt="Argent" />
+          <span class="count" id="countArgent">0</span>
+          <span class="label" data-i18n-site="stats.badge_silver">Argent</span>
+        </div>
+        <div class="badge-counter">
+          <img src="/images/badges/bronze.png" alt="Bronze" />
+          <span class="count" id="countBronze">0</span>
+          <span class="label" data-i18n-site="stats.badge_bronze">Bronze</span>
+        </div>
+        <div class="badge-counter">
+          <img src="/images/badges/fer.png" alt="Fer" />
+          <span class="count" id="countFer">0</span>
+          <span class="label" data-i18n-site="stats.badge_iron">Fer</span>
+        </div>
+      </div>
+
+      <!-- Power Grid -->
+      <div class="power-grid" id="powerGrid">
+        <div class="loading" data-i18n-site="stats.loading_powers">Chargement des pouvoirs...</div>
+      </div>
+    </div>
+
+    <!-- View: Postgame -->
+    <div id="viewPostgame" class="view">
+      <div id="postgameContent">
+        <div class="loading">Chargement du rapport de partie...</div>
+      </div>
+    </div>
+
+    <!-- View: Leaderboards -->
+    <div id="viewLeaderboards" class="view">
+      <div class="lb-grid" id="lbGrid">
+        <div class="loading">Chargement des classements...</div>
+      </div>
+    </div>
+
+    <!-- View: Archives -->
+    <div id="viewArchives" class="view">
+      <div id="archivesContent">
+        <div class="loading">Chargement des archives...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for leaderboard details -->
+  <div class="modal-overlay" id="lbModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Classement</div>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody">
+        <div class="loading">Chargement...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for explanations -->
+  <div class="modal-overlay" id="explanationsModal">
+    <div class="modal-content" style="max-width:700px;">
+      <div class="modal-header">
+        <div class="modal-title" data-i18n-site="stats.how_stats_work">❓ Comment fonctionnent les Stats & Badges</div>
+        <button class="modal-close" onclick="closeExplanations()">&times;</button>
+      </div>
+      <div style="line-height:1.6;color:var(--text-main);">
+        
+        <h3 style="color:var(--neon-main);margin:0 0 12px;" data-i18n-site="stats.badge_acquisition">🏅 Obtention des Badges</h3>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.9rem;">
+          <tr style="border-bottom:1px solid var(--border-soft);">
+            <td style="padding:8px;"><img src="/images/badges/fer.png" style="width:24px;vertical-align:middle;"> <span data-i18n-site="stats.badge_iron">Fer</span></td>
+            <td style="padding:8px;color:var(--text-muted);" data-i18n-site="stats.first_game_played">Dès ta 1ère partie jouée</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-soft);">
+            <td style="padding:8px;"><img src="/images/badges/bronze.png" style="width:24px;vertical-align:middle;"> <span data-i18n-site="stats.badge_bronze">Bronze</span></td>
+            <td style="padding:8px;color:var(--text-muted);" data-i18n-site="stats.top_25_verified">Top 25% des joueurs vérifiés</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-soft);">
+            <td style="padding:8px;"><img src="/images/badges/argent.png" style="width:24px;vertical-align:middle;"> <span data-i18n-site="stats.badge_silver">Argent</span></td>
+            <td style="padding:8px;color:var(--text-muted);" data-i18n-site="stats.top_10_verified">Top 10% des joueurs vérifiés</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-soft);">
+            <td style="padding:8px;"><img src="/images/badges/or.png" style="width:24px;vertical-align:middle;"> <span data-i18n-site="stats.badge_gold">Or</span></td>
+            <td style="padding:8px;color:var(--text-muted);" data-i18n-site="stats.top_5_verified">Top 5% des joueurs vérifiés</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;"><img src="/images/badges/platine.png" style="width:24px;vertical-align:middle;"> <span data-i18n-site="stats.badge_platinum">Platine</span></td>
+            <td style="padding:8px;color:var(--text-muted);" data-i18n-site="stats.top_3_verified">Top 3% des joueurs vérifiés</td>
+          </tr>
+        </table>
+        
+        <h3 style="color:var(--neon-main);margin:20px 0 12px;" data-i18n-site="stats.power_calculation">📊 Calcul des Pouvoirs (Score 0-100%)</h3>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🏆 <span data-i18n-site="stats.power_champion">Champion</span></strong> — <span data-i18n-site="stats.champion_calc">Moyenne pondérée de tous les pouvoirs (sauf Exterminateur)</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🧪 <span data-i18n-site="stats.power_doctor">Docteur/Sorcière</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.doctor_calc_1">60% : Taux de soins réussis sur astronautes</span><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.doctor_calc_2">40% : Potions mortelles utilisées sur saboteurs</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🎭 <span data-i18n-site="stats.power_bluffer">Bluffer (Incognito)</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.bluffer_calc">Victoires en tant que saboteur sans recevoir aucun vote contre toi</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🛡️ <span data-i18n-site="stats.power_resistant">Résistant</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.resistant_calc">Temps passé vivant / Temps total de tes parties</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🕵️ <span data-i18n-site="stats.power_investigator">Enquêteur</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.investigator_calc">Votes corrects contre saboteurs vs votes erronés</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>👑 <span data-i18n-site="stats.power_captain">Chef de station</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.captain_calc">Départages du maire tuant un saboteur + Transferts de capitaine vers un astronaute</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🔫 <span data-i18n-site="stats.power_security">Chef de sécurité</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.security_calc">Vengeance efficace : tirs mortels sur saboteurs vs tirs amis</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>🔥 <span data-i18n-site="stats.power_streak">Série de Victoires</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.streak_calc">Ta plus longue série de victoires consécutives</span>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <strong>☠️ <span data-i18n-site="stats.power_exterminator">Exterminateur</span></strong><br>
+          <span style="color:var(--text-muted);font-size:0.85rem;" data-i18n-site="stats.exterminator_calc">Potions mortelles utilisées sur astronautes (non comptabilisé dans Champion)</span>
+        </div>
+        
+        <h3 style="color:var(--neon-main);margin:20px 0 12px;" data-i18n-site="stats.ranking_info">📈 Classement</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin:0;" data-i18n-site="stats.ranking_details">
+          Seuls les <strong>comptes vérifiés</strong> (email confirmé) sont pris en compte dans les classements.<br>
+          Le badge principal correspond au classement <strong>Champion</strong> (moyenne globale).<br>
+          Le numéro affiché (#12) est ton rang parmi tous les joueurs éligibles.
+        </p>
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════════
+    // CONFIGURATION & STATE
+    // ═══════════════════════════════════════════════════════════════════
+    
+    let meData = null;
+    let postgameData = null;
+    
+    const POWER_ICONS = {
+      A: "🧪", B: "🎭", C: "🛡️", D: "☠️", 
+      E: "🕵️", F: "👑", G: "🔫", I: "🔥", H: "🏆"
+    };
+    
+    const POWER_LABELS = {
+      A: ["Docteur / Sorcière", "Soins astro + potions mort saboteurs"],
+      B: ["Bluffer (Incognito)", "Victoire saboteur + 0 vote contre toi"],
+      C: ["Le plus Résistant", "Temps vivant / temps total"],
+      D: ["Exterminateur", "Potions mort sur astronautes"],
+      E: ["Enquêteur", "Votes justes vs saboteurs"],
+      F: ["Chef de station", "Départages + transferts pro-astro"],
+      G: ["Chef de sécurité", "Vengeance efficace vs saboteur"],
+      I: ["Série de Victoires", "Meilleure streak (tous rôles)"],
+      H: ["Champion", "Moyenne pondérée globale"]
+    };
+
+    const TIER_LABELS = {
+      platinum: "Platine", gold: "Or", silver: "Argent", bronze: "Bronze", iron: "Fer"
+    };
+    
+    const TIER_FILES = {
+      platinum: "platine", gold: "or", silver: "argent", bronze: "bronze", iron: "fer"
+    };
+    
+    // Fonction pour récupérer la langue courante (compatible avec toutes les clés)
+    function getCurrentLang() {
+      // Priorité : saboteur_language > saboteur_lang > site_language > navigateur > fr
+      return localStorage.getItem('saboteur_language') 
+          || localStorage.getItem('saboteur_lang') 
+          || localStorage.getItem('site_language') 
+          || navigator.language.split('-')[0] 
+          || 'fr';
+    }
+    
+    // Fonction pour récupérer les traductions dynamiques
+    function t(key, fallback) {
+      if (typeof SITE_TRANSLATIONS !== 'undefined' && SITE_TRANSLATIONS.stats) {
+        const lang = getCurrentLang();
+        const val = SITE_TRANSLATIONS.stats[key];
+        if (val && val[lang]) return val[lang];
+        if (val && val['fr']) return val['fr'];
+      }
+      return fallback;
+    }
+    
+    // Labels traduits dynamiquement
+    function getPowerLabels() {
+      return {
+        A: [t('power_doctor', 'Docteur / Sorcière'), t('power_doctor_desc', 'Soins astro + potions mort saboteurs')],
+        B: [t('power_bluffer', 'Bluffer (Incognito)'), t('power_bluffer_desc', 'Victoire saboteur + 0 vote contre toi')],
+        C: [t('power_resistant', 'Le plus Résistant'), t('power_resistant_desc', 'Temps vivant / temps total')],
+        D: [t('power_exterminator', 'Exterminateur'), t('power_exterminator_desc', 'Potions mort sur astronautes')],
+        E: [t('power_investigator', 'Enquêteur'), t('power_investigator_desc', 'Votes justes vs saboteurs')],
+        F: [t('power_captain', 'Chef de station'), t('power_captain_desc', 'Départages + transferts pro-astro')],
+        G: [t('power_security', 'Chef de sécurité'), t('power_security_desc', 'Vengeance efficace vs saboteur')],
+        I: [t('power_streak', 'Série de Victoires'), t('power_streak_desc', 'Meilleure streak (tous rôles)')],
+        H: [t('power_champion', 'Champion'), t('power_champion_desc', 'Moyenne pondérée globale')]
+      };
+    }
+    
+    function getTierLabels() {
+      return {
+        platinum: t('badge_platinum', 'Platine'),
+        gold: t('badge_gold', 'Or'),
+        silver: t('badge_silver', 'Argent'),
+        bronze: t('badge_bronze', 'Bronze'),
+        iron: t('badge_iron', 'Fer')
+      };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // UTILITIES
+    // ═══════════════════════════════════════════════════════════════════
+
+    function getUrlParams() {
+      const params = {};
+      new URLSearchParams(window.location.search).forEach((v, k) => params[k] = v);
+      return params;
+    }
+
+    function getToken() {
+      return localStorage.getItem('saboteur_token');
+    }
+
+    function getLocalUser() {
+      try {
+        return JSON.parse(localStorage.getItem('saboteur_user') || 'null');
+      } catch { return null; }
+    }
+
+    function applyTheme() {
+      const theme = localStorage.getItem('saboteur_theme') || 'default';
+      document.body.className = '';
+      if (theme && theme !== 'default') {
+        document.body.classList.add(`theme-${theme}`);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // RENDERING
+    // ═══════════════════════════════════════════════════════════════════
+
+    function renderProgressCircle(percent, size = 70) {
+      const r = (size - 12) / 2;
+      const c = 2 * Math.PI * r;
+      const offset = c - (percent / 100) * c;
+      return `
+        <div class="progress-circle" style="width:${size}px;height:${size}px;">
+          <svg width="${size}" height="${size}">
+            <circle class="bg" cx="${size/2}" cy="${size/2}" r="${r}" />
+            <circle class="fg" cx="${size/2}" cy="${size/2}" r="${r}" 
+                    stroke-dasharray="${c}" stroke-dashoffset="${offset}" />
+          </svg>
+          <div class="value">${Math.round(percent)}%</div>
+        </div>
+      `;
+    }
+
+    function renderTierBadge(tier, rank) {
+      if (!tier) {
+        return `<span class="tier-badge tier-locked">${t('unranked', '🔒 Non classé')}</span>`;
+      }
+      const tierLabels = getTierLabels();
+      const label = tierLabels[tier] || tier;
+      const file = TIER_FILES[tier] || 'fer';
+      const img = `/images/badges/${file}.png`;
+      return `
+        <span class="tier-badge tier-${tier}">
+          <img src="${img}" alt="${label}" />
+          ${label} ${rank ? '#' + rank : ''}
+        </span>
+      `;
+    }
+
+    function renderProfile() {
+      const localUser = getLocalUser();
+      const avatarEl = document.getElementById('profileAvatar');
+      const nameEl = document.getElementById('profileName');
+      const statusEl = document.getElementById('profileStatus');
+      const mainBadgeImg = document.getElementById('mainBadgeImg');
+      const mainBadgeRank = document.getElementById('mainBadgeRank');
+      const powerGrid = document.getElementById('powerGrid');
+
+      // Avatar et nom
+      if (meData && meData.user) {
+        nameEl.textContent = meData.user.username;
+        statusEl.textContent = meData.user.emailVerified ? t('verified_account', '✅ Compte vérifié') : t('unverified_email', '⚠️ Email non vérifié');
+        
+        const avatar = meData.user.currentAvatar || localUser?.currentAvatar;
+        if (avatar) {
+          if (avatar.length <= 4) {
+            // Emoji
+            avatarEl.style.display = 'none';
+            const container = document.getElementById('profileAvatarContainer');
+            container.innerHTML = `<div class="profile-avatar emoji">${avatar}</div>`;
+          } else {
+            avatarEl.src = avatar;
+            avatarEl.style.display = '';
+          }
+        } else {
+          avatarEl.src = '';
+          const container = document.getElementById('profileAvatarContainer');
+          container.innerHTML = `<div class="profile-avatar emoji">👤</div>`;
+        }
+      } else if (localUser) {
+        nameEl.textContent = localUser.username || 'Joueur';
+        statusEl.textContent = t('persistent_stats_info', 'Connecte-toi pour des stats persistantes');
+        const container = document.getElementById('profileAvatarContainer');
+        container.innerHTML = `<div class="profile-avatar emoji">${localUser.currentAvatar || '👤'}</div>`;
+      } else {
+        nameEl.textContent = t('not_logged_in', 'Non connecté');
+        statusEl.textContent = t('login_to_see_stats', 'Connecte-toi pour voir tes stats');
+      }
+
+      // Pouvoirs
+      const powers = meData?.powers || {};
+      const order = ["H", "A", "B", "C", "E", "F", "G", "I", "D"];
+      
+      // Compter les badges
+      const counts = { platinum: 0, gold: 0, silver: 0, bronze: 0, iron: 0 };
+      for (const k of order) {
+        const p = powers[k];
+        if (p && p.tier && counts[p.tier] !== undefined) {
+          counts[p.tier]++;
+        }
+      }
+      document.getElementById('countPlatine').textContent = counts.platinum;
+      document.getElementById('countOr').textContent = counts.gold;
+      document.getElementById('countArgent').textContent = counts.silver;
+      document.getElementById('countBronze').textContent = counts.bronze;
+      document.getElementById('countFer').textContent = counts.iron;
+
+      // Badge principal (Champion) - basé sur meData.badge
+      const badgeInfo = meData?.badge;
+      const gamesPlayed = badgeInfo?.gamesPlayed || 0;
+      const tierLabels = getTierLabels();
+      
+      if (gamesPlayed >= 1 && badgeInfo?.tier) {
+        // Joueur a joué, afficher son badge
+        const tierFile = TIER_FILES[badgeInfo.tier] || 'fer';
+        mainBadgeImg.src = `/images/badges/${tierFile}.png`;
+        mainBadgeImg.style.display = '';
+        mainBadgeRank.textContent = badgeInfo.rank ? `#${badgeInfo.rank}` : tierLabels[badgeInfo.tier] || '';
+      } else {
+        // Pas encore joué - masquer le badge
+        mainBadgeImg.style.display = 'none';
+        mainBadgeRank.textContent = t('play_first_game', 'Joue ta 1ère partie !');
+      }
+
+      // Power cards
+      const powerLabels = getPowerLabels();
+      let html = '';
+      for (const k of order) {
+        const p = powers[k] || { scoreRaw: 0, scoreFinal: 0, eligible: false };
+        const [title, desc] = powerLabels[k] || [k, ''];
+        const icon = POWER_ICONS[k] || '⭐';
+        const score = Math.round(p.scoreFinal || p.scoreRaw || 0);
+        
+        html += `
+          <div class="power-card">
+            <div class="power-header">
+              <div>
+                <span class="power-icon">${icon}</span>
+                <span class="power-title">${title}</span>
+                <div class="power-desc">${desc}</div>
+              </div>
+              <div class="power-badge">
+                ${renderProgressCircle(score)}
+              </div>
+            </div>
+            <div class="power-rank">
+              ${renderTierBadge(p.tier, p.rank)}
+            </div>
+          </div>
+        `;
+      }
+      powerGrid.innerHTML = html || `<div class="loading">${t('no_data', 'Aucune donnée disponible')}</div>`;
+    }
+
+    function renderPostgame() {
+      const container = document.getElementById('postgameContent');
+      const params = getUrlParams();
+      
+      if (!params.room) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px;">
+            <p style="color:var(--text-muted);margin-bottom:16px;">
+              Aucune partie en cours. Cette page affiche les stats après une partie.
+            </p>
+            <a href="/game.html" class="btn-stats primary">🎮 Jouer une partie</a>
+          </div>
+        `;
+        return;
+      }
+
+      if (!postgameData) {
+        container.innerHTML = '<div class="loading">Chargement du rapport...</div>';
+        return;
+      }
+
+      const report = postgameData.report;
+      if (!report) {
+        container.innerHTML = '<div class="loading">Rapport introuvable</div>';
+        return;
+      }
+
+      const winner = report.winner || 'unknown';
+      const duration = report.gameDuration ? Math.round(report.gameDuration / 1000) : 0;
+      const mins = Math.floor(duration / 60);
+      const secs = duration % 60;
+
+      let html = `
+        <div style="background:var(--bg-card);border:1px solid var(--border-soft);border-radius:16px;padding:20px;margin-bottom:20px;">
+          <h2 style="margin:0 0 12px;color:var(--neon-main);">
+            🏆 ${winner === 'astronauts' || winner === 'astronautes' ? 'Victoire des Astronautes !' : 
+                 winner === 'saboteurs' ? 'Victoire des Saboteurs !' : 
+                 winner === 'AMOUREUX' ? 'Victoire des Amoureux !' : 'Partie terminée'}
+          </h2>
+          <p style="color:var(--text-muted);margin:0;">Durée : ${mins}min ${secs}s</p>
+        </div>
+      `;
+
+      // Liste des joueurs
+      if (report.players && report.players.length > 0) {
+        html += '<div class="power-grid">';
+        for (const p of report.players) {
+          const isWinner = p.win || (p.team === winner);
+          html += `
+            <div class="power-card" style="${isWinner ? 'border-color:var(--neon-main);' : ''}">
+              <div class="power-header">
+                <div>
+                  <span class="power-icon">${p.alive ? '✅' : '💀'}</span>
+                  <span class="power-title">${p.name}</span>
+                  <div class="power-desc">${p.role || 'Inconnu'} ${isWinner ? '🏆' : ''}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    async function renderLeaderboards() {
+      const grid = document.getElementById('lbGrid');
+      grid.innerHTML = '<div class="loading">Chargement des classements...</div>';
+
+      const categories = [
+        ["H", "🏆 Champion", "Classement global"],
+        ["A", "🧪 Docteur", "Soins + potions"],
+        ["B", "🎭 Bluffer", "Incognito saboteur"],
+        ["C", "🛡️ Résistant", "Temps vivant"],
+        ["E", "🕵️ Enquêteur", "Votes justes"],
+        ["F", "👑 Chef station", "Décisions capitaine"],
+        ["G", "🔫 Sécurité", "Vengeance"],
+        ["I", "🔥 Streak", "Série victoires"],
+        ["D", "☠️ Exterminateur", "Potions sur astronautes"]
+      ];
+
+      let html = '';
+      for (const [key, title, desc] of categories) {
+        html += `
+          <div class="lb-card" onclick="openLeaderboardModal('${key}')">
+            <div class="lb-card-title">${title}</div>
+            <div class="lb-card-desc">${desc}</div>
+            <div class="lb-card-count">Voir le classement →</div>
+          </div>
+        `;
+      }
+      grid.innerHTML = html;
+    }
+
+    async function openLeaderboardModal(category) {
+      const modal = document.getElementById('lbModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      
+      const powerLabels = getPowerLabels();
+      const [, label] = Object.entries(powerLabels).find(([k]) => k === category) || [category, [category]];
+      title.textContent = `${POWER_ICONS[category] || ''} ${label[0]}`;
+      body.innerHTML = `<div class="loading">${t('loading', 'Chargement...')}</div>`;
+      modal.classList.add('active');
+
+      try {
+        const token = getToken();
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(`/api/stats/leaderboard?category=${category}&limit=50`, { headers });
+        const data = await res.json();
+
+        if (!data.success || !data.top || data.top.length === 0) {
+          body.innerHTML = `<p style="text-align:center;color:var(--text-muted);">${t('no_players_ranked', 'Aucun joueur classé')}</p>`;
+          return;
+        }
+
+        let html = `
+          <table class="lb-table">
+            <thead>
+              <tr>
+                <th>${t('rank', '#')}</th>
+                <th>${t('player', 'Joueur')}</th>
+                <th>${t('badge', 'Badge')}</th>
+                <th>${t('score', 'Score')}</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        for (const row of data.top) {
+          const isMe = meData?.user?.username === row.username;
+          html += `
+            <tr class="${isMe ? 'me' : ''}">
+              <td><strong>${row.rank}</strong></td>
+              <td>${row.username}</td>
+              <td>${renderTierBadge(row.tier, null)}</td>
+              <td>${Math.round(row.scoreFinal)}/100</td>
+            </tr>
+          `;
+        }
+
+        html += '</tbody></table>';
+        body.innerHTML = html;
+      } catch (e) {
+        body.innerHTML = '<p style="color:#ff6b6b;">Erreur de chargement</p>';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('lbModal').classList.remove('active');
+    }
+
+    function showExplanations() {
+      document.getElementById('explanationsModal').classList.add('active');
+    }
+
+    function closeExplanations() {
+      document.getElementById('explanationsModal').classList.remove('active');
+    }
+
+    async function renderArchives() {
+      const container = document.getElementById('archivesContent');
+      container.innerHTML = '<div class="loading">Chargement...</div>';
+
+      try {
+        const res = await fetch('/api/stats/snapshots');
+        const data = await res.json();
+
+        if (!data.success || !data.months || data.months.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">Aucun snapshot mensuel disponible</p>';
+          return;
+        }
+
+        let html = '<div class="lb-grid">';
+        for (const month of data.months) {
+          html += `
+            <div class="lb-card" onclick="viewSnapshot('${month}')">
+              <div class="lb-card-title">📅 ${month}</div>
+              <div class="lb-card-desc">Classement officiel du mois</div>
+              <div class="lb-card-count">Voir →</div>
+            </div>
+          `;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<p style="color:#ff6b6b;">Erreur de chargement</p>';
+      }
+    }
+
+    async function viewSnapshot(month) {
+      const modal = document.getElementById('lbModal');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      
+      title.textContent = `📅 Classement ${month}`;
+      body.innerHTML = '<div class="loading">Chargement...</div>';
+      modal.classList.add('active');
+
+      try {
+        const res = await fetch(`/api/stats/snapshot/${month}`);
+        const data = await res.json();
+
+        if (!data.success || !data.snapshot) {
+          body.innerHTML = '<p style="color:var(--text-muted);">Snapshot introuvable</p>';
+          return;
+        }
+
+        let html = '';
+        for (const [catKey, catData] of Object.entries(data.snapshot.categories || {})) {
+          html += `<h3 style="margin:20px 0 10px;">${POWER_ICONS[catKey] || ''} ${catData.title}</h3>`;
+          
+          if (catData.top50 && catData.top50.length > 0) {
+            html += '<table class="lb-table"><thead><tr><th>#</th><th>Joueur</th><th>Score</th></tr></thead><tbody>';
+            for (const row of catData.top50.slice(0, 10)) {
+              html += `<tr><td>${row.rank}</td><td>${row.username}</td><td>${row.scoreFinal}</td></tr>`;
+            }
+            html += '</tbody></table>';
+          } else {
+            html += '<p style="color:var(--text-muted);">Aucun classé</p>';
+          }
+        }
+        body.innerHTML = html || '<p>Données vides</p>';
+      } catch (e) {
+        body.innerHTML = '<p style="color:#ff6b6b;">Erreur de chargement</p>';
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // NAVIGATION
+    // ═══════════════════════════════════════════════════════════════════
+
+    function switchTab(viewId) {
+      // Update tabs
+      document.querySelectorAll('.stats-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.view === viewId);
+      });
+
+      // Update views
+      document.querySelectorAll('.view').forEach(view => {
+        view.classList.toggle('active', view.id === `view${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`);
+      });
+
+      // Load data if needed
+      if (viewId === 'leaderboards') {
+        renderLeaderboards();
+      } else if (viewId === 'archives') {
+        renderArchives();
+      } else if (viewId === 'postgame') {
+        renderPostgame();
+      }
+    }
+
+    function backToGame() {
+      const stored = sessionStorage.getItem('saboteur_return_to_game_url');
+      if (stored) {
+        window.location.href = stored;
+      } else {
+        window.location.href = '/game.html';
+      }
+    }
+
+    function maybeShowBackButton() {
+      const params = getUrlParams();
+      const isPostgame = (params.mode || '').toLowerCase() === 'postgame';
+      document.getElementById('btnBackToGame').style.display = isPostgame ? '' : 'none';
+      
+      // Si postgame, activer cet onglet
+      if (isPostgame) {
+        switchTab('postgame');
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // DATA FETCHING
+    // ═══════════════════════════════════════════════════════════════════
+
+    async function fetchMeStats() {
+      const token = getToken();
+      if (!token) return null;
+
+      try {
+        const res = await fetch('/api/stats/me', { 
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        console.error('fetchMeStats error:', e);
+        return null;
+      }
+    }
+
+    async function fetchPostgame() {
+      const params = getUrlParams();
+      if (!params.room) return null;
+
+      try {
+        const token = getToken();
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const url = `/api/stats/postgame/${params.room}${params.pt ? `?pt=${params.pt}` : ''}`;
+        const res = await fetch(url, { headers });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        console.error('fetchPostgame error:', e);
+        return null;
+      }
+    }
+
+    async function refreshAll() {
+      // Fetch me stats
+      meData = await fetchMeStats();
+      renderProfile();
+
+      // Fetch postgame if applicable
+      const params = getUrlParams();
+      if (params.room) {
+        postgameData = await fetchPostgame();
+        renderPostgame();
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════════════════
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      maybeShowBackButton();
+      refreshAll();
+
+      // Close modal on overlay click
+      document.getElementById('lbModal').addEventListener('click', (e) => {
+        if (e.target.id === 'lbModal') closeModal();
+      });
+      
+      document.getElementById('explanationsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'explanationsModal') closeExplanations();
+      });
+
+      // Escape key closes modals
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeModal();
+          closeExplanations();
+        }
+      });
+    });
+  </script>
+  
+  <!-- Traductions -->
+  <script src="/site-translations.js"></script>
+  <script>
+    // Appliquer les traductions au chargement
+    if (typeof applySiteTranslations === 'function') {
+      applySiteTranslations();
+    }
+  </script>
+</body>
+</html>
