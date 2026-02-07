@@ -940,9 +940,15 @@
     
     // D4: Forcer les styles inline pour s'assurer de la visibilité
     // D6: Ajouter grayscale SEULEMENT si joueur mort ET pas en GAME_OVER
+    // V11: Ne pas appliquer 64px aux éléments du briefing container
     const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
     const borderColor = shouldGray ? '#666' : '#00ffff';
-    slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+    
+    // V11 FIX: Vérifier si le slot est dans le briefing (grille vidéo)
+    const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
+    if (!isInBriefing) {
+      slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+    }
     v.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;
     
     log("Video attached to slot for:", playerId.slice(0,8), "slot size:", rect.width + "x" + rect.height, isEliminated ? "(ELIMINATED)" : "", isGameOver ? "(GAME_OVER - no gray)" : "");
@@ -1416,8 +1422,12 @@
       const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
       const borderColor = shouldGray ? '#666' : '#00ffff';
       
-      // Mettre à jour le style du slot
-      slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+      // V11 FIX: Ne pas appliquer 64px aux éléments du briefing container
+      const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
+      if (!isInBriefing) {
+        // Mettre à jour le style du slot uniquement pour les slots du lobby
+        slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+      }
       
       // Mettre à jour le style de la vidéo
       const video = slot.querySelector('video');
@@ -2002,23 +2012,18 @@
       const slots = document.querySelectorAll(`[data-player-id="${player.playerId}"]`);
       
       slots.forEach(slot => {
-        // V10 FIX: IGNORER les .video-thumb - ils sont gérés par video-briefing-ui.js
-        if (slot.classList.contains('video-thumb')) {
-          return; // Ne pas toucher aux thumbs du BriefingUI!
-        }
-        // V10 FIX: IGNORER aussi les éléments dans #videoBriefingContainer
-        if (slot.closest('#videoBriefingContainer')) {
-          return; // Ne pas toucher au BriefingUI!
-        }
-        
         const video = slot.querySelector('video');
         if (!video) return;
         
         const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
         const borderColor = shouldGray ? '#666' : '#00ffff';
         
-        // Appliquer les styles au slot
-        slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+        // V11 FIX: Ne pas appliquer 64px aux éléments du briefing container
+        const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
+        if (!isInBriefing) {
+          // Appliquer les styles au slot uniquement pour les slots du lobby
+          slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+        }
         
         // Appliquer les styles à la vidéo
         video.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;

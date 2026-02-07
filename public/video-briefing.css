@@ -96,271 +96,20 @@
 }
 
 /* ============================================
-   MODE FULL (MAX) - GRILLE PLEIN ÉCRAN V5.1
-   ============================================ 
-   Toutes les vidéos de MÊME TAILLE
-   Grille qui remplit TOUT l'écran
-   Classes .players-N pour adapter la grille
-*/
+   MODE FULL (Plein écran) - Par défaut
+   ============================================ */
 
 .video-briefing-container.mode-full,
 .video-briefing-container:not(.mode-split) {
   inset: 0;
-  padding: 10px;
-  padding-top: 55px;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* CACHER le focus wrapper en mode MAX */
-.mode-full .video-focus-wrapper,
-.video-briefing-container:not(.mode-split) .video-focus-wrapper {
-  display: none !important;
-}
-
-/* Sidebar devient grille PLEIN ÉCRAN */
-.mode-full .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split) .video-thumbs-sidebar {
-  width: 100% !important;
-  height: 100% !important;
-  flex: 1 !important;
-  
-  display: grid !important;
-  gap: 8px !important;
-  
-  max-height: none !important;
-  overflow: hidden !important;
-  padding: 0 !important;
-}
-
-/* === GRILLES PAR NOMBRE DE JOUEURS === */
-
-/* 1-2 joueurs: 2 colonnes */
-.mode-full .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split) .video-thumbs-sidebar {
-  grid-template-columns: repeat(2, 1fr) !important;
-  grid-template-rows: 1fr !important;
-}
-
-/* 3-4 joueurs: 2x2 */
-.mode-full.players-3 .video-thumbs-sidebar,
-.mode-full.players-4 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-3 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-4 .video-thumbs-sidebar {
-  grid-template-columns: repeat(2, 1fr) !important;
-  grid-template-rows: repeat(2, 1fr) !important;
-}
-
-/* 5-6 joueurs: 3x2 */
-.mode-full.players-5 .video-thumbs-sidebar,
-.mode-full.players-6 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-5 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-6 .video-thumbs-sidebar {
-  grid-template-columns: repeat(3, 1fr) !important;
-  grid-template-rows: repeat(2, 1fr) !important;
-}
-
-/* 7-8 joueurs: 4x2 */
-.mode-full.players-7 .video-thumbs-sidebar,
-.mode-full.players-8 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-7 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-8 .video-thumbs-sidebar {
-  grid-template-columns: repeat(4, 1fr) !important;
-  grid-template-rows: repeat(2, 1fr) !important;
-}
-
-/* 9-10 joueurs: 5x2 */
-.mode-full.players-9 .video-thumbs-sidebar,
-.mode-full.players-10 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-9 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-10 .video-thumbs-sidebar {
-  grid-template-columns: repeat(5, 1fr) !important;
-  grid-template-rows: repeat(2, 1fr) !important;
-}
-
-/* 11-12 joueurs: 4x3 */
-.mode-full.players-11 .video-thumbs-sidebar,
-.mode-full.players-12 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-11 .video-thumbs-sidebar,
-.video-briefing-container:not(.mode-split).players-12 .video-thumbs-sidebar {
-  grid-template-columns: repeat(4, 1fr) !important;
-  grid-template-rows: repeat(3, 1fr) !important;
-}
-
-/* Vidéos remplissent leur cellule */
-.mode-full .video-thumb,
-.video-briefing-container:not(.mode-split) .video-thumb {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  
-  position: relative !important;
-  border-radius: 12px;
-  border: 3px solid var(--thumb-border);
-  background: #001020;
-  overflow: hidden;
-}
-
-/* Vidéo couvre tout le thumb */
-.mode-full .video-thumb video,
-.video-briefing-container:not(.mode-split) .video-thumb video {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
-/* Nom du joueur */
-.mode-full .video-thumb .thumb-name,
-.video-briefing-container:not(.mode-split) .video-thumb .thumb-name {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  font-size: 1.1rem !important;
-  padding: 12px 15px !important;
-  background: linear-gradient(transparent, rgba(0,0,0,0.85)) !important;
-  z-index: 2;
-}
-
-/* Speaker actif - bordure lumineuse */
-.mode-full .video-thumb.is-speaking,
-.video-briefing-container:not(.mode-split) .video-thumb.is-speaking {
-  border-color: var(--speaker-ring) !important;
-  border-width: 4px !important;
-  box-shadow: 
-    0 0 0 4px var(--speaker-pulse),
-    0 0 30px var(--speaker-pulse),
-    0 0 60px rgba(0, 255, 255, 0.3) !important;
-  z-index: 10;
-}
-
-/* Badge PARLE sur le speaker */
-.mode-full .video-thumb.is-speaking::before,
-.video-briefing-container:not(.mode-split) .video-thumb.is-speaking::before {
-  content: "🎤 PARLE";
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, #00ff88, #00ccff);
-  color: #000;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  z-index: 10;
-  animation: pulse-badge 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
-}
-
-/* Empty state */
-.mode-full .video-thumb.empty::after,
-.video-briefing-container:not(.mode-split) .video-thumb.empty::after {
-  content: "📹";
-  font-size: 3rem !important;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-  padding: 5px !important;
-  align-content: center !important;
-}
-
-/* Vidéos de même taille qui remplissent leur cellule */
-.mode-full .video-thumb,
-.video-briefing-container:not(.mode-split) .video-thumb {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 200px !important;
-  min-height: 150px !important;
-  
-  position: relative !important;
-  border-radius: 12px;
-  border: 3px solid var(--thumb-border);
-  background: #001020;
-  overflow: hidden;
-  aspect-ratio: 16/10;
-}
-
-/* Vidéo couvre tout le thumb */
-.mode-full .video-thumb video,
-.video-briefing-container:not(.mode-split) .video-thumb video {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-}
-
-/* Nom du joueur */
-.mode-full .video-thumb .thumb-name,
-.video-briefing-container:not(.mode-split) .video-thumb .thumb-name {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  font-size: 1rem !important;
-  padding: 10px 15px !important;
-  background: linear-gradient(transparent, rgba(0,0,0,0.85)) !important;
-  z-index: 2;
-}
-
-/* Speaker actif - bordure lumineuse */
-.mode-full .video-thumb.is-speaking,
-.video-briefing-container:not(.mode-split) .video-thumb.is-speaking {
-  border-color: var(--speaker-ring) !important;
-  border-width: 4px !important;
-  box-shadow: 
-    0 0 0 4px var(--speaker-pulse),
-    0 0 30px var(--speaker-pulse),
-    0 0 60px rgba(0, 255, 255, 0.3) !important;
-  z-index: 10;
-}
-
-/* Badge PARLE sur le speaker */
-.mode-full .video-thumb.is-speaking::before,
-.video-briefing-container:not(.mode-split) .video-thumb.is-speaking::before {
-  content: "🎤 PARLE";
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, #00ff88, #00ccff);
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  z-index: 10;
-  animation: pulse-badge 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
-}
-
-/* Empty state */
-.mode-full .video-thumb.empty::after,
-.video-briefing-container:not(.mode-split) .video-thumb.empty::after {
-  content: "📹";
-  font-size: 3rem !important;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  padding: 20px;
+  padding-top: 70px;
+  flex-direction: row;
+  gap: 20px;
 }
 
 /* ============================================
-   MODE SPLIT (50/50) - GRILLE 2x2
+   MODE SPLIT (50/50)
    ============================================ */
 
 .video-briefing-container.mode-split {
@@ -381,34 +130,24 @@
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* GRILLE 2x2: Cacher le focus wrapper */
 .mode-split .video-focus-wrapper {
-  display: none;
+  flex: 1;
+  min-width: 0;
 }
 
-/* Pour compatibilité si pas de grille */
 .mode-split .video-focus-main {
   min-height: unset;
   height: 100%;
 }
 
-/* GRILLE 2x2: Sidebar devient grille pleine largeur */
 .mode-split .video-thumbs-sidebar {
-  width: 100%;
-  flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 10px;
-  max-height: none;
-  overflow: visible;
-  padding: 0;
+  width: 100px;
+  gap: 8px;
 }
 
-/* GRILLE 2x2: Thumbnails remplissent les cellules */
 .mode-split .video-thumb {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 75px;
 }
 
 .mode-split .video-focus-name {
@@ -937,7 +676,7 @@
     max-height: 350px;
   }
   
-  /* Mode SPLIT sur mobile - GRILLE 2x2 */
+  /* Mode SPLIT sur mobile */
   .video-briefing-container.mode-split {
     height: 45vh;
     min-height: 220px;
@@ -948,31 +687,22 @@
     gap: 8px;
   }
   
-  /* GRILLE 2x2: Cacher le focus wrapper */
   .mode-split .video-focus-wrapper {
-    display: none;
-  }
-  
-  /* GRILLE 2x2: Sidebar devient grille pleine largeur */
-  .mode-split .video-thumbs-sidebar {
-    width: 100%;
     flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 6px;
-    max-height: none;
-    overflow: visible;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules */
+  .mode-split .video-thumbs-sidebar {
+    width: 80px;
+    gap: 6px;
+  }
+  
   .mode-split .video-thumb {
-    width: 100%;
-    height: 100%;
+    width: 80px;
+    height: 60px;
   }
   
   .mode-split .video-thumb .thumb-name {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     padding: 4px 6px;
   }
   
@@ -1396,16 +1126,15 @@ body.video-split-active #topRightButtons {
     top: calc(35vh + 5px) !important;
   }
   
-  /* GRILLE 2x2: Mobile - garder la grille, juste réduire le gap */
+  /* Thumbs plus compactes sur mobile en mode split */
   .mode-split .video-thumbs-sidebar {
-    width: 100% !important;
-    gap: 6px !important;
+    width: 80px !important;
+    gap: 5px !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
   .mode-split .video-thumb {
-    width: 100% !important;
-    height: 100% !important;
+    width: 75px !important;
+    height: 55px !important;
   }
   
   /* Header plus compact */
@@ -1418,7 +1147,7 @@ body.video-split-active #topRightButtons {
     font-size: 0.75rem !important;
   }
   
-  /* Focus name plus compact (pour compatibilité) */
+  /* Focus name plus compact */
   .mode-split .video-focus-name {
     padding: 4px 8px !important;
   }
@@ -1443,16 +1172,13 @@ body.video-split-active #topRightButtons {
     /* padding-top: calc(30vh + 10px) !important; SUPPRIMÉ V3.23 */
   }
   
-  /* GRILLE 2x2: Très petits écrans - garder la grille, réduire le gap */
   .mode-split .video-thumbs-sidebar {
-    width: 100% !important;
-    gap: 4px !important;
+    width: 65px !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
   .mode-split .video-thumb {
-    width: 100% !important;
-    height: 100% !important;
+    width: 60px !important;
+    height: 45px !important;
   }
 }
 
@@ -1512,151 +1238,201 @@ body.video-split-active .header-banner::before {
 */
 
 /* ============================================
-   GRILLE MODE SPLIT - V5.1 DEUX RANGÉES + SPEAKER DROITE
-   ============================================ 
-   - Deux rangées de vidéos
-   - Vidéos remplissent l'espace
-   - Speaker actif à DROITE et plus grand
-*/
+   V11 - MODE GRILLE VIDÉO
+   SPLIT: 2 rangées, scroll horizontal
+   MAX: Mosaïque plein écran
+   ============================================ */
 
-/* CACHER le focus wrapper en mode SPLIT */
-.mode-split .video-focus-wrapper {
-  display: none !important;
-}
-
-/* Container: grille 2 rangées, colonnes auto */
-.mode-split .video-thumbs-sidebar {
-  width: 100% !important;
-  height: 100% !important;
-  flex: 1 !important;
-  
-  display: grid !important;
-  grid-template-rows: 1fr 1fr !important;
-  grid-auto-flow: column !important;
-  grid-auto-columns: 1fr !important;
-  gap: 8px !important;
-  
-  max-height: none !important;
-  overflow: hidden !important;
-  padding: 5px !important;
-}
-
-/* Vidéos remplissent leur cellule */
-.mode-split .video-thumb {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  
-  position: relative !important;
-  border-radius: 10px;
-  border: 2px solid var(--thumb-border);
-  background: #001020;
+/* Container de la grille - caché par défaut */
+.video-grid-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+  gap: 10px;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
-/* Vidéo couvre tout le thumb */
-.mode-split .video-thumb video {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+/* === MODE SPLIT: 2 rangées avec scroll horizontal === */
+.mode-split .video-grid-container {
+  display: grid !important;
+  grid-template-rows: 1fr 1fr;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 280px);
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
 }
 
-/* Nom du joueur */
-.mode-split .video-thumb .thumb-name {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  font-size: 0.8rem !important;
-  padding: 6px 10px !important;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;
+/* Scrollbar stylée pour SPLIT */
+.mode-split .video-grid-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.mode-split .video-grid-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.mode-split .video-grid-container::-webkit-scrollbar-thumb {
+  background: var(--briefing-border);
+  border-radius: 3px;
+}
+
+/* === MODE MAX (FULL): Mosaïque adaptative === */
+.mode-full .video-grid-container {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 10px;
+  overflow: hidden;
+}
+
+/* === Éléments de la grille === */
+.video-grid-item {
+  position: relative;
+  background: var(--thumb-bg);
+  border: 2px solid var(--thumb-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-grid-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Nom du joueur dans la grille */
+.video-grid-item .grid-item-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  padding: 20px 12px 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   z-index: 2;
 }
 
-/* ============================================
-   SPEAKER ACTIF - À DROITE ET PLUS GRAND
-   ============================================ */
-
-/* Le speaker prend 2 rangées à droite */
-.mode-split .video-thumb.is-speaking {
-  order: 999 !important;
-  grid-row: 1 / -1 !important; /* Prend les 2 rangées */
-  
-  /* Style mis en évidence */
-  border-color: var(--speaker-ring) !important;
-  border-width: 3px !important;
-  box-shadow: 
-    0 0 0 3px var(--speaker-pulse),
-    0 0 20px var(--speaker-pulse),
-    0 0 40px rgba(0, 255, 255, 0.2) !important;
-  z-index: 10;
+.video-grid-item .grid-item-name .name {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Badge PARLE sur le speaker */
-.mode-split .video-thumb.is-speaking::before {
-  content: "🎤 PARLE";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: linear-gradient(135deg, #00ff88, #00ccff);
+/* Badge PARLE */
+.video-grid-item .badge-speaker {
+  background: var(--speaker-ring);
   color: #000;
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.65rem;
   font-weight: bold;
-  z-index: 10;
-  animation: pulse-badge 1.5s ease-in-out infinite;
+  text-transform: uppercase;
+  animation: pulse-speaker 1.5s ease-in-out infinite;
 }
 
-/* Empty state */
-.mode-split .video-thumb.empty::after {
+/* === État SPEAKER (qui parle) === */
+.video-grid-item.is-speaking {
+  border-color: var(--speaker-ring) !important;
+  box-shadow: 0 0 20px var(--speaker-pulse), 0 0 40px var(--speaker-pulse) !important;
+}
+
+/* === État MORT === */
+.video-grid-item.is-dead {
+  filter: grayscale(80%) brightness(0.6);
+  opacity: 0.7;
+  border-color: #666 !important;
+}
+
+/* === État VIDE (pas de vidéo) === */
+.video-grid-item.empty {
+  background: linear-gradient(135deg, rgba(0, 20, 40, 0.8), rgba(0, 10, 20, 0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-grid-item.empty::before {
   content: "📹";
-  font-size: 2rem !important;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+/* Animation pulse pour speaker */
+@keyframes pulse-speaker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 /* ============================================
-   SPLIT RESPONSIVE - MOBILE
+   V11 - RESPONSIVE GRILLE
    ============================================ */
 
-@media (max-width: 900px) {
-  .mode-split .video-thumbs-sidebar {
-    gap: 6px !important;
+@media (max-width: 768px) {
+  /* SPLIT mobile: 3 colonnes, rangées automatiques selon nb joueurs */
+  /* 6 joueurs = 2 rangées, 9 joueurs = 3 rangées */
+  .mode-split .video-grid-container {
+    grid-template-rows: unset !important;
+    grid-auto-flow: row !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-columns: unset !important;
+    grid-auto-rows: 1fr !important;
+    gap: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   
-  .mode-split .video-thumb .thumb-name {
-    font-size: 0.7rem !important;
-    padding: 4px 8px !important;
+  /* MAX mobile: grille adaptative plus petite */
+  .mode-full .video-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  
+  .video-grid-item .grid-item-name {
+    padding: 15px 8px 6px 8px;
+  }
+  
+  .video-grid-item .grid-item-name .name {
+    font-size: 0.75rem;
+  }
+  
+  .video-grid-item .badge-speaker {
+    font-size: 0.55rem;
+    padding: 2px 6px;
   }
 }
 
-@media (max-width: 600px) {
-  .mode-split .video-thumbs-sidebar {
-    gap: 4px !important;
+@media (max-width: 480px) {
+  /* Petit mobile: 3 colonnes toujours mais plus compact */
+  .mode-split .video-grid-container {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 5px;
   }
   
-  .mode-split .video-thumb {
-    border-radius: 6px;
-    border-width: 1px;
+  .mode-full .video-grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 5px;
   }
   
-  .mode-split .video-thumb .thumb-name {
-    font-size: 0.6rem !important;
-    padding: 3px 6px !important;
+  .video-grid-item .grid-item-name .name {
+    font-size: 0.65rem;
   }
   
-  .mode-split .video-thumb.is-speaking::before {
-    font-size: 0.6rem;
-    padding: 2px 6px;
-    top: 4px;
-    right: 4px;
+  .video-grid-item .badge-speaker {
+    font-size: 0.5rem;
+    padding: 1px 4px;
   }
 }
