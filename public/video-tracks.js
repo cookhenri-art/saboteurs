@@ -2002,6 +2002,15 @@
       const slots = document.querySelectorAll(`[data-player-id="${player.playerId}"]`);
       
       slots.forEach(slot => {
+        // V10 FIX: IGNORER les .video-thumb - ils sont gérés par video-briefing-ui.js
+        if (slot.classList.contains('video-thumb')) {
+          return; // Ne pas toucher aux thumbs du BriefingUI!
+        }
+        // V10 FIX: IGNORER aussi les éléments dans #videoBriefingContainer
+        if (slot.closest('#videoBriefingContainer')) {
+          return; // Ne pas toucher au BriefingUI!
+        }
+        
         const video = slot.querySelector('video');
         if (!video) return;
         
