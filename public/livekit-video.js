@@ -731,48 +731,46 @@ class LiveKitVideoManager {
     const shouldOverlay = !this.allowed.video && !this.allowed.audio;
     this.setOverlay(shouldOverlay, this.allowed.reason);
 
-    // === ENFORCE : couper si interdit (seulement si pas déjà coupé) ===
-    if (!this.allowed.video && this._localVideoEnabled) {
-      try {
-        await this.room?.localParticipant?.setCameraEnabled(false);
-        this._localVideoEnabled = false;
-      } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
-    }
-    if (!this.allowed.audio) {
+    // V11: Vérifier si c'est une phase privée
+    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false };
+    const isPrivatePhase = privateStatus.isPrivate;
+    const isPrivateNotInvolved = isPrivatePhase && !privateStatus.iAmInvolved;
+
+    // === V11 ULTRA-SIMPLE: Ne couper audio/vidéo QUE si phase privée non-concerné ===
+    if (isPrivateNotInvolved) {
+      // Phase privée où je ne suis PAS concerné → tout couper
+      if (this._localVideoEnabled) {
+        try {
+          await this.room?.localParticipant?.setCameraEnabled(false);
+          this._localVideoEnabled = false;
+        } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
+      }
       if (this._localAudioEnabled) {
         try {
           await this.room?.localParticipant?.setMicrophoneEnabled(false);
           this._localAudioEnabled = false;
         } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
       }
-      // 🔇 DEAFEN : couper l'audio distant (phase privée / nuit silencieuse)
+      // 🔇 DEAFEN : couper l'audio distant
       await this.deafenRemotes(true);
-    } else {
-      // 🔊 Remettre l'audio distant
+    } else if (isPrivatePhase && privateStatus.iAmInvolved) {
+      // Phase privée où je SUIS concerné → activer pour communiquer
       await this.deafenRemotes(false);
-    }
-
-    // V11: Réactiver vidéo ET audio si autorisés par le serveur
-    // MAIS seulement si l'état doit changer (évite NotReadableError)
-    if (this.allowed.video) {
-      const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
-      // Ne changer que si l'état est différent
-      if (this._localVideoEnabled !== desiredVideo) {
+      if (!this._localVideoEnabled) {
         try {
-          await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
-          this._localVideoEnabled = desiredVideo;
-        } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
+          await this.room?.localParticipant?.setCameraEnabled(true);
+          this._localVideoEnabled = true;
+        } catch (e) { console.warn("[LiveKit] setCameraEnabled(true) for private phase failed", e); }
       }
-    }
-    if (this.allowed.audio) {
-      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
-      // Ne changer que si l'état est différent
-      if (this._localAudioEnabled !== desiredAudio) {
+      if (!this._localAudioEnabled) {
         try {
-          await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
-          this._localAudioEnabled = desiredAudio;
-        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+          await this.room?.localParticipant?.setMicrophoneEnabled(true);
+          this._localAudioEnabled = true;
+        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(true) for private phase failed", e); }
       }
+    } else {
+      // Phase normale → NE RIEN TOUCHER à l'audio/vidéo, juste le deafen
+      await this.deafenRemotes(false);
     }
 
     // Message status

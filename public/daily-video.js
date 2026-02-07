@@ -1148,36 +1148,36 @@ background: rgba(10, 14, 39, 0.95);
     const shouldOverlay = !this.allowed.video && !this.allowed.audio;
     this.setOverlay(shouldOverlay, this.allowed.reason);
 
-    // ENFORCE: si interdit -> forcer OFF
-    if (!this.allowed.video) {
-      try { await this.callFrame.setLocalVideo(false); } catch (e) { console.warn("setLocalVideo(false) failed", e); }
-    }
-    if (!this.allowed.audio) {
-      try { await this.callFrame.setLocalAudio(false); } catch (e) { console.warn("setLocalAudio(false) failed", e); }
-      await this.deafenRemotes(true);
-    } else {
-      await this.deafenRemotes(false);
-    }
+    // V11: Vérifier si c'est une phase privée
+    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false };
+    const isPrivatePhase = privateStatus.isPrivate;
+    const isPrivateNotInvolved = isPrivatePhase && !privateStatus.iAmInvolved;
 
-    // V11: Réactiver vidéo ET audio si autorisés par le serveur
-    // MAIS seulement si l'état doit changer (évite NotReadableError)
-    if (this.allowed.video) {
-      const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
+    // === V11 ULTRA-SIMPLE: Ne couper audio/vidéo QUE si phase privée non-concerné ===
+    if (isPrivateNotInvolved) {
+      // Phase privée où je ne suis PAS concerné → tout couper
+      try { await this.callFrame.setLocalVideo(false); } catch (e) { console.warn("setLocalVideo(false) failed", e); }
+      try { await this.callFrame.setLocalAudio(false); } catch (e) { console.warn("setLocalAudio(false) failed", e); }
+      // 🔇 DEAFEN : couper l'audio distant
+      await this.deafenRemotes(true);
+    } else if (isPrivatePhase && privateStatus.iAmInvolved) {
+      // Phase privée où je SUIS concerné → activer pour communiquer
+      await this.deafenRemotes(false);
       try {
         const currentVideo = await this.callFrame.localVideo();
-        if (currentVideo !== desiredVideo) {
-          await this.callFrame.setLocalVideo(desiredVideo);
+        if (!currentVideo) {
+          await this.callFrame.setLocalVideo(true);
         }
-      } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
-    }
-    if (this.allowed.audio) {
-      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
+      } catch (e) { console.warn("setLocalVideo(true) for private phase failed", e); }
       try {
         const currentAudio = await this.callFrame.localAudio();
-        if (currentAudio !== desiredAudio) {
-          await this.callFrame.setLocalAudio(desiredAudio);
+        if (!currentAudio) {
+          await this.callFrame.setLocalAudio(true);
         }
-      } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
+      } catch (e) { console.warn("setLocalAudio(true) for private phase failed", e); }
+    } else {
+      // Phase normale → NE RIEN TOUCHER à l'audio/vidéo, juste le deafen
+      await this.deafenRemotes(false);
     }
 
     // Message de statut (optionnel)
