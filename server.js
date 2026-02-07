@@ -6641,6 +6641,48 @@ app.post("/api/auth/reset-password", async (req, res) => {
   }
 });
 
+// Changement de mot de passe (utilisateur connecté)
+app.post("/api/auth/change-password", authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, error: "Mot de passe actuel et nouveau requis" });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, error: "Nouveau mot de passe trop court (min 6 caractères)" });
+    }
+    
+    // Récupérer l'utilisateur
+    const user = dbGet("SELECT id, username, email, password FROM users WHERE id = ?", [req.user.id]);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Utilisateur non trouvé" });
+    }
+    
+    // Vérifier l'ancien mot de passe
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(400).json({ success: false, error: "Mot de passe actuel incorrect" });
+    }
+    
+    // Hasher le nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Mettre à jour
+    dbRun("UPDATE users SET password = ? WHERE id = ?", [hashedPassword, user.id]);
+    
+    logger.info("password_changed", { userId: user.id, email: user.email });
+    
+    res.json({ success: true, message: "Mot de passe modifié avec succès" });
+    
+  } catch (error) {
+    console.error("Erreur change-password:", error);
+    res.status(500).json({ success: false, error: "Erreur serveur" });
+  }
+});
+
 // Profil
 app.get("/api/auth/me", authenticateToken, async (req, res) => {
   try {
