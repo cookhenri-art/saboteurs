@@ -1512,10 +1512,10 @@ body.video-split-active .header-banner::before {
 */
 
 /* ============================================
-   GRILLE MODE SPLIT - V5.0 TAILLE FIXE + SPEAKER
+   GRILLE MODE SPLIT - V5.1 DEUX RANGÉES + SPEAKER DROITE
    ============================================ 
-   - Taille FIXE pour chaque vidéo (300x200px)
-   - Vidéos centrées selon le nombre de joueurs
+   - Deux rangées de vidéos
+   - Vidéos remplissent l'espace
    - Speaker actif à DROITE et plus grand
 */
 
@@ -1524,37 +1524,33 @@ body.video-split-active .header-banner::before {
   display: none !important;
 }
 
-/* Container flex centré avec wrap */
+/* Container: grille 2 rangées, colonnes auto */
 .mode-split .video-thumbs-sidebar {
   width: 100% !important;
   height: 100% !important;
   flex: 1 !important;
   
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  align-items: center !important;
-  align-content: center !important;
-  gap: 10px !important;
+  display: grid !important;
+  grid-template-rows: 1fr 1fr !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 1fr !important;
+  gap: 8px !important;
   
   max-height: none !important;
-  overflow: visible !important;
-  padding: 10px !important;
+  overflow: hidden !important;
+  padding: 5px !important;
 }
 
-/* Taille FIXE pour chaque vidéo - NE PAS ÉTIRER */
+/* Vidéos remplissent leur cellule */
 .mode-split .video-thumb {
-  width: 280px !important;
-  height: 180px !important;
-  min-width: 280px !important;
-  min-height: 180px !important;
-  max-width: 280px !important;
-  max-height: 180px !important;
-  flex: 0 0 280px !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   
   position: relative !important;
-  border-radius: 12px;
-  border: 3px solid var(--thumb-border);
+  border-radius: 10px;
+  border: 2px solid var(--thumb-border);
   background: #001020;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -1576,8 +1572,8 @@ body.video-split-active .header-banner::before {
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  font-size: 0.85rem !important;
-  padding: 8px 10px !important;
+  font-size: 0.8rem !important;
+  padding: 6px 10px !important;
   background: linear-gradient(transparent, rgba(0,0,0,0.8)) !important;
   z-index: 2;
 }
@@ -1586,26 +1582,18 @@ body.video-split-active .header-banner::before {
    SPEAKER ACTIF - À DROITE ET PLUS GRAND
    ============================================ */
 
-/* Le speaker va à la fin (droite) */
+/* Le speaker prend 2 rangées à droite */
 .mode-split .video-thumb.is-speaking {
   order: 999 !important;
-  
-  /* Plus grand que les autres */
-  width: 350px !important;
-  height: 230px !important;
-  min-width: 350px !important;
-  min-height: 230px !important;
-  max-width: 350px !important;
-  max-height: 230px !important;
-  flex: 0 0 350px !important;
+  grid-row: 1 / -1 !important; /* Prend les 2 rangées */
   
   /* Style mis en évidence */
   border-color: var(--speaker-ring) !important;
-  border-width: 4px !important;
+  border-width: 3px !important;
   box-shadow: 
-    0 0 0 4px var(--speaker-pulse),
-    0 0 30px var(--speaker-pulse),
-    0 0 60px rgba(0, 255, 255, 0.3) !important;
+    0 0 0 3px var(--speaker-pulse),
+    0 0 20px var(--speaker-pulse),
+    0 0 40px rgba(0, 255, 255, 0.2) !important;
   z-index: 10;
 }
 
@@ -1613,21 +1601,16 @@ body.video-split-active .header-banner::before {
 .mode-split .video-thumb.is-speaking::before {
   content: "🎤 PARLE";
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 8px;
   background: linear-gradient(135deg, #00ff88, #00ccff);
   color: #000;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 15px;
   font-size: 0.75rem;
   font-weight: bold;
   z-index: 10;
   animation: pulse-badge 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
 }
 
 /* Empty state */
@@ -1641,62 +1624,39 @@ body.video-split-active .header-banner::before {
 }
 
 /* ============================================
-   RESPONSIVE - MOBILE
+   SPLIT RESPONSIVE - MOBILE
    ============================================ */
 
 @media (max-width: 900px) {
-  .mode-split .video-thumb {
-    width: 220px !important;
-    height: 140px !important;
-    min-width: 220px !important;
-    min-height: 140px !important;
-    max-width: 220px !important;
-    max-height: 140px !important;
-    flex: 0 0 220px !important;
-  }
-  
-  .mode-split .video-thumb.is-speaking {
-    width: 280px !important;
-    height: 180px !important;
-    min-width: 280px !important;
-    min-height: 180px !important;
-    max-width: 280px !important;
-    max-height: 180px !important;
-    flex: 0 0 280px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .mode-split .video-thumb {
-    width: 160px !important;
-    height: 100px !important;
-    min-width: 160px !important;
-    min-height: 100px !important;
-    max-width: 160px !important;
-    max-height: 100px !important;
-    flex: 0 0 160px !important;
-    border-radius: 8px;
-  }
-  
-  .mode-split .video-thumb.is-speaking {
-    width: 200px !important;
-    height: 130px !important;
-    min-width: 200px !important;
-    min-height: 130px !important;
-    max-width: 200px !important;
-    max-height: 130px !important;
-    flex: 0 0 200px !important;
+  .mode-split .video-thumbs-sidebar {
+    gap: 6px !important;
   }
   
   .mode-split .video-thumb .thumb-name {
     font-size: 0.7rem !important;
-    padding: 5px 8px !important;
+    padding: 4px 8px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mode-split .video-thumbs-sidebar {
+    gap: 4px !important;
+  }
+  
+  .mode-split .video-thumb {
+    border-radius: 6px;
+    border-width: 1px;
+  }
+  
+  .mode-split .video-thumb .thumb-name {
+    font-size: 0.6rem !important;
+    padding: 3px 6px !important;
   }
   
   .mode-split .video-thumb.is-speaking::before {
     font-size: 0.6rem;
-    padding: 3px 6px;
-    top: 5px;
-    right: 5px;
+    padding: 2px 6px;
+    top: 4px;
+    right: 4px;
   }
 }
