@@ -441,6 +441,7 @@ function forceUnmuteWithNotification(phase, registry) {
 
 /**
  * D4 v5.8: Met à jour visuellement les boutons mute
+ * V11: Boutons inline supprimés - uniquement boutons briefing
  */
 function updateMuteButtonsUI(audioMuted, videoMuted) {
   // Boutons du briefing UI
@@ -450,44 +451,24 @@ function updateMuteButtonsUI(audioMuted, videoMuted) {
   if (briefingMicBtn) {
     if (audioMuted) {
       briefingMicBtn.textContent = '🔇';
+      briefingMicBtn.style.background = 'rgba(180, 50, 50, 0.7)';
       briefingMicBtn.classList.add('is-off');
     } else {
       briefingMicBtn.textContent = '🎤';
+      briefingMicBtn.style.background = '';
       briefingMicBtn.classList.remove('is-off');
     }
   }
   
   if (briefingCamBtn) {
     if (videoMuted) {
-      briefingCamBtn.textContent = '📷';
+      briefingCamBtn.textContent = '🚫';
+      briefingCamBtn.style.background = 'rgba(180, 50, 50, 0.7)';
       briefingCamBtn.classList.add('is-off');
     } else {
       briefingCamBtn.textContent = '📹';
+      briefingCamBtn.style.background = '';
       briefingCamBtn.classList.remove('is-off');
-    }
-  }
-  
-  // Boutons de la barre inline
-  const inlineMicBtn = document.getElementById('inlineMicBtn');
-  const inlineCamBtn = document.getElementById('inlineCamBtn');
-  
-  if (inlineMicBtn) {
-    if (audioMuted) {
-      inlineMicBtn.textContent = '🔇';
-      inlineMicBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-    } else {
-      inlineMicBtn.textContent = '🎤';
-      inlineMicBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-    }
-  }
-  
-  if (inlineCamBtn) {
-    if (videoMuted) {
-      inlineCamBtn.textContent = '📷';
-      inlineCamBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-    } else {
-      inlineCamBtn.textContent = '📹';
-      inlineCamBtn.style.background = 'rgba(0, 100, 100, 0.5)';
     }
   }
 }

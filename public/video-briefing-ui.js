@@ -111,6 +111,12 @@
       border: 1px solid rgba(0,255,255,0.3);
     `;
     floatingActions.innerHTML = `
+      <button class="video-briefing-btn btn-mic" id="briefingMicBtn" title="Micro">
+        🎤
+      </button>
+      <button class="video-briefing-btn btn-cam" id="briefingCamBtn" title="Caméra">
+        📹
+      </button>
       <button class="video-briefing-btn btn-expand" id="briefingExpandBtn" title="Plein écran">
         ⬆ Max
       </button>
@@ -262,7 +268,20 @@
       });
     }
     
-    // V32: Boutons mic/cam supprimés - utiliser les contrôles des mini-vidéos
+    // V11: Boutons mic/cam
+    const micBtn = document.getElementById('briefingMicBtn');
+    if (micBtn) {
+      micBtn.addEventListener('click', () => {
+        toggleMicrophone();
+      });
+    }
+    
+    const camBtn = document.getElementById('briefingCamBtn');
+    if (camBtn) {
+      camBtn.addEventListener('click', () => {
+        toggleCamera();
+      });
+    }
     
     // Expand button (plein écran)
     const expandBtn2 = document.getElementById('briefingExpandBtn');
@@ -663,6 +682,9 @@
     if (floatingActions) floatingActions.style.display = 'flex';
     // V40b: Le bouton X mobile est géré par updateModeButtons()
     
+    // V11: Nettoyer les vidéos du lobby pour économiser les ressources
+    cleanupLobbyVideos();
+    
     refreshParticipants();
     syncControlStates(); // D4: Synchroniser l'état des boutons micro/caméra
     
@@ -670,6 +692,19 @@
     startPhasePolling();
     
     log('Briefing UI shown');
+  }
+  
+  // V11: Nettoyer les vidéos du lobby pour économiser les ressources
+  function cleanupLobbyVideos() {
+    const lobbyVideos = document.querySelectorAll('#playersList .player-video-slot video');
+    lobbyVideos.forEach(video => {
+      video.pause();
+      video.srcObject = null;
+      video.remove();
+    });
+    if (lobbyVideos.length > 0) {
+      log('Cleaned up', lobbyVideos.length, 'lobby videos');
+    }
   }
 
   function hide() {
@@ -1480,18 +1515,6 @@
       
       updateMicButton();
       
-      // D4 v5.4: Synchroniser le bouton inline
-      const inlineMicBtn = document.getElementById('inlineMicBtn');
-      if (inlineMicBtn) {
-        if (isMicMuted) {
-          inlineMicBtn.textContent = '🔇';
-          inlineMicBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-        } else {
-          inlineMicBtn.textContent = '🎤';
-          inlineMicBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-        }
-      }
-      
       // D6: Afficher le toast de confirmation
       showMuteToast(isMicMuted);
       
@@ -1521,31 +1544,42 @@
       
       updateCamButton();
       
-      // D4 v5.4: Synchroniser le bouton inline
-      const inlineCamBtn = document.getElementById('inlineCamBtn');
-      if (inlineCamBtn) {
-        if (isCamOff) {
-          inlineCamBtn.textContent = '📷';
-          inlineCamBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-        } else {
-          inlineCamBtn.textContent = '📹';
-          inlineCamBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-        }
-      }
-      
       log('Camera:', newState ? 'ON' : 'OFF', '(manual mute saved)');
     } catch (e) {
       log('Error toggling camera:', e);
     }
   }
   
-  // V32: Fonctions simplifiées - boutons briefing supprimés, utiliser mini-vidéos
+  // V11: Mettre à jour le bouton mic du briefing
   function updateMicButton() {
-    // Bouton briefing supprimé - contrôles sur mini-vidéos uniquement
+    const btn = document.getElementById('briefingMicBtn');
+    if (btn) {
+      if (isMicMuted) {
+        btn.textContent = '🔇';
+        btn.style.background = 'rgba(180, 50, 50, 0.7)';
+        btn.title = 'Activer le micro';
+      } else {
+        btn.textContent = '🎤';
+        btn.style.background = '';
+        btn.title = 'Couper le micro';
+      }
+    }
   }
   
+  // V11: Mettre à jour le bouton cam du briefing
   function updateCamButton() {
-    // Bouton briefing supprimé - contrôles sur mini-vidéos uniquement
+    const btn = document.getElementById('briefingCamBtn');
+    if (btn) {
+      if (isCamOff) {
+        btn.textContent = '🚫';
+        btn.style.background = 'rgba(180, 50, 50, 0.7)';
+        btn.title = 'Activer la caméra';
+      } else {
+        btn.textContent = '📹';
+        btn.style.background = '';
+        btn.title = 'Couper la caméra';
+      }
+    }
   }
   
   async function syncControlStates() {

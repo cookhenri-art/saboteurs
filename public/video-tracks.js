@@ -329,170 +329,24 @@
   function ensureGameScreenSlot(playerId) {
     if (!playerId) return null;
     
-    // D4 v5.4: Ne pas créer la barre si le mode SPLIT est actif
+    // V11: Mode SPLIT/MAX actif = pas de slots inline du tout
+    // Les vidéos sont gérées uniquement par le briefing UI
     const controller = window.VideoModeController;
     const currentMode = controller?.getState?.()?.currentMode;
-    if (currentMode === 'SPLIT') {
-      // En mode SPLIT, cacher la barre inline si elle existe
+    
+    // En mode SPLIT ou ADVANCED_FOCUS, ne rien créer
+    if (currentMode === 'SPLIT' || currentMode === 'ADVANCED_FOCUS') {
+      // Supprimer la barre inline si elle existe
       const existingBar = document.getElementById('inlineVideoBar');
       if (existingBar) {
-        existingBar.style.display = 'none';
+        existingBar.remove();
+        log("Removed inlineVideoBar (SPLIT/MAX mode)");
       }
-      return null; // Ne pas créer de slot - le SPLIT gère les vidéos
+      return null;
     }
     
-    // Chercher ou créer le conteneur de vignettes dans le gameScreen
-    let container = document.getElementById('inlineVideoBar');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'inlineVideoBar';
-      container.style.cssText = `
-        display: flex !important;
-        gap: 8px;
-        flex-wrap: wrap;
-        padding: 10px;
-        background: rgba(0, 20, 40, 0.8);
-        border: 2px solid rgba(0, 255, 255, 0.4);
-        border-radius: 12px;
-        margin-bottom: 12px;
-        min-height: 70px;
-        align-items: center;
-      `;
-      
-      // D4 v5.4: Ajouter les boutons de contrôle mic/cam
-      const controlsDiv = document.createElement('div');
-      controlsDiv.id = 'inlineVideoControls';
-      controlsDiv.style.cssText = `
-        display: flex;
-        gap: 6px;
-        margin-right: 10px;
-        padding-right: 10px;
-        border-right: 1px solid rgba(0, 255, 255, 0.3);
-      `;
-      
-      // Bouton micro
-      const micBtn = document.createElement('button');
-      micBtn.id = 'inlineMicBtn';
-      micBtn.textContent = '🎤';
-      micBtn.title = 'Couper le micro';
-      micBtn.style.cssText = `
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 2px solid rgba(0, 255, 255, 0.5);
-        background: rgba(0, 100, 100, 0.5);
-        color: #fff;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      `;
-      micBtn.onclick = () => toggleInlineMic(micBtn);
-      
-      // D6: Synchroniser l'état initial du bouton avec l'état réel du micro
-      // V11: Attendre que la connexion LiveKit soit établie
-      setTimeout(async () => {
-        const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-        if (callObj && typeof callObj.localAudio === 'function') {
-          try {
-            const isAudioOn = await callObj.localAudio();
-            if (isAudioOn) {
-              micBtn.textContent = '🎤';
-              micBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-              micBtn.title = 'Couper le micro';
-            } else {
-              micBtn.textContent = '🔇';
-              micBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-              micBtn.title = 'Activer le micro';
-            }
-          } catch (e) {
-            log('Error syncing mic state:', e);
-          }
-        }
-      }, 2000);
-      
-      // Bouton caméra
-      const camBtn = document.createElement('button');
-      camBtn.id = 'inlineCamBtn';
-      camBtn.textContent = '📹';
-      camBtn.title = 'Couper la caméra';
-      camBtn.style.cssText = `
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 2px solid rgba(0, 255, 255, 0.5);
-        background: rgba(0, 100, 100, 0.5);
-        color: #fff;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      `;
-      camBtn.onclick = () => toggleInlineCam(camBtn);
-      
-      // D6: Synchroniser l'état initial du bouton caméra
-      // V11: Attendre que la connexion LiveKit soit établie
-      setTimeout(async () => {
-        const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-        if (callObj && typeof callObj.localVideo === 'function') {
-          try {
-            const isVideoOn = await callObj.localVideo();
-            if (isVideoOn) {
-              camBtn.textContent = '📹';
-              camBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-              camBtn.title = 'Couper la caméra';
-            } else {
-              camBtn.textContent = '🚫';
-              camBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-              camBtn.title = 'Activer la caméra';
-            }
-          } catch (e) {
-            log('Error syncing cam state:', e);
-          }
-        }
-      }, 2000);
-      
-      controlsDiv.appendChild(micBtn);
-      controlsDiv.appendChild(camBtn);
-      container.appendChild(controlsDiv);
-      
-      // Insérer dans gameScreen (forcer même si display pas vérifié)
-      const gameScreen = document.getElementById('gameScreen');
-      if (gameScreen) {
-        const controlPanel = gameScreen.querySelector('.control-panel');
-        if (controlPanel) {
-          controlPanel.insertBefore(container, controlPanel.firstChild);
-          log("Created inline video bar with controls in gameScreen ✅");
-        } else {
-          // Fallback: insérer directement dans gameScreen
-          gameScreen.insertBefore(container, gameScreen.firstChild);
-          log("Created inline video bar (fallback) ✅");
-        }
-      } else {
-        log("ERROR: gameScreen not found!");
-        return null;
-      }
-    } else {
-      // S'assurer que la barre est visible (au cas où elle aurait été cachée en mode SPLIT)
-      container.style.display = 'flex';
-    }
-    
-    // Vérifier que le container est bien dans le DOM
-    if (!document.body.contains(container)) {
-      log("Container not in DOM, reinserting...");
-      const gameScreen = document.getElementById('gameScreen');
-      if (gameScreen) {
-        const controlPanel = gameScreen.querySelector('.control-panel');
-        if (controlPanel) {
-          controlPanel.insertBefore(container, controlPanel.firstChild);
-        } else {
-          gameScreen.insertBefore(container, gameScreen.firstChild);
-        }
-      }
-    }
-    
-    // Chercher le slot existant dans le container
-    // V11: NE PLUS CRÉER de slots vidéo inline - retourner null
-    // Les vidéos sont affichées uniquement dans le briefing (SPLIT/MAX)
-    // On garde juste les boutons mic/cam dans le container
+    // V11: Ne plus créer de barre inline avec vidéos
+    // Retourner null pour tous les modes
     return null;
   }
 
@@ -1527,9 +1381,22 @@
 
       if (ev?.track?.kind === "video") {
         videoTracks.set(pid, ev.track);
-        attachTrackToPlayer(pid, ev.track, isLocal);
         
-        // D4: Notifier le Briefing UI
+        // V11: Vérifier si on est en mode SPLIT/MAX - si oui, laisser briefing UI gérer
+        const controller = window.VideoModeController;
+        const currentMode = controller?.getState?.()?.currentMode;
+        const isAdvancedMode = (currentMode === 'SPLIT' || currentMode === 'ADVANCED_FOCUS');
+        
+        // V11: Vérifier si on est dans le lobby
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const isInLobby = lobbyScreen && lobbyScreen.classList.contains('active');
+        
+        // Attacher au slot SEULEMENT si dans le lobby (pas en mode avancé)
+        if (isInLobby && !isAdvancedMode) {
+          attachTrackToPlayer(pid, ev.track, isLocal);
+        }
+        
+        // D4: Notifier le Briefing UI (il gère les vidéos en mode SPLIT/MAX)
         if (window.VideoBriefingUI) {
           window.VideoBriefingUI.onTrackStarted(pid, ev.track);
         }
