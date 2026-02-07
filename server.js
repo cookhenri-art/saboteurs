@@ -3064,7 +3064,11 @@ function buildEndReport(room, winner) {
       doctorMissedSaves: s.doctorMissedSaves || 0,
       mayorTiebreakerOk: s.mayorTiebreakerOk || 0,
       mayorTiebreakerKo: s.mayorTiebreakerKo || 0,
-      mayorTiebreakerTotal: s.mayorTiebreakerTotal || 0
+      mayorTiebreakerTotal: s.mayorTiebreakerTotal || 0,
+      // V11: Ajouter les stats de transfert du capitaine
+      captainTransferTotal: s.captainTransferTotal || 0,
+      captainTransferToAstronauts: s.captainTransferToAstronauts || 0,
+      captainTransferToSaboteurs: s.captainTransferToSaboteurs || 0
     };
   }
 
