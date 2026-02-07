@@ -4084,6 +4084,15 @@ const TRANSLATIONS = {
         pt: "Estatísticas detalhadas",
         nl: "Gedetailleerde statistieken"
       },
+      fullStats: {
+        fr: "Mes stats complètes",
+        en: "My full stats",
+        es: "Mis stats completas",
+        de: "Meine vollständigen Stats",
+        it: "Le mie stats complete",
+        pt: "Minhas stats completas",
+        nl: "Mijn volledige stats"
+      },
       gameDuration: {
         fr: "Durée de la partie",
         en: "Game duration",
