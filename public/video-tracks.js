@@ -485,10 +485,17 @@
     let slot = container.querySelector(`.player-video-slot[data-player-id="${CSS.escape(playerId)}"]`);
     if (slot) return slot;
     
+    // V11: Ne pas créer de nouveau slot inline si la visio briefing est active
+    const briefingActive = document.body.classList.contains('video-briefing-active') ||
+                           document.querySelector('.video-briefing-container.active');
+    
     // Créer le slot
     slot = document.createElement('div');
     slot.className = 'player-video-slot game-slot';
     slot.dataset.playerId = playerId;
+    
+    // V11: Cacher immédiatement si briefing actif
+    const displayStyle = briefingActive ? 'none' : 'block';
     slot.style.cssText = `
       width: 80px !important;
       height: 60px !important;
@@ -499,7 +506,7 @@
       border-radius: 8px !important;
       overflow: hidden !important;
       position: relative !important;
-      display: block !important;
+      display: ${displayStyle} !important;
     `;
     
     // Ajouter le nom du joueur

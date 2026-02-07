@@ -77,9 +77,13 @@
   display: none;
   position: fixed;
   z-index: 10500;
-  background: var(--briefing-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* V11: Image de fond par thème + fallback gradient */
+  background: var(--video-bg-main), var(--video-bg-fallback), var(--briefing-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-sizing: border-box;
   
   /* Animation d'entrée */
@@ -819,6 +823,11 @@ body.video-briefing-active .player-video-slot {
   display: none !important;
 }
 
+/* V11: Backup - cacher aussi quand container est visible */
+body:has(.video-briefing-container.active) .player-video-slot {
+  display: none !important;
+}
+
 .player-video-slot video {
   width: 100% !important;
   height: 100% !important;
@@ -1258,19 +1267,19 @@ body.video-split-active .header-banner::before {
 }
 
 /* === MODE SPLIT: 2 rangées avec taille adaptative === */
-/* Taille max = comme si 6 joueurs (3 par rangée) */
+/* Centré et taille max comme pour 6 joueurs */
 .mode-split .video-grid-container {
   display: grid !important;
   grid-template-rows: 1fr 1fr;
   grid-auto-flow: column;
-  /* Taille adaptative mais max 250px (taille pour 6 joueurs) */
+  /* Taille adaptative mais max 250px */
   grid-auto-columns: minmax(150px, 250px);
   gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 8px;
-  /* Centrer si peu de vidéos */
-  justify-content: start;
+  /* Centrer les vidéos */
+  justify-content: center;
 }
 
 /* Scrollbar stylée pour SPLIT */
@@ -1307,7 +1316,9 @@ body.video-split-active .header-banner::before {
 /* === Éléments de la grille === */
 .video-grid-item {
   position: relative;
-  background: var(--thumb-bg);
+  background: var(--video-bg-main), var(--video-bg-fallback, var(--thumb-bg));
+  background-size: cover;
+  background-position: center;
   border: 2px solid var(--thumb-border);
   border-radius: 12px;
   overflow: hidden;
@@ -1321,6 +1332,10 @@ body.video-split-active .header-banner::before {
   position: absolute;
   top: 0;
   left: 0;
+  /* Background si vidéo pas encore chargée */
+  background: var(--video-bg-main), var(--video-bg-fallback);
+  background-size: cover;
+  background-position: center;
 }
 
 /* Nom du joueur dans la grille */
@@ -1375,7 +1390,7 @@ body.video-split-active .header-banner::before {
 
 /* === État VIDE (pas de vidéo) === */
 .video-grid-item.empty {
-  background: linear-gradient(135deg, rgba(0, 20, 40, 0.8), rgba(0, 10, 20, 0.9));
+  /* Utilise le background du parent (video-bg-main) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1398,47 +1413,54 @@ body.video-split-active .header-banner::before {
    ============================================ */
 
 @media (max-width: 768px) {
-  /* Mobile: Conteneur 2x plus haut pour vidéos pas aplaties */
+  /* Mobile: Conteneur adapté */
   .video-briefing-container.mode-split {
-    height: 70vh !important;
-    min-height: 400px !important;
-    max-height: 600px !important;
+    height: 55vh !important;
+    min-height: 280px !important;
+    max-height: 400px !important;
   }
   
   .video-briefing-container.mode-full {
-    min-height: 80vh !important;
+    min-height: 70vh !important;
   }
   
-  /* SPLIT mobile: 3 colonnes, rangées automatiques selon nb joueurs */
-  /* 6 joueurs = 2 rangées, 9 joueurs = 3 rangées */
+  /* SPLIT mobile: 3 colonnes, vidéos réduites de 1/3 */
   .mode-split .video-grid-container {
     grid-template-rows: unset !important;
     grid-auto-flow: row !important;
     grid-template-columns: repeat(3, 1fr) !important;
     grid-auto-columns: unset !important;
-    grid-auto-rows: 1fr !important;
-    gap: 8px;
+    grid-auto-rows: minmax(70px, 100px) !important;
+    gap: 6px;
     overflow-y: auto;
     overflow-x: hidden;
+    justify-content: center;
   }
   
-  /* MAX mobile: grille 3 colonnes aussi */
+  /* MAX mobile: grille 3 colonnes, vidéos réduites */
   .mode-full .video-grid-container {
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px;
+    grid-auto-rows: minmax(80px, 120px) !important;
+    gap: 6px;
+  }
+  
+  /* Items plus petits sur mobile */
+  .video-grid-item {
+    min-height: 70px !important;
+    max-height: 120px !important;
   }
   
   .video-grid-item .grid-item-name {
-    padding: 15px 8px 6px 8px;
+    padding: 10px 6px 4px 6px;
   }
   
   .video-grid-item .grid-item-name .name {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
   
   .video-grid-item .badge-speaker {
-    font-size: 0.55rem;
-    padding: 2px 6px;
+    font-size: 0.5rem;
+    padding: 2px 4px;
   }
 }
 
