@@ -49,6 +49,10 @@
   let exitBtn = null;
   let expandBtn = null; // Mobile expand button
   
+  // V11: Grid mode pour SPLIT et MAX
+  let gridContainer = null;
+  const gridElements = new Map(); // playerId -> gridItem element
+  
   // Track elements
   const thumbElements = new Map(); // playerId -> DOM element
   let focusVideoEl = null;
@@ -220,6 +224,12 @@
     thumbsSidebar.className = 'video-thumbs-sidebar';
     thumbsSidebar.id = 'videoThumbsSidebar';
     container.appendChild(thumbsSidebar);
+    
+    // V11: Grid container pour mode SPLIT et MAX (grille de vidéos)
+    gridContainer = document.createElement('div');
+    gridContainer.className = 'video-grid-container';
+    gridContainer.id = 'videoGridContainer';
+    container.appendChild(gridContainer);
     
     // Add to body
     document.body.appendChild(container);
@@ -676,49 +686,96 @@
     
     const participants = window.videoModeCtrl.getParticipants();
     const currentFocus = window.videoModeCtrl.getFocusedPlayerId();
-    
-    // V5.0: Détecter le mode
     const isSplitMode = container && container.classList.contains('mode-split');
-    const isFullMode = container && container.classList.contains('mode-full');
+    const isMaxMode = container && container.classList.contains('mode-full');
+    const useGrid = isSplitMode || isMaxMode;
     
-    // V5.1: Mettre à jour la classe players-N pour la grille CSS
-    updatePlayersCountClass(participants.length);
+    log('Refreshing participants:', participants.length, 'useGrid:', useGrid, 'split:', isSplitMode, 'max:', isMaxMode);
     
-    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID' : (isFullMode ? 'MAX-GRID' : 'LEGACY'));
+    if (useGrid) {
+      // V11: Mode grille - tous les participants dans gridContainer
+      refreshGridParticipants(participants);
+    } else {
+      // Mode classique focus + thumbs
+      refreshClassicParticipants(participants, currentFocus);
+    }
+    
+    // Attach video tracks
+    attachVideoTracks();
+  }
+  
+  // V11: Rafraîchir la grille de vidéos
+  function refreshGridParticipants(participants) {
+    // Clear existing grid items
+    gridContainer.innerHTML = '';
+    gridElements.clear();
+    
+    // Cacher focus et thumbs, montrer grille
+    if (focusWrapper) focusWrapper.style.display = 'none';
+    if (thumbsSidebar) thumbsSidebar.style.display = 'none';
+    if (gridContainer) gridContainer.style.display = 'grid';
+    
+    // Create grid item for each participant
+    participants.forEach(p => {
+      const gridItem = createGridItem(p);
+      gridContainer.appendChild(gridItem);
+      gridElements.set(p.playerId, gridItem);
+    });
+    
+    log('Grid refreshed with', participants.length, 'items');
+  }
+  
+  // V11: Mode classique avec focus + thumbnails
+  function refreshClassicParticipants(participants, currentFocus) {
+    // Montrer focus et thumbs, cacher grille
+    if (focusWrapper) focusWrapper.style.display = '';
+    if (thumbsSidebar) thumbsSidebar.style.display = '';
+    if (gridContainer) gridContainer.style.display = 'none';
     
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
-    // Create thumbnail for each participant
+    // Create thumbnail for each participant (except focused)
     participants.forEach(p => {
-      // V5.0: En mode grille (SPLIT ou MAX), inclure TOUS les joueurs
-      // Plus de skip du focused player car on n'a plus de zone focus séparée
+      if (p.playerId === currentFocus) return;
       
       const thumb = createThumbnail(p);
       thumbsSidebar.appendChild(thumb);
       thumbElements.set(p.playerId, thumb);
     });
     
-    // V5.0: Pas de setFocus en mode grille - tous égaux
-    // Le speaker est juste mis en évidence avec la classe .is-speaking
-    
-    // Attach video tracks
-    attachVideoTracks();
+    // Set focus
+    if (currentFocus) {
+      setFocus(currentFocus, false);
+    } else if (participants.length > 0) {
+      setFocus(participants[0].playerId, false);
+    }
   }
   
-  // V5.1: Met à jour la classe players-N sur le container pour adapter la grille CSS
-  function updatePlayersCountClass(count) {
-    if (!container) return;
+  // V11: Créer un élément de grille pour un participant
+  function createGridItem(participant) {
+    const item = document.createElement('div');
+    item.className = 'video-grid-item empty';
+    item.dataset.playerId = participant.playerId;
     
-    // Retirer toutes les anciennes classes players-N
-    for (let i = 1; i <= 15; i++) {
-      container.classList.remove('players-' + i);
+    // Name label avec badge speaker
+    const nameEl = document.createElement('div');
+    nameEl.className = 'grid-item-name';
+    nameEl.innerHTML = `
+      <span class="name">${participant.name || 'Joueur'}</span>
+      <span class="badge-speaker" style="display:none;">PARLE</span>
+    `;
+    item.appendChild(nameEl);
+    
+    // Mark if dead (but not at GAME_OVER)
+    const state = window.lastKnownState;
+    const isGameOver = state?.phase === 'GAME_OVER';
+    if (!participant.alive && !isGameOver) {
+      item.classList.add('is-dead');
     }
     
-    // Ajouter la nouvelle classe
-    container.classList.add('players-' + count);
-    log('Updated players count class: players-' + count);
+    return item;
   }
 
   function createThumbnail(participant) {
@@ -768,13 +825,10 @@
       return;
     }
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
-    const isSplitMode = container && container.classList.contains('mode-split');
-    
-    // D5: Animation de transition si le focus change (seulement en mode MAX)
+    // D5: Animation de transition si le focus change
     const isNewFocus = currentFocusId !== playerId;
     
-    if (!isSplitMode && isNewFocus && focusMain) {
+    if (isNewFocus && focusMain) {
       // Ajouter la classe d'animation
       focusMain.classList.add('focus-changing');
       
@@ -786,32 +840,26 @@
     
     currentFocusId = playerId;
     
-    // GRILLE 2x2: En mode SPLIT, ne pas mettre à jour le focus (pas de zone focus visible)
-    if (!isSplitMode) {
-      // Update focus name
-      const nameEl = document.getElementById('focusPlayerName');
-      if (nameEl) {
-        nameEl.textContent = focusedPlayer.name || 'Joueur';
-      }
-      
-      // Update focus video
-      focusMain.classList.remove('empty');
-      attachFocusVideo(playerId);
+    // Update focus name
+    const nameEl = document.getElementById('focusPlayerName');
+    if (nameEl) {
+      nameEl.textContent = focusedPlayer.name || 'Joueur';
     }
+    
+    // Update focus video
+    focusMain.classList.remove('empty');
+    attachFocusVideo(playerId);
     
     // Update thumbnail highlights
     thumbElements.forEach((el, id) => {
       el.classList.toggle('is-focused', id === playerId);
     });
     
-    // GRILLE 2x2: En mode SPLIT, ne PAS reconstruire les thumbs (on garde les 4)
-    if (!isSplitMode) {
-      // Rebuild thumbs to exclude focused player (mode MAX seulement)
-      rebuildThumbs(playerId);
-    }
+    // Rebuild thumbs to exclude focused player
+    rebuildThumbs(playerId);
     
     // D5: Log avec indication si manuel ou auto
-    log('Focus set to:', playerId, focusedPlayer.name, isManual ? '(manual)' : '(auto-speaker)', isSplitMode ? '[SPLIT-GRID]' : '[MAX]');
+    log('Focus set to:', playerId, focusedPlayer.name, isManual ? '(manual)' : '(auto-speaker)');
   }
 
   function rebuildThumbs(focusedId) {
@@ -819,16 +867,13 @@
     
     const participants = window.videoModeCtrl.getParticipants();
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
-    const isSplitMode = container && container.classList.contains('mode-split');
-    
     // Clear
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
-    // Recreate - en mode SPLIT, inclure TOUS les joueurs
+    // Recreate without focused player
     participants.forEach(p => {
-      if (!isSplitMode && p.playerId === focusedId) return; // Skip focused seulement en mode MAX
+      if (p.playerId === focusedId) return;
       
       const thumb = createThumbnail(p);
       thumbsSidebar.appendChild(thumb);
@@ -846,18 +891,55 @@
   function attachVideoTracks() {
     // Get tracks from video-tracks.js registry
     const tracks = window.VideoTracksRegistry?.getAll() || getTracksFromGlobal();
-    
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
+    const isMaxMode = container && container.classList.contains('mode-full');
+    const useGrid = isSplitMode || isMaxMode;
     
     tracks.forEach((track, playerId) => {
-      // GRILLE 2x2: En mode SPLIT, TOUS les joueurs sont dans les thumbs
-      if (!isSplitMode && playerId === currentFocusId) {
-        attachFocusVideo(playerId);
+      if (useGrid) {
+        // V11: Mode grille - attacher à l'élément de grille
+        attachGridVideo(playerId, track);
       } else {
-        attachThumbVideo(playerId, track);
+        // Mode classique
+        if (playerId === currentFocusId) {
+          attachFocusVideo(playerId);
+        } else {
+          attachThumbVideo(playerId, track);
+        }
       }
     });
+  }
+  
+  // V11: Attacher une vidéo à un élément de la grille
+  function attachGridVideo(playerId, track) {
+    const gridItem = gridElements.get(playerId);
+    if (!gridItem) {
+      log('Grid item not found for:', playerId);
+      return;
+    }
+    
+    // Remove existing video
+    const existingVideo = gridItem.querySelector('video');
+    if (existingVideo) {
+      existingVideo.remove();
+    }
+    
+    // LIVEKIT: Get video element
+    const videoEl = getLiveKitVideoElement(playerId);
+    if (videoEl) {
+      gridItem.classList.remove('empty');
+      videoEl.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
+      videoEl.muted = isLocalPlayer(playerId);
+      // Insérer avant le nameEl
+      const nameEl = gridItem.querySelector('.grid-item-name');
+      if (nameEl) {
+        gridItem.insertBefore(videoEl, nameEl);
+      } else {
+        gridItem.appendChild(videoEl);
+      }
+      videoEl.play().catch(e => log('Grid video play error:', e));
+      log('Grid video attached for:', playerId);
+    }
   }
 
   function getTracksFromGlobal() {
@@ -1090,6 +1172,17 @@
     // D5: Update thumbnails in sidebar (mode SPLIT/ADVANCED_FOCUS)
     thumbElements.forEach((el, id) => {
       el.classList.toggle('is-speaking', id === speakerId);
+    });
+    
+    // V11: Update grid items (mode SPLIT/MAX grille)
+    gridElements.forEach((el, id) => {
+      const isSpeaking = id === speakerId;
+      el.classList.toggle('is-speaking', isSpeaking);
+      // Afficher/cacher le badge "PARLE"
+      const gridBadge = el.querySelector('.badge-speaker');
+      if (gridBadge) {
+        gridBadge.style.display = isSpeaking ? 'inline-block' : 'none';
+      }
     });
     
     // D5 NEW: Update player-item highlights in INLINE mode (lobby & game lists)
