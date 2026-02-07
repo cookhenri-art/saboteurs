@@ -1163,15 +1163,15 @@ background: rgba(10, 14, 39, 0.95);
       await this.deafenRemotes(false);
     }
 
-    // V11: NE PLUS réactiver automatiquement l'audio/vidéo
-    // La gestion est centralisée dans video-integration-client.js
-    // avec la logique simplifiée (mute votes, unmute moments clés)
-    // On respecte le choix manuel de l'utilisateur
-    /*
+    // V11: NE PLUS réactiver automatiquement l'AUDIO
+    // La gestion audio est centralisée dans video-integration-client.js
+    // MAIS on réactive la VIDÉO normalement
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try { await this.callFrame.setLocalVideo(desiredVideo); } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
     }
+    // V11: Audio géré par video-integration-client.js uniquement
+    /*
     if (this.allowed.audio) {
       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
       try { await this.callFrame.setLocalAudio(desiredAudio); } catch (e) { console.warn("setLocalAudio(desired) failed", e); }

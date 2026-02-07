@@ -752,21 +752,26 @@ class LiveKitVideoManager {
       await this.deafenRemotes(false);
     }
 
-    // V11: DISABLED -     // Si autorisé, appliquer l'état voulu
-    // V11: DISABLED -     if (this.allowed.video) {
-    // V11: DISABLED -       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
-    // V11: DISABLED -       try {
-    // V11: DISABLED -         await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
-    // V11: DISABLED -         this._localVideoEnabled = desiredVideo;
-    // V11: DISABLED -       } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
-    // V11: DISABLED -     }
-    // V11: DISABLED -     if (this.allowed.audio) {
-    // V11: DISABLED -       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
-    // V11: DISABLED -       try {
-    // V11: DISABLED -         await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
-    // V11: DISABLED -         this._localAudioEnabled = desiredAudio;
-    // V11: DISABLED -       } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
-    // V11: DISABLED -     }
+    // V11: NE PLUS réactiver automatiquement l'AUDIO
+    // La gestion audio est centralisée dans video-integration-client.js
+    // MAIS on réactive la VIDÉO normalement
+    if (this.allowed.video) {
+      const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
+      try {
+        await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
+        this._localVideoEnabled = desiredVideo;
+      } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
+    }
+    // V11: Audio géré par video-integration-client.js uniquement
+    /*
+    if (this.allowed.audio) {
+      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
+      try {
+        await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
+        this._localAudioEnabled = desiredAudio;
+      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+    }
+    */
 
     // Message status
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");

@@ -1172,16 +1172,35 @@
     }
   }
   
-  // V11: DÉSACTIVÉ - La gestion audio est maintenant centralisée dans video-integration-client.js
-  // Cette fonction était appelée par client.js mais causait des réactivations non désirées
-  // On la garde vide pour éviter les erreurs mais elle ne fait plus rien
+  // V11: Restaurer la VIDÉO aux moments clés (phases publiques uniquement)
+  // L'AUDIO est géré par video-integration-client.js
   function restoreLocalTracks() {
-    // V11: NE RIEN FAIRE - laisser video-integration-client.js gérer l'audio
-    // selon la logique simplifiée : mute uniquement pendant votes, unmute uniquement aux moments clés
-    log("⏭️ restoreLocalTracks called but DISABLED (V11 - audio managed by video-integration-client)");
+    const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
+    if (!callObj) return;
+    
+    // Vérifier qu'on n'est PAS en phase privée non-concerné
+    const state = window.lastKnownState;
+    const localId = getLocalPlayerId();
+    const privateStatus = getPrivatePhaseStatus(state, localId);
+    
+    if (privateStatus.isPrivate && !privateStatus.iAmInvolved) {
+      log("🔒 restoreLocalTracks blocked - still in private phase");
+      return;
+    }
+    
+    try {
+      // V11: Restaurer uniquement la VIDÉO (pas l'audio - géré ailleurs)
+      if (!userMutedVideo) {
+        callObj.setLocalVideo(true);
+        log("📹 Restored local video");
+      }
+      // V11: NE PAS toucher à l'audio ici - géré par video-integration-client.js
+    } catch (e) {
+      log("Error restoring local tracks:", e);
+    }
   }
   
-  // V35: Exposer la fonction pour client.js (mais elle ne fait plus rien)
+  // V35: Exposer la fonction pour client.js
   window.restoreLocalTracks = restoreLocalTracks;
   
   // D4 v5.5: Exposer une fonction pour forcer le recalcul des permissions
