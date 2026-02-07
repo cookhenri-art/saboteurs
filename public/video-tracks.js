@@ -1439,6 +1439,14 @@
       const pid = parsePlayerIdFromUserName(p?.user_name);
       log("participant-joined:", p?.user_name, "pid:", pid);
       if (peerKey && pid) peerToPlayerId.set(peerKey, pid);
+      
+      // V11: Rafraîchir la grille du briefing UI quand un participant rejoint
+      setTimeout(() => {
+        if (window.VideoBriefingUI?.refreshParticipants) {
+          log("Refreshing briefing grid after participant joined:", pid);
+          window.VideoBriefingUI.refreshParticipants();
+        }
+      }, 500);
     });
 
     callObject.on("participant-updated", (ev) => {
@@ -1493,6 +1501,12 @@
         // Notifier le Briefing UI
         if (window.VideoBriefingUI) {
           window.VideoBriefingUI.onTrackStopped(pid);
+          // V11: Rafraîchir la grille après qu'un participant quitte
+          setTimeout(() => {
+            if (window.VideoBriefingUI?.refreshParticipants) {
+              window.VideoBriefingUI.refreshParticipants();
+            }
+          }, 300);
         }
       }
     });

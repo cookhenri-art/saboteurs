@@ -1599,8 +1599,14 @@
         const useGrid = isSplitMode || isMaxMode;
         
         if (useGrid) {
-          // Mode grille - attacher à l'élément de grille
-          attachGridVideo(playerId);
+          // V11: Si le joueur n'est pas dans gridElements, rafraîchir la grille
+          if (!gridElements.has(playerId)) {
+            log('New participant track started, refreshing grid:', playerId);
+            refreshParticipants();
+          } else {
+            // Mode grille - attacher à l'élément de grille existant
+            attachGridVideo(playerId);
+          }
         } else {
           // Mode classique
           if (playerId === currentFocusId) {

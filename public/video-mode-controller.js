@@ -35,7 +35,9 @@
       'DEBATE', 'VOTING', 'DAY_DEBATE', 'DAY_VOTE', 'DISCUSSION', 'GAME_OVER',
       // Phases spécifiques Saboteur
       'ROLE_REVEAL', 'CAPTAIN_CANDIDACY', 'CAPTAIN_VOTE', 'DAY', 'DAY_DISCUSSION',
-      'EJECTION_REVEAL', 'FINAL_VOTE'
+      'EJECTION_REVEAL', 'FINAL_VOTE',
+      // V11: Phases de résultat et réveil (anciennement inline)
+      'NIGHT_RESULTS', 'DAY_WAKE', 'DAY_RESULTS', 'CAPTAIN_RESULT', 'VOTE_RESULT'
     ],
     
     // Phases de nuit (PiP possible)
