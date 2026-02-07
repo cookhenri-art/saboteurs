@@ -677,10 +677,14 @@
     const participants = window.videoModeCtrl.getParticipants();
     const currentFocus = window.videoModeCtrl.getFocusedPlayerId();
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
+    // V5.0: Détecter le mode
     const isSplitMode = container && container.classList.contains('mode-split');
+    const isFullMode = container && container.classList.contains('mode-full');
     
-    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID' : 'FOCUS');
+    // V5.1: Mettre à jour la classe players-N pour la grille CSS
+    updatePlayersCountClass(participants.length);
+    
+    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID' : (isFullMode ? 'MAX-GRID' : 'LEGACY'));
     
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
@@ -688,26 +692,33 @@
     
     // Create thumbnail for each participant
     participants.forEach(p => {
-      // GRILLE 2x2: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
-      if (!isSplitMode && p.playerId === currentFocus) return; // Skip focused player in thumbs (mode MAX seulement)
+      // V5.0: En mode grille (SPLIT ou MAX), inclure TOUS les joueurs
+      // Plus de skip du focused player car on n'a plus de zone focus séparée
       
       const thumb = createThumbnail(p);
       thumbsSidebar.appendChild(thumb);
       thumbElements.set(p.playerId, thumb);
     });
     
-    // Set focus (seulement si pas en mode SPLIT car pas de zone focus visible)
-    if (!isSplitMode) {
-      if (currentFocus) {
-        setFocus(currentFocus, false);
-      } else if (participants.length > 0) {
-        // Auto-focus first participant
-        setFocus(participants[0].playerId, false);
-      }
-    }
+    // V5.0: Pas de setFocus en mode grille - tous égaux
+    // Le speaker est juste mis en évidence avec la classe .is-speaking
     
     // Attach video tracks
     attachVideoTracks();
+  }
+  
+  // V5.1: Met à jour la classe players-N sur le container pour adapter la grille CSS
+  function updatePlayersCountClass(count) {
+    if (!container) return;
+    
+    // Retirer toutes les anciennes classes players-N
+    for (let i = 1; i <= 15; i++) {
+      container.classList.remove('players-' + i);
+    }
+    
+    // Ajouter la nouvelle classe
+    container.classList.add('players-' + count);
+    log('Updated players count class: players-' + count);
   }
 
   function createThumbnail(participant) {
