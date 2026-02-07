@@ -321,44 +321,16 @@ function updateVideoPermissions(state) {
   const permissions = state.videoPermissions;
   if (!permissions) return;
 
-  console.log('[Video] V11 Updating permissions for phase:', state.phase);
+  console.log('[Video] V11 ULTRA-SIMPLE: Phase', state.phase, '- Audio géré uniquement par phases privées');
   
-  const registry = window.VideoTracksRegistry;
-  const phase = state.phase;
+  // V11 ULTRA-SIMPLE: NE RIEN FORCER sur le micro
+  // Seule exception : phases privées gérées par video-tracks.js (forceLocalMute)
+  // L'utilisateur contrôle son micro comme il veut le reste du temps
   
-  // V11: Phases où on FORCE le mute (silence obligatoire)
-  const FORCE_MUTE_PHASES = ['DAY_VOTE', 'FINAL_VOTE'];
-  const shouldForceMute = FORCE_MUTE_PHASES.includes(phase);
-  
-  // V11: Phases où on FORCE le unmute (discussion)
-  const FORCE_UNMUTE_PHASES = ['DAY_WAKE', 'DAY_RESULTS', 'VOTE_RESULT', 'GAME_OVER', 'LOBBY'];
-  const shouldForceUnmute = FORCE_UNMUTE_PHASES.includes(phase);
-  
-  // V11: Ne forcer qu'UNE SEULE FOIS au changement de phase
-  const isNewPhase = (phase !== lastForceUnmutePhase && phase !== lastForceMutePhase);
-  
-  if (shouldForceMute && isNewPhase) {
-    // COUPER le micro pendant le vote
-    console.log('[Video] 🔇 Phase', phase, '- Forcing MUTE for vote');
-    lastForceMutePhase = phase;
-    lastForceUnmutePhase = null;
-    forceMuteForVote(phase, registry);
-  } else if (shouldForceUnmute && isNewPhase) {
-    // RÉACTIVER le micro pour discussion
-    console.log('[Video] 🔊 Phase', phase, '- Forcing UNMUTE for discussion');
-    lastForceUnmutePhase = phase;
-    lastForceMutePhase = null;
-    forceUnmuteWithNotification(phase, registry);
-  } else {
-    // V11: Laisser comme l'utilisateur l'a mis - ne rien faire
-    console.log('[Video] ⏭️ Phase', phase, '- Respecting user choice');
-  }
-  
-  // Appliquer les permissions de base
+  // Appliquer les permissions de base (vidéo + deafen seulement)
   window.dailyVideo.updatePermissions(permissions);
   
-  // D4 v5.5: Rafraîchir le filtrage des tracks selon les nouvelles permissions
-  // PERF FIX V9: Throttle pour éviter les appels répétés
+  // Rafraîchir le filtrage des tracks selon les nouvelles permissions
   if (window.VideoTracksRefresh) {
     const now = Date.now();
     if (!window._lastTracksRefreshTime || (now - window._lastTracksRefreshTime) > 300) {

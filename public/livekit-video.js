@@ -718,8 +718,7 @@ class LiveKitVideoManager {
       reason: permissions.reason || ""
     };
 
-    // Reset overrides utilisateur au changement de phase (vidéo seulement)
-    // V11: L'audio est géré séparément via VideoTracksRegistry
+    // V11 ULTRA-SIMPLE: Ne pas reset userPref.audio - l'utilisateur contrôle son micro
     if (phaseChanged) {
       this.userPref = { video: null, audio: this.userPref.audio };
     }
@@ -753,7 +752,7 @@ class LiveKitVideoManager {
       await this.deafenRemotes(false);
     }
 
-    // Réactiver vidéo si autorisé
+    // V11 ULTRA-SIMPLE: Réactiver UNIQUEMENT la VIDÉO si autorisée
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try {
@@ -762,16 +761,9 @@ class LiveKitVideoManager {
       } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
     }
     
-    // V11: Réactiver audio si autorisé ET si l'utilisateur n'a pas manuellement coupé
-    if (this.allowed.audio) {
-      // Vérifier via VideoTracksRegistry si l'utilisateur a manuellement coupé
-      const userMutedAudio = window.VideoTracksRegistry?.getUserMutedAudio?.() || false;
-      const desiredAudio = userMutedAudio ? false : ((this.userPref.audio !== null) ? this.userPref.audio : true);
-      try {
-        await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
-        this._localAudioEnabled = desiredAudio;
-      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
-    }
+    // V11 ULTRA-SIMPLE: NE JAMAIS réactiver l'audio automatiquement
+    // L'utilisateur contrôle son micro manuellement
+    // Seule exception : phases privées gérées par video-tracks.js
 
     // Message status
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");

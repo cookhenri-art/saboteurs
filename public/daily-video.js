@@ -1137,8 +1137,7 @@ background: rgba(10, 14, 39, 0.95);
       reason: permissions.reason || ""
     };
 
-    // Si la phase change, on remet les overrides utilisateur à zéro (vidéo seulement)
-    // V11: L'audio est géré séparément via VideoTracksRegistry
+    // V11 ULTRA-SIMPLE: Ne pas reset userPref.audio - l'utilisateur contrôle son micro
     if (phaseChanged) {
       this.userPref = { video: null, audio: this.userPref.audio };
     }
@@ -1162,19 +1161,15 @@ background: rgba(10, 14, 39, 0.95);
       await this.deafenRemotes(false);
     }
 
-    // Réactiver vidéo si autorisé
+    // V11 ULTRA-SIMPLE: Réactiver UNIQUEMENT la VIDÉO si autorisée
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try { await this.callFrame.setLocalVideo(desiredVideo); } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
     }
     
-    // V11: Réactiver audio si autorisé ET si l'utilisateur n'a pas manuellement coupé
-    if (this.allowed.audio) {
-      // Vérifier via VideoTracksRegistry si l'utilisateur a manuellement coupé
-      const userMutedAudio = window.VideoTracksRegistry?.getUserMutedAudio?.() || false;
-      const desiredAudio = userMutedAudio ? false : ((this.userPref.audio !== null) ? this.userPref.audio : true);
-      try { await this.callFrame.setLocalAudio(desiredAudio); } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
-    }
+    // V11 ULTRA-SIMPLE: NE JAMAIS réactiver l'audio automatiquement
+    // L'utilisateur contrôle son micro manuellement
+    // Seule exception : phases privées gérées par video-tracks.js
 
     // Message de statut (optionnel)
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");
