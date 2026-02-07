@@ -1,7 +1,7 @@
 /**
- * VIDEO BRIEFING CSS - V3 GRILLE FIX
- * ===================================
- * CSS ultra-spécifique pour éviter les conflits et la miniaturisation
+ * VIDEO BRIEFING CSS - V4 STABLE
+ * ==============================
+ * CSS ultra-agressif pour éviter la miniaturisation
  */
 
 /* ============================================
@@ -63,15 +63,17 @@
 }
 
 /* ============================================
-   MODE SPLIT - RÈGLES PRINCIPALES
+   V4: MODE SPLIT - RÈGLES ULTRA-AGRESSIVES
    ============================================ */
 
-.video-briefing-container.mode-split {
+/* Container en mode SPLIT */
+#videoBriefingContainer.video-briefing-container.mode-split {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: auto !important;
+  width: 100% !important;
   height: 50vh !important;
   min-height: 280px !important;
   max-height: 450px !important;
@@ -84,51 +86,61 @@
   
   border-bottom: 3px solid var(--briefing-border) !important;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5) !important;
+  
+  box-sizing: border-box !important;
 }
 
-/* Cacher le focus wrapper en mode SPLIT */
-.video-briefing-container.mode-split .video-focus-wrapper {
+/* Cacher le focus en mode SPLIT */
+#videoBriefingContainer.mode-split .video-focus-wrapper {
   display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Content en mode SPLIT */
-.video-briefing-container.mode-split .video-briefing-content {
+#videoBriefingContainer.mode-split .video-briefing-content {
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
   min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* Sidebar devient grille en mode SPLIT */
-.video-briefing-container.mode-split .video-thumbs-sidebar {
+/* V4: GRILLE 2x2 - Sidebar */
+#videoBriefingContainer.mode-split .video-thumbs-sidebar,
+#videoBriefingContainer.mode-split #videoThumbsSidebar {
   width: 100% !important;
   height: 100% !important;
   flex: 1 !important;
   min-height: 0 !important;
   
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
-  grid-auto-rows: 1fr !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: 1fr 1fr !important;
   gap: 10px !important;
   
   max-height: none !important;
+  max-width: none !important;
   overflow: visible !important;
   padding: 0 !important;
+  margin: 0 !important;
   
-  align-content: center !important;
-  justify-content: center !important;
+  box-sizing: border-box !important;
 }
 
-/* Thumbs en mode SPLIT - remplissent les cellules */
-.video-briefing-container.mode-split .video-thumb {
+/* V4: THUMBS - Remplissent les cellules de la grille */
+#videoBriefingContainer.mode-split .video-thumbs-sidebar .video-thumb,
+#videoBriefingContainer.mode-split #videoThumbsSidebar .video-thumb,
+#videoBriefingContainer.mode-split .video-thumb {
   width: 100% !important;
   height: 100% !important;
-  min-width: 120px !important;
-  min-height: 90px !important;
-  max-width: 300px !important;
-  max-height: 225px !important;
-  
-  aspect-ratio: 4/3 !important;
+  min-width: 100px !important;
+  min-height: 75px !important;
+  max-width: none !important;
+  max-height: none !important;
   
   position: relative !important;
   display: block !important;
@@ -138,36 +150,64 @@
   border-radius: 12px !important;
   overflow: hidden !important;
   
-  margin: 0 auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  
+  box-sizing: border-box !important;
+  
+  /* Forcer le contexte de positionnement */
+  transform: translateZ(0);
 }
 
-/* Vidéo dans les thumbs en mode SPLIT */
-.video-briefing-container.mode-split .video-thumb video {
+/* V4: VIDÉO dans les thumbs - FORCER plein écran */
+#videoBriefingContainer.mode-split .video-thumbs-sidebar .video-thumb video,
+#videoBriefingContainer.mode-split #videoThumbsSidebar .video-thumb video,
+#videoBriefingContainer.mode-split .video-thumb video {
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  
   object-fit: cover !important;
   display: block !important;
+  
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  
+  box-sizing: border-box !important;
+  
+  /* Reset tout style inline possible */
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
-/* Nom du joueur en mode SPLIT */
-.video-briefing-container.mode-split .video-thumb .thumb-name {
+/* V4: Nom du joueur */
+#videoBriefingContainer.mode-split .video-thumb .thumb-name {
   position: absolute !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
+  width: 100% !important;
   padding: 8px 10px !important;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.85)) !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
   color: #fff !important;
   z-index: 5 !important;
+  box-sizing: border-box !important;
 }
 
-/* Speaker actif en mode SPLIT */
-.video-briefing-container.mode-split .video-thumb.is-speaking {
+/* V4: Speaker actif */
+#videoBriefingContainer.mode-split .video-thumb.is-speaking {
   border-color: var(--speaker-ring) !important;
   box-shadow: 
     0 0 0 3px var(--speaker-pulse),
@@ -175,45 +215,37 @@
   z-index: 10 !important;
 }
 
-/* Empty state en mode SPLIT */
-.video-briefing-container.mode-split .video-thumb.empty {
+/* V4: Empty state */
+#videoBriefingContainer.mode-split .video-thumb.empty {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
-.video-briefing-container.mode-split .video-thumb.empty::after {
+#videoBriefingContainer.mode-split .video-thumb.empty::after {
   content: '📹' !important;
   font-size: 2rem !important;
   opacity: 0.3 !important;
 }
 
 /* ============================================
-   MODE SPLIT - RESPONSIVE
+   V4: RESPONSIVE - MODE SPLIT
    ============================================ */
 
 /* Tablette */
 @media (max-width: 1024px) {
-  .video-briefing-container.mode-split {
+  #videoBriefingContainer.video-briefing-container.mode-split {
     height: 45vh !important;
     min-height: 250px !important;
     max-height: 400px !important;
     padding-top: 50px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumbs-sidebar {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+  #videoBriefingContainer.mode-split .video-thumbs-sidebar {
     gap: 8px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumb {
-    min-width: 100px !important;
-    min-height: 75px !important;
-    max-width: 250px !important;
-    max-height: 187px !important;
-  }
-  
-  .video-briefing-container.mode-split .video-thumb .thumb-name {
+  #videoBriefingContainer.mode-split .video-thumb .thumb-name {
     font-size: 0.75rem !important;
     padding: 6px 8px !important;
   }
@@ -221,7 +253,7 @@
 
 /* Mobile */
 @media (max-width: 768px) {
-  .video-briefing-container.mode-split {
+  #videoBriefingContainer.video-briefing-container.mode-split {
     height: 40vh !important;
     min-height: 220px !important;
     max-height: 350px !important;
@@ -229,21 +261,15 @@
     padding-top: 45px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumbs-sidebar {
-    grid-template-columns: repeat(2, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
+  #videoBriefingContainer.mode-split .video-thumbs-sidebar {
     gap: 6px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumb {
-    min-width: 80px !important;
-    min-height: 60px !important;
-    max-width: none !important;
-    max-height: none !important;
+  #videoBriefingContainer.mode-split .video-thumb {
     border-radius: 8px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumb .thumb-name {
+  #videoBriefingContainer.mode-split .video-thumb .thumb-name {
     font-size: 0.7rem !important;
     padding: 4px 6px !important;
   }
@@ -251,7 +277,7 @@
 
 /* Très petit écran */
 @media (max-width: 480px) {
-  .video-briefing-container.mode-split {
+  #videoBriefingContainer.video-briefing-container.mode-split {
     height: 38vh !important;
     min-height: 200px !important;
     max-height: 300px !important;
@@ -259,16 +285,16 @@
     padding-top: 42px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumbs-sidebar {
+  #videoBriefingContainer.mode-split .video-thumbs-sidebar {
     gap: 4px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumb {
+  #videoBriefingContainer.mode-split .video-thumb {
     border-radius: 6px !important;
     border-width: 1px !important;
   }
   
-  .video-briefing-container.mode-split .video-thumb .thumb-name {
+  #videoBriefingContainer.mode-split .video-thumb .thumb-name {
     font-size: 0.6rem !important;
     padding: 3px 5px !important;
   }
@@ -328,20 +354,14 @@
   gap: 8px;
 }
 
-/* Header mode SPLIT */
-.mode-split .video-briefing-header {
+#videoBriefingContainer.mode-split .video-briefing-header {
   height: 50px !important;
   padding: 0 12px !important;
 }
 
-.mode-split .video-briefing-title .text {
+#videoBriefingContainer.mode-split .video-briefing-title .text {
   font-size: 0.85rem !important;
   letter-spacing: 1px !important;
-}
-
-.mode-split .video-briefing-title .phase-badge {
-  font-size: 0.65rem !important;
-  padding: 3px 8px !important;
 }
 
 /* ============================================
@@ -387,17 +407,13 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  background: var(--video-bg-main), var(--video-bg-fallback);
-  background-size: cover;
-  background-position: center;
 }
 
 .video-focus-main.is-speaking {
   border-color: var(--speaker-ring);
   box-shadow: 
     0 0 0 4px var(--speaker-pulse),
-    0 0 40px var(--speaker-pulse),
-    inset 0 0 50px rgba(0, 0, 0, 0.3);
+    0 0 40px var(--speaker-pulse);
 }
 
 .video-focus-main.empty {
@@ -419,7 +435,6 @@
   right: 0;
   padding: 15px 20px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
-  
   display: flex;
   align-items: center;
   gap: 12px;
@@ -446,7 +461,6 @@
   50% { opacity: 0.8; transform: scale(1.05); }
 }
 
-/* Focus animation */
 .video-focus-main.focus-changing {
   animation: focus-change 0.4s ease;
 }
@@ -458,17 +472,15 @@
 }
 
 /* ============================================
-   THUMBS SIDEBAR (MODE MAX/FULL)
+   THUMBS SIDEBAR (MODE MAX/FULL - BASE)
    ============================================ */
 
 .video-thumbs-sidebar {
   width: 140px;
   flex-shrink: 0;
-  
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
   max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -489,7 +501,7 @@
 }
 
 /* ============================================
-   THUMBNAIL (MODE MAX/FULL - BASE)
+   THUMBNAIL (MODE MAX - BASE)
    ============================================ */
 
 .video-thumb {
@@ -505,20 +517,12 @@
   cursor: pointer;
   flex-shrink: 0;
   
-  transition: 
-    border-color var(--transition-smooth),
-    transform var(--transition-smooth),
-    box-shadow var(--transition-smooth);
+  transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .video-thumb:hover {
   border-color: var(--thumb-border-hover);
-  transform: scale(1.05);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-}
-
-.video-thumb:active {
-  transform: scale(0.98);
 }
 
 .video-thumb video {
@@ -526,9 +530,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  background: var(--video-bg-main), var(--video-bg-fallback);
-  background-size: cover;
-  background-position: center;
 }
 
 .video-thumb .thumb-name {
@@ -538,7 +539,6 @@
   right: 0;
   padding: 6px 8px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
-  
   font-size: 0.7rem;
   font-weight: 600;
   color: #fff;
@@ -562,9 +562,7 @@
 
 .video-thumb.is-speaking {
   border-color: var(--speaker-ring);
-  box-shadow: 
-    0 0 0 2px var(--speaker-pulse),
-    0 0 15px var(--speaker-pulse);
+  box-shadow: 0 0 0 2px var(--speaker-pulse), 0 0 15px var(--speaker-pulse);
 }
 
 .video-thumb.is-focused {
@@ -588,7 +586,7 @@
 }
 
 /* ============================================
-   MODE FULL (PLEIN ÉCRAN)
+   MODE FULL
    ============================================ */
 
 .video-briefing-container.mode-full {
@@ -643,7 +641,7 @@
 }
 
 /* ============================================
-   BODY CLASS FOR GAME CONTENT
+   BODY CLASS
    ============================================ */
 
 body.video-split-active #gameScreen {
@@ -737,7 +735,7 @@ body.video-split-active .control-panel {
 }
 
 /* ============================================
-   FLOATING VIDEO ACTIONS (PC)
+   FLOATING ACTIONS
    ============================================ */
 
 #floatingVideoActions {
@@ -800,7 +798,7 @@ body.video-split-active .control-panel {
 }
 
 /* ============================================
-   INLINE MODE SPEAKER HIGHLIGHTS
+   INLINE SPEAKER HIGHLIGHTS
    ============================================ */
 
 .player-item.is-speaking {
