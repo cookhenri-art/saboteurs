@@ -2053,9 +2053,10 @@ function renderEnd() {
 
     // V25: Nouvelle structure - Éjections en premier
     $("endSummary").innerHTML += `
-      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button class="btn btn-secondary" id="tabSummaryBtn">${eg('tabSummary', 'Résumé')}</button>
         <button class="btn btn-secondary" id="tabDetailedBtn">${eg('tabDetailed', 'Stats détaillées')}</button>
+        <a href="/player-stats.html?tab=detailed" target="_blank" class="btn btn-secondary" style="text-decoration:none;">📊 ${eg('fullStats', 'Mes stats complètes')}</a>
       </div>
 
       <div id="tabSummary" style="margin-top:12px;">

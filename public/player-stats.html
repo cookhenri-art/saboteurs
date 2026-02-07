@@ -661,6 +661,171 @@
         justify-content: center;
       }
     }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       V11: ONGLET DÉTAILLÉ - Styles pour camemberts et stats
+       ═══════════════════════════════════════════════════════════════════ */
+    
+    .detailed-section {
+      margin-bottom: 32px;
+    }
+    
+    .detailed-section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--neon-main);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .chart-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 220px;
+      margin-bottom: 12px;
+    }
+    
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 16px;
+      font-size: 0.8rem;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    
+    .stat-card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--neon-main);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+    
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    .stat-value {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    .stat-value.good {
+      color: #4ade80;
+    }
+    
+    .stat-value.bad {
+      color: #f87171;
+    }
+    
+    .stat-bar-container {
+      width: 100%;
+      height: 8px;
+      background: var(--border-soft);
+      border-radius: 4px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    
+    .stat-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .stat-bar.good {
+      background: linear-gradient(90deg, #4ade80, #22c55e);
+    }
+    
+    .stat-bar.bad {
+      background: linear-gradient(90deg, #f87171, #ef4444);
+    }
+    
+    .stat-bar.neutral {
+      background: linear-gradient(90deg, var(--neon-main), var(--neon-secondary));
+    }
+    
+    .no-data-message {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px;
+      font-style: italic;
+    }
+    
+    @media (max-width: 600px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .chart-container {
+        height: 180px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -681,6 +846,7 @@
     <!-- Tabs -->
     <div class="stats-tabs">
       <button class="stats-tab active" data-view="profile" onclick="switchTab('profile')" data-i18n-site="stats.tab_profile">👤 Mon Profil</button>
+      <button class="stats-tab" data-view="detailed" onclick="switchTab('detailed')" data-i18n-site="stats.tab_detailed">📊 Détaillé</button>
       <button class="stats-tab" data-view="leaderboards" onclick="switchTab('leaderboards')" data-i18n-site="stats.tab_leaderboards">📈 Classements</button>
       <button class="stats-tab" data-view="archives" onclick="switchTab('archives')" data-i18n-site="stats.tab_archives">📅 Archives</button>
     </div>
@@ -776,6 +942,13 @@
     <div id="viewArchives" class="view">
       <div id="archivesContent">
         <div class="loading">Chargement des archives...</div>
+      </div>
+    </div>
+
+    <!-- View: Detailed (V11) -->
+    <div id="viewDetailed" class="view">
+      <div id="detailedContent">
+        <div class="loading">Chargement des statistiques détaillées...</div>
       </div>
     </div>
   </div>
@@ -902,6 +1075,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Chart.js pour les camemberts (V11) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <script>
     // ═══════════════════════════════════════════════════════════════════
@@ -1658,6 +1834,323 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════
+    // V11: ONGLET DÉTAILLÉ - Camemberts et stats détaillées
+    // ═══════════════════════════════════════════════════════════════════
+    
+    let detailedCharts = { wins: null, losses: null };
+    
+    function renderDetailed() {
+      const container = document.getElementById('detailedContent');
+      if (!meData || !meData.stats) {
+        container.innerHTML = '<div class="no-data-message">Connecte-toi pour voir tes statistiques détaillées</div>';
+        return;
+      }
+      
+      const stats = meData.stats;
+      const gamesByRole = stats.gamesByRole || {};
+      const winsByRole = stats.winsByRole || {};
+      
+      // Calculer les défaites par rôle
+      const lossesByRole = {};
+      for (const [role, games] of Object.entries(gamesByRole)) {
+        const wins = winsByRole[role] || 0;
+        lossesByRole[role] = games - wins;
+      }
+      
+      // Couleurs pour les rôles
+      const roleColors = {
+        astronaut: '#4ade80', crewmate: '#4ade80', villageois: '#4ade80', etudiant: '#4ade80', mortel: '#4ade80',
+        doctor: '#60a5fa', docteur: '#60a5fa', sorciere: '#60a5fa', guerisseur: '#60a5fa', apollon: '#60a5fa',
+        security: '#f59e0b', chef_securite: '#f59e0b', chasseur: '#f59e0b', ares: '#f59e0b',
+        radar: '#a78bfa', officier_radar: '#a78bfa', voyante: '#a78bfa', oracle: '#a78bfa', athena: '#a78bfa',
+        ai_agent: '#ec4899', liaison_ia: '#ec4899', cupidon: '#ec4899', aphrodite: '#ec4899',
+        chameleon: '#14b8a6', cameleon: '#14b8a6', salvateur: '#14b8a6', hermes: '#14b8a6',
+        engineer: '#6366f1', ingenieur: '#6366f1', ancien: '#6366f1', hephaïstos: '#6366f1',
+        saboteur: '#ef4444', loup_garou: '#ef4444', imposteur: '#ef4444', sorcier_noir: '#ef4444', titan: '#ef4444'
+      };
+      
+      // Fonction pour obtenir le nom traduit d'un rôle
+      const getRoleName = (roleKey) => {
+        const roleNames = {
+          astronaut: 'Astronaute', crewmate: 'Équipier', villageois: 'Villageois', etudiant: 'Étudiant', mortel: 'Mortel',
+          doctor: 'Docteur', sorciere: 'Sorcière', guerisseur: 'Guérisseur', apollon: 'Apollon',
+          security: 'Chef Sécurité', chasseur: 'Chasseur', ares: 'Arès',
+          radar: 'Officier Radar', voyante: 'Voyante', oracle: 'Oracle', athena: 'Athéna',
+          ai_agent: 'Agent IA', cupidon: 'Cupidon', aphrodite: 'Aphrodite',
+          chameleon: 'Caméléon', salvateur: 'Salvateur', hermes: 'Hermès',
+          engineer: 'Ingénieur', ancien: 'Ancien', hephaïstos: 'Héphaïstos',
+          saboteur: 'Saboteur', loup_garou: 'Loup-Garou', imposteur: 'Imposteur', sorcier_noir: 'Sorcier Noir', titan: 'Titan'
+        };
+        return roleNames[roleKey] || roleKey;
+      };
+      
+      // Préparer les données pour les camemberts
+      const winsData = Object.entries(winsByRole).filter(([_, v]) => v > 0);
+      const lossesData = Object.entries(lossesByRole).filter(([_, v]) => v > 0);
+      
+      // Stats détaillées
+      const correctVotes = stats.correctSaboteurVotes || 0;
+      const wrongVotes = stats.wrongSaboteurVotes || 0;
+      const totalVotes = stats.totalVotes || 0;
+      
+      const revengeKillsSab = stats.revengeKillsOnSaboteurs || 0;
+      const revengeKillsInn = stats.revengeKillsOnInnocents || 0;
+      const totalRevengeShots = stats.securityRevengeShots || 0;
+      
+      const doctorKillsSab = stats.doctorKillsOnSaboteurs || 0;
+      const doctorKillsInn = stats.doctorKillsOnInnocents || 0;
+      const totalDoctorKills = stats.doctorKills || 0;
+      const doctorSaves = stats.doctorSaves || 0;
+      const doctorNotSavedOpp = stats.doctorNotSavedOpportunities || 0;
+      const doctorMissed = stats.doctorMissedSaves || 0;
+      
+      const mayorOk = stats.mayorTiebreakerOk || 0;
+      const mayorKo = stats.mayorTiebreakerKo || 0;
+      const mayorTotal = stats.mayorTiebreakerTotal || 0;
+      const captainTransferTotal = stats.captainTransferTotal || 0;
+      const captainTransferToAst = stats.captainTransferToAstronauts || 0;
+      const captainTransferToSab = stats.captainTransferToSaboteurs || 0;
+      
+      // Helper pour calculer les pourcentages
+      const pct = (num, total) => total > 0 ? Math.round((num / total) * 100) : 0;
+      
+      // Générer le HTML
+      container.innerHTML = `
+        <!-- Camemberts Victoires/Défaites par rôle -->
+        <div class="detailed-section">
+          <div class="detailed-section-title">📊 Répartition par rôle</div>
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3>🏆 Victoires par rôle</h3>
+              <div class="chart-container">
+                <canvas id="winsChart"></canvas>
+              </div>
+              <div class="chart-legend" id="winsLegend"></div>
+            </div>
+            <div class="chart-card">
+              <h3>💀 Défaites par rôle</h3>
+              <div class="chart-container">
+                <canvas id="lossesChart"></canvas>
+              </div>
+              <div class="chart-legend" id="lossesLegend"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stats détaillées -->
+        <div class="detailed-section">
+          <div class="detailed-section-title">🎯 Statistiques de combat</div>
+          <div class="stats-grid">
+            
+            <!-- Combat VS Saboteurs -->
+            <div class="stat-card">
+              <div class="stat-card-title">🎯 Combat VS Saboteurs</div>
+              <div class="stat-row">
+                <span class="stat-label">Votes corrects</span>
+                <span class="stat-value good">${correctVotes}/${totalVotes} (${pct(correctVotes, totalVotes)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar good" style="width: ${pct(correctVotes, totalVotes)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Votes faux</span>
+                <span class="stat-value bad">${wrongVotes}/${totalVotes} (${pct(wrongVotes, totalVotes)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar bad" style="width: ${pct(wrongVotes, totalVotes)}%"></div>
+              </div>
+            </div>
+            
+            <!-- Chef de Sécurité -->
+            <div class="stat-card">
+              <div class="stat-card-title">🔫 Chef de Sécurité</div>
+              <div class="stat-row">
+                <span class="stat-label">Saboteurs éliminés</span>
+                <span class="stat-value good">${revengeKillsSab}/${totalRevengeShots} (${pct(revengeKillsSab, totalRevengeShots)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar good" style="width: ${pct(revengeKillsSab, totalRevengeShots)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Astronautes éliminés (err)</span>
+                <span class="stat-value bad">${revengeKillsInn}/${totalRevengeShots} (${pct(revengeKillsInn, totalRevengeShots)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar bad" style="width: ${pct(revengeKillsInn, totalRevengeShots)}%"></div>
+              </div>
+            </div>
+            
+            <!-- Docteur -->
+            <div class="stat-card">
+              <div class="stat-card-title">💊 Docteur / Sorcière</div>
+              <div class="stat-row">
+                <span class="stat-label">Potion fatale OK (saboteur)</span>
+                <span class="stat-value good">${doctorKillsSab}/${totalDoctorKills} (${pct(doctorKillsSab, totalDoctorKills)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar good" style="width: ${pct(doctorKillsSab, totalDoctorKills)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Potion fatale err (astronaute)</span>
+                <span class="stat-value bad">${doctorKillsInn}/${totalDoctorKills} (${pct(doctorKillsInn, totalDoctorKills)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar bad" style="width: ${pct(doctorKillsInn, totalDoctorKills)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Potions de vie utilisées</span>
+                <span class="stat-value">${doctorSaves}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Non sauvés (opportunités manquées)</span>
+                <span class="stat-value">${doctorMissed}/${doctorNotSavedOpp}</span>
+              </div>
+            </div>
+            
+            <!-- Actions du Capitaine -->
+            <div class="stat-card">
+              <div class="stat-card-title">👑 Actions du Capitaine</div>
+              <div class="stat-row">
+                <span class="stat-label">Départage OK (tué saboteur)</span>
+                <span class="stat-value good">${mayorOk}/${mayorTotal} (${pct(mayorOk, mayorTotal)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar good" style="width: ${pct(mayorOk, mayorTotal)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Départage KO (tué astronaute)</span>
+                <span class="stat-value bad">${mayorKo}/${mayorTotal} (${pct(mayorKo, mayorTotal)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar bad" style="width: ${pct(mayorKo, mayorTotal)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Transfert OK (à astronaute)</span>
+                <span class="stat-value good">${captainTransferToAst}/${captainTransferTotal} (${pct(captainTransferToAst, captainTransferTotal)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar good" style="width: ${pct(captainTransferToAst, captainTransferTotal)}%"></div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Transfert KO (à saboteur)</span>
+                <span class="stat-value bad">${captainTransferToSab}/${captainTransferTotal} (${pct(captainTransferToSab, captainTransferTotal)}%)</span>
+              </div>
+              <div class="stat-bar-container">
+                <div class="stat-bar bad" style="width: ${pct(captainTransferToSab, captainTransferTotal)}%"></div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Tableau des victoires par rôle -->
+        <div class="detailed-section">
+          <div class="detailed-section-title">📈 Détail par rôle</div>
+          <div class="stat-card">
+            <table style="width:100%; border-collapse:collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-soft);">
+                  <th style="text-align:left; padding:12px 8px; color:var(--text-muted);">Rôle</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Parties</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Victoires</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Défaites</th>
+                  <th style="text-align:center; padding:12px 8px; color:var(--text-muted);">Win Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${Object.entries(gamesByRole).map(([role, games]) => {
+                  const wins = winsByRole[role] || 0;
+                  const losses = games - wins;
+                  const wr = pct(wins, games);
+                  const color = roleColors[role] || '#888';
+                  return `
+                    <tr style="border-bottom: 1px solid var(--border-soft);">
+                      <td style="padding:10px 8px;">
+                        <span style="display:inline-block; width:10px; height:10px; border-radius:3px; background:${color}; margin-right:8px;"></span>
+                        ${getRoleName(role)}
+                      </td>
+                      <td style="text-align:center; padding:10px 8px;">${games}</td>
+                      <td style="text-align:center; padding:10px 8px; color:#4ade80;">${wins}</td>
+                      <td style="text-align:center; padding:10px 8px; color:#f87171;">${losses}</td>
+                      <td style="text-align:center; padding:10px 8px; font-weight:700;">${wr}%</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      // Créer les camemberts avec Chart.js
+      setTimeout(() => {
+        createPieChart('winsChart', 'winsLegend', winsData, roleColors, getRoleName);
+        createPieChart('lossesChart', 'lossesLegend', lossesData, roleColors, getRoleName);
+      }, 100);
+    }
+    
+    function createPieChart(canvasId, legendId, data, colors, getLabel) {
+      const canvas = document.getElementById(canvasId);
+      const legendContainer = document.getElementById(legendId);
+      
+      if (!canvas || data.length === 0) {
+        if (legendContainer) {
+          legendContainer.innerHTML = '<span style="color:var(--text-muted);">Aucune donnée</span>';
+        }
+        return;
+      }
+      
+      const labels = data.map(([role]) => getLabel(role));
+      const values = data.map(([_, v]) => v);
+      const bgColors = data.map(([role]) => colors[role] || '#888888');
+      
+      // Détruire le chart existant si présent
+      const chartKey = canvasId.includes('wins') ? 'wins' : 'losses';
+      if (detailedCharts[chartKey]) {
+        detailedCharts[chartKey].destroy();
+      }
+      
+      detailedCharts[chartKey] = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: bgColors,
+            borderColor: 'rgba(0,0,0,0.3)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                  const pct = Math.round((ctx.raw / total) * 100);
+                  return `${ctx.label}: ${ctx.raw} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Générer la légende personnalisée
+      legendContainer.innerHTML = data.map(([role, value]) => `
+        <div class="legend-item">
+          <span class="legend-color" style="background:${colors[role] || '#888'}"></span>
+          <span>${getLabel(role)}: ${value}</span>
+        </div>
+      `).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
     // NAVIGATION
     // ═══════════════════════════════════════════════════════════════════
 
@@ -1677,6 +2170,8 @@
         renderLeaderboards();
       } else if (viewId === 'archives') {
         renderArchives();
+      } else if (viewId === 'detailed') {
+        renderDetailed();
       }
       // V42: postgame supprimé, plus besoin de le gérer
     }
@@ -1764,6 +2259,15 @@
       applyTheme();
       maybeShowBackButton();
       refreshAll();
+
+      // V11: Ouvrir l'onglet spécifié dans l'URL (ex: ?tab=detailed)
+      const params = getUrlParams();
+      if (params.tab) {
+        const validTabs = ['profile', 'detailed', 'leaderboards', 'archives'];
+        if (validTabs.includes(params.tab)) {
+          setTimeout(() => switchTab(params.tab), 300);
+        }
+      }
 
       // Close modal on overlay click
       document.getElementById('lbModal').addEventListener('click', (e) => {
