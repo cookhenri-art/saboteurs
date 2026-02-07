@@ -53,7 +53,7 @@
           return new MediaStream([track._liveKitTrack.mediaStreamTrack]);
         }
       } catch (e) {
-        if (DEBUG) console.warn('[VideoTracks] LiveKit track attach error:', e);
+        console.warn('[VideoTracks] LiveKit track attach error:', e);
       }
     }
     
@@ -66,7 +66,7 @@
     try {
       return new MediaStream([track]);
     } catch (e) {
-      if (DEBUG) console.warn('[VideoTracks] Cannot create MediaStream from track:', e);
+      console.warn('[VideoTracks] Cannot create MediaStream from track:', e);
       return null;
     }
   }
@@ -389,13 +389,17 @@
       micBtn.onclick = () => toggleInlineMic(micBtn);
       
       // D6: Synchroniser l'état initial du bouton avec l'état réel du micro
-      (async () => {
+      // V11: Attendre que la connexion LiveKit soit établie
+      setTimeout(async () => {
         const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-        if (callObj) {
+        if (callObj && typeof callObj.localAudio === 'function') {
           try {
             const isAudioOn = await callObj.localAudio();
-            const isMuted = !isAudioOn;
-            if (isMuted) {
+            if (isAudioOn) {
+              micBtn.textContent = '🎤';
+              micBtn.style.background = 'rgba(0, 100, 100, 0.5)';
+              micBtn.title = 'Couper le micro';
+            } else {
               micBtn.textContent = '🔇';
               micBtn.style.background = 'rgba(180, 50, 50, 0.7)';
               micBtn.title = 'Activer le micro';
@@ -404,7 +408,7 @@
             log('Error syncing mic state:', e);
           }
         }
-      })();
+      }, 2000);
       
       // Bouton caméra
       const camBtn = document.createElement('button');
@@ -425,13 +429,17 @@
       camBtn.onclick = () => toggleInlineCam(camBtn);
       
       // D6: Synchroniser l'état initial du bouton caméra
-      (async () => {
+      // V11: Attendre que la connexion LiveKit soit établie
+      setTimeout(async () => {
         const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-        if (callObj) {
+        if (callObj && typeof callObj.localVideo === 'function') {
           try {
             const isVideoOn = await callObj.localVideo();
-            const isCamOff = !isVideoOn;
-            if (isCamOff) {
+            if (isVideoOn) {
+              camBtn.textContent = '📹';
+              camBtn.style.background = 'rgba(0, 100, 100, 0.5)';
+              camBtn.title = 'Couper la caméra';
+            } else {
               camBtn.textContent = '🚫';
               camBtn.style.background = 'rgba(180, 50, 50, 0.7)';
               camBtn.title = 'Activer la caméra';
@@ -440,7 +448,7 @@
             log('Error syncing cam state:', e);
           }
         }
-      })();
+      }, 2000);
       
       controlsDiv.appendChild(micBtn);
       controlsDiv.appendChild(camBtn);
@@ -482,62 +490,10 @@
     }
     
     // Chercher le slot existant dans le container
-    let slot = container.querySelector(`.player-video-slot[data-player-id="${CSS.escape(playerId)}"]`);
-    if (slot) return slot;
-    
-    // V11: Ne pas créer de nouveau slot inline si la visio briefing est active
-    const briefingActive = document.body.classList.contains('video-briefing-active') ||
-                           document.querySelector('.video-briefing-container.active');
-    
-    // Créer le slot
-    slot = document.createElement('div');
-    slot.className = 'player-video-slot game-slot';
-    slot.dataset.playerId = playerId;
-    
-    // V11: Cacher immédiatement si briefing actif
-    const displayStyle = briefingActive ? 'none' : 'block';
-    slot.style.cssText = `
-      width: 80px !important;
-      height: 60px !important;
-      min-width: 80px !important;
-      min-height: 60px !important;
-      background: rgba(0, 30, 60, 0.9) !important;
-      border: 2px solid rgba(0, 255, 255, 0.5) !important;
-      border-radius: 8px !important;
-      overflow: hidden !important;
-      position: relative !important;
-      display: ${displayStyle} !important;
-    `;
-    
-    // Ajouter le nom du joueur
-    const nameLabel = document.createElement('div');
-    nameLabel.className = 'slot-name';
-    nameLabel.style.cssText = `
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 2px 4px;
-      background: rgba(0, 0, 0, 0.7);
-      color: #fff;
-      font-size: 0.65rem;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      z-index: 1;
-    `;
-    
-    // Trouver le nom du joueur
-    const state = window.lastKnownState;
-    const player = state?.players?.find(p => p.playerId === playerId);
-    nameLabel.textContent = player?.name || playerId.slice(0, 6);
-    
-    slot.appendChild(nameLabel);
-    container.appendChild(slot);
-    
-    log("Created game slot for:", playerId, player?.name);
-    return slot;
+    // V11: NE PLUS CRÉER de slots vidéo inline - retourner null
+    // Les vidéos sont affichées uniquement dans le briefing (SPLIT/MAX)
+    // On garde juste les boutons mic/cam dans le container
+    return null;
   }
 
   function getPlayerRow(playerId) {
@@ -947,15 +903,9 @@
     
     // D4: Forcer les styles inline pour s'assurer de la visibilité
     // D6: Ajouter grayscale SEULEMENT si joueur mort ET pas en GAME_OVER
-    // V11: Ne pas appliquer 64px aux éléments du briefing container
     const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
     const borderColor = shouldGray ? '#666' : '#00ffff';
-    
-    // V11 FIX: Vérifier si le slot est dans le briefing (grille vidéo)
-    const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
-    if (!isInBriefing) {
-      slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
-    }
+    slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
     v.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;
     
     log("Video attached to slot for:", playerId.slice(0,8), "slot size:", rect.width + "x" + rect.height, isEliminated ? "(ELIMINATED)" : "", isGameOver ? "(GAME_OVER - no gray)" : "");
@@ -1429,12 +1379,8 @@
       const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
       const borderColor = shouldGray ? '#666' : '#00ffff';
       
-      // V11 FIX: Ne pas appliquer 64px aux éléments du briefing container
-      const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
-      if (!isInBriefing) {
-        // Mettre à jour le style du slot uniquement pour les slots du lobby
-        slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
-      }
+      // Mettre à jour le style du slot
+      slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
       
       // Mettre à jour le style de la vidéo
       const video = slot.querySelector('video');
@@ -2025,12 +1971,8 @@
         const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
         const borderColor = shouldGray ? '#666' : '#00ffff';
         
-        // V11 FIX: Ne pas appliquer 64px aux éléments du briefing container
-        const isInBriefing = slot.closest('#videoBriefingContainer') || slot.classList.contains('video-grid-item') || slot.classList.contains('video-thumb');
-        if (!isInBriefing) {
-          // Appliquer les styles au slot uniquement pour les slots du lobby
-          slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
-        }
+        // Appliquer les styles au slot
+        slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
         
         // Appliquer les styles à la vidéo
         video.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;

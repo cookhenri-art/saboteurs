@@ -49,13 +49,13 @@
   let exitBtn = null;
   let expandBtn = null; // Mobile expand button
   
-  // V11: Grid mode pour SPLIT et MAX
-  let gridContainer = null;
-  const gridElements = new Map(); // playerId -> gridItem element
-  
   // Track elements
   const thumbElements = new Map(); // playerId -> DOM element
   let focusVideoEl = null;
+  
+  // V11: Variables pour la grille
+  let gridContainer = null;
+  const gridElements = new Map(); // playerId -> grid item element
   
   // State
   let isInitialized = false;
@@ -225,7 +225,7 @@
     thumbsSidebar.id = 'videoThumbsSidebar';
     container.appendChild(thumbsSidebar);
     
-    // V11: Grid container pour mode SPLIT et MAX (grille de vidéos)
+    // V11: Grid container pour modes SPLIT/MAX
     gridContainer = document.createElement('div');
     gridContainer.className = 'video-grid-container';
     gridContainer.id = 'videoGridContainer';
@@ -415,20 +415,23 @@
     
     // Show/hide based on mode
     if (mode === 'ADVANCED_FOCUS' || mode === 'SPLIT') {
+      // V11: Rafraîchir les participants pour gérer les phases privées
+      refreshParticipants();
+      
       // ============================================
       // V3.21 COORDINATION: SCROLL FIX AVEC FLAG
       // ============================================
       
-      if (DEBUG) console.log('%c🎯 V3.21: MODE SPLIT ACTIVÉ - COORDINATION SCROLL', 
+      console.log('%c🎯 V3.21: MODE SPLIT ACTIVÉ - COORDINATION SCROLL', 
         'background: #00ff00; color: #000000; font-size: 16px; font-weight: bold; padding: 5px;');
       
       // ÉTAPE 1: ACTIVER LE FLAG pour bloquer client.js
       window.__briefingUIScrollLock = true;
-      if (DEBUG) console.log('[V3.21] 🔒 Flag de coordination activé - client.js est bloqué');
+      console.log('[V3.21] 🔒 Flag de coordination activé - client.js est bloqué');
       
       // ÉTAPE 2: Capturer position initiale
       const scrollStart = window.pageYOffset || document.documentElement.scrollTop;
-      if (DEBUG) console.log('[V3.21] 📍 Position de départ:', scrollStart);
+      console.log('[V3.21] 📍 Position de départ:', scrollStart);
       
       // ÉTAPE 3: Désactiver smooth scroll temporairement
       const originalScrollBehavior = document.documentElement.style.scrollBehavior;
@@ -456,16 +459,16 @@
         const current = window.pageYOffset || document.documentElement.scrollTop;
         if (current !== scrollStart) {
           window.scrollTo({ top: scrollStart, behavior: 'auto' });
-          if (DEBUG) console.log(`[V3.21] ✅ Scroll restauré (${reason}):`, scrollStart, 'was:', current);
+          console.log(`[V3.21] ✅ Scroll restauré (${reason}):`, scrollStart, 'was:', current);
           return true;
         }
         return false;
       };
       
       // ÉTAPE 6: show() avec surveillance
-      if (DEBUG) console.log('[V3.21] 🎬 Appel show()...');
+      console.log('[V3.21] 🎬 Appel show()...');
       show();
-      if (DEBUG) console.log('[V3.21] ✓ show() terminé');
+      console.log('[V3.21] ✓ show() terminé');
       
       updateExpandButton(false);
       
@@ -502,7 +505,7 @@
               
               // LIBÉRER LE FLAG
               window.__briefingUIScrollLock = false;
-              if (DEBUG) console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
+              console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
               
               // Arrêter le monitoring
               // V41 FIX: Utiliser la variable de module
@@ -512,13 +515,11 @@
               }
               
               const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
-              if (DEBUG) {
-                console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 
-                  'background: #0088ff; color: #ffffff; font-size: 14px; font-weight: bold; padding: 5px;');
-                console.log('[V3.21] Position finale:', scrollEnd);
-                console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
-                console.log('[V3.21] Changements détectés:', scrollChanges.length);
-              }
+              console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 
+                'background: #0088ff; color: #ffffff; font-size: 14px; font-weight: bold; padding: 5px;');
+              console.log('[V3.21] Position finale:', scrollEnd);
+              console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
+              console.log('[V3.21] Changements détectés:', scrollChanges.length);
               // V41 FIX: Ne plus afficher la table complète (spam)
               // console.table est disponible en mode debug si nécessaire
               
@@ -527,10 +528,10 @@
               document.body.style.scrollBehavior = originalScrollBehavior;
               
               if (scrollEnd === scrollStart) {
-                if (DEBUG) console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 
+                console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 
                   'background: #00ff00; color: #000000; font-size: 16px; font-weight: bold; padding: 5px;');
               } else {
-                if (DEBUG) console.error('%c❌ V3.21: ÉCHEC - SCROLL A BOUGÉ', 
+                console.error('%c❌ V3.21: ÉCHEC - SCROLL A BOUGÉ', 
                   'background: #ff0000; color: #ffffff; font-size: 16px; font-weight: bold; padding: 5px;');
               }
             }, 200);
@@ -543,11 +544,11 @@
       // V3.21 COORDINATION: SCROLL FIX POUR HIDE
       // ============================================
       
-      if (DEBUG) console.log('[V3.21] 🔽 MODE HIDE - Début fix scroll');
+      console.log('[V3.21] 🔽 MODE HIDE - Début fix scroll');
       
       // ACTIVER LE FLAG
       window.__briefingUIScrollLock = true;
-      if (DEBUG) console.log('[V3.21] 🔒 Flag activé pour HIDE');
+      console.log('[V3.21] 🔒 Flag activé pour HIDE');
       
       const scrollStart = window.pageYOffset || document.documentElement.scrollTop;
       
@@ -566,13 +567,13 @@
         const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
         if (scrollEnd !== scrollStart) {
           window.scrollTo(0, scrollStart);
-          if (DEBUG) console.log('[V3.21] ✅ Scroll restauré après hide:', scrollStart);
+          console.log('[V3.21] ✅ Scroll restauré après hide:', scrollStart);
         }
         
         // Libérer le flag après hide
         setTimeout(() => {
           window.__briefingUIScrollLock = false;
-          if (DEBUG) console.log('[V3.21] 🔓 Flag libéré après HIDE');
+          console.log('[V3.21] 🔓 Flag libéré après HIDE');
         }, 100);
       });
     }
@@ -622,15 +623,40 @@
   // VISIBILITY
   // ============================================
   
+  // V11: Variables pour le polling de phase privée
+  let phasePollingInterval = null;
+  let lastPrivatePhase = null;
+  
+  function startPhasePolling() {
+    if (phasePollingInterval) return;
+    
+    phasePollingInterval = setInterval(() => {
+      const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false };
+      const currentPhaseKey = privateStatus.isPrivate ? 
+        `${privateStatus.iAmInvolved}-${privateStatus.allowedPlayerIds?.join(',')}` : 'public';
+      
+      if (currentPhaseKey !== lastPrivatePhase) {
+        log('Phase privée changée:', currentPhaseKey);
+        lastPrivatePhase = currentPhaseKey;
+        refreshParticipants();
+      }
+    }, 2000);
+  }
+  
+  function stopPhasePolling() {
+    if (phasePollingInterval) {
+      clearInterval(phasePollingInterval);
+      phasePollingInterval = null;
+    }
+    lastPrivatePhase = null;
+  }
+  
   function show() {
     if (!container) init();
     
     container.classList.add('active');
     // CAPTAIN_RESULT FIX: Remettre display pour afficher le container
     container.style.display = '';
-    
-    // V11: Marquer le body pour cacher les vidéos inline
-    document.body.classList.add('video-briefing-active');
     
     // V40: Afficher les boutons flottants (PC)
     const floatingActions = document.getElementById('floatingVideoActions');
@@ -640,16 +666,8 @@
     refreshParticipants();
     syncControlStates(); // D4: Synchroniser l'état des boutons micro/caméra
     
-    // V11: Refresh différé pour s'assurer que toutes les vidéos sont attachées
-    setTimeout(() => {
-      refreshParticipants();
-      attachVideoTracks();
-    }, 500);
-    
-    // V11: Second refresh pour les vidéos qui tardent
-    setTimeout(() => {
-      attachVideoTracks();
-    }, 1500);
+    // V11: Démarrer le polling des phases privées
+    startPhasePolling();
     
     log('Briefing UI shown');
   }
@@ -660,15 +678,15 @@
     // CAPTAIN_RESULT FIX: Forcer display:none pour vraiment cacher le container
     container.style.display = 'none';
     
-    // V11: Retirer la classe pour réafficher les vidéos inline
-    document.body.classList.remove('video-briefing-active');
-    
     // V40: Cacher les boutons flottants (PC)
     const floatingActions = document.getElementById('floatingVideoActions');
     if (floatingActions) floatingActions.style.display = 'none';
     // V40b: Cacher le bouton X mobile
     const mobileCloseBtn = document.getElementById('mobileCloseBtn');
     if (mobileCloseBtn) mobileCloseBtn.style.display = 'none';
+    
+    // V11: Arrêter le polling des phases privées
+    stopPhasePolling();
     
     // Retirer la classe split du body
     document.body.classList.remove('video-split-active');
@@ -706,38 +724,64 @@
     
     const participants = window.videoModeCtrl.getParticipants();
     const currentFocus = window.videoModeCtrl.getFocusedPlayerId();
+    
+    log('Refreshing participants:', participants.length);
+    
+    // V11: Déterminer le mode actuel
     const isSplitMode = container && container.classList.contains('mode-split');
     const isMaxMode = container && container.classList.contains('mode-full');
     const useGrid = isSplitMode || isMaxMode;
     
-    log('Refreshing participants:', participants.length, 'useGrid:', useGrid, 'split:', isSplitMode, 'max:', isMaxMode);
-    
     if (useGrid) {
-      // V11: Mode grille - tous les participants dans gridContainer
+      // V11: Mode grille
       refreshGridParticipants(participants);
     } else {
-      // Mode classique focus + thumbs
+      // Mode classique avec focus + thumbnails
       refreshClassicParticipants(participants, currentFocus);
     }
-    
-    // Attach video tracks
-    attachVideoTracks();
   }
   
-  // V11: Rafraîchir la grille de vidéos
+  // V11: Rafraîchir la grille
   function refreshGridParticipants(participants) {
     if (!gridContainer) return;
     
-    // Clear existing grid items
+    // Clear
     gridContainer.innerHTML = '';
     gridElements.clear();
     
-    // Cacher focus et thumbs, montrer grille
+    // Cacher focus/thumbs, montrer grille
     if (focusWrapper) focusWrapper.style.display = 'none';
     if (thumbsSidebar) thumbsSidebar.style.display = 'none';
-    if (gridContainer) gridContainer.style.display = '';
+    gridContainer.style.display = '';
+    
+    // V11: Vérifier si on est en phase privée
+    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false };
+    
+    if (privateStatus.isPrivate && !privateStatus.iAmInvolved) {
+      // On n'est pas concerné - afficher overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'video-grid-private-overlay';
+      overlay.innerHTML = `
+        <div class="private-message">
+          <span class="icon">🔒</span>
+          <span class="text">${privateStatus.message || 'Phase privée en cours...'}</span>
+        </div>
+      `;
+      gridContainer.appendChild(overlay);
+      return;
+    }
+    
+    // V11: Filtrer les participants si phase privée
+    let filteredParticipants = participants;
+    if (privateStatus.isPrivate && privateStatus.iAmInvolved && privateStatus.allowedPlayerIds?.length > 0) {
+      filteredParticipants = participants.filter(p => 
+        privateStatus.allowedPlayerIds.includes(p.playerId)
+      );
+      log('Phase privée - participants filtrés:', filteredParticipants.length);
+    }
     
     const isSplitMode = container && container.classList.contains('mode-split');
+    const currentSpeaker = window.__currentActiveSpeaker;
     
     if (isSplitMode) {
       // V11: Mode SPLIT - créer 2 zones : main (gauche) et speaker (droite)
@@ -750,15 +794,11 @@
       gridContainer.appendChild(mainZone);
       gridContainer.appendChild(speakerZone);
       
-      // Trouver le speaker actuel
-      const currentSpeaker = window.__currentActiveSpeaker;
-      
-      // Create grid item for each participant
-      participants.forEach(p => {
+      // Créer les items
+      filteredParticipants.forEach(p => {
         const gridItem = createGridItem(p);
         gridElements.set(p.playerId, gridItem);
         
-        // Placer dans la bonne zone
         if (p.playerId === currentSpeaker) {
           speakerZone.appendChild(gridItem);
           gridItem.classList.add('is-speaking');
@@ -769,28 +809,28 @@
         }
       });
       
-      // Si pas de speaker ou speakerZone vide, mettre le premier dans la zone speaker
+      // Si speakerZone vide, y mettre le premier
       if (speakerZone.children.length === 0 && mainZone.children.length > 0) {
-        const firstItem = mainZone.firstElementChild;
-        if (firstItem) {
-          speakerZone.appendChild(firstItem);
-        }
+        speakerZone.appendChild(mainZone.firstElementChild);
       }
     } else {
       // V11: Mode MAX - grille simple
-      participants.forEach(p => {
+      filteredParticipants.forEach(p => {
         const gridItem = createGridItem(p);
         gridContainer.appendChild(gridItem);
         gridElements.set(p.playerId, gridItem);
       });
     }
     
-    log('Grid refreshed with', participants.length, 'items, split mode:', isSplitMode);
+    // Attacher les vidéos
+    attachVideoTracks();
+    
+    log('Grid refreshed with', filteredParticipants.length, 'items');
   }
   
-  // V11: Mode classique avec focus + thumbnails
+  // V11: Mode classique (non utilisé actuellement)
   function refreshClassicParticipants(participants, currentFocus) {
-    // Montrer focus et thumbs, cacher grille
+    // Montrer focus/thumbs, cacher grille
     if (focusWrapper) focusWrapper.style.display = '';
     if (thumbsSidebar) thumbsSidebar.style.display = '';
     if (gridContainer) gridContainer.style.display = 'none';
@@ -799,7 +839,7 @@
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
-    // Create thumbnail for each participant (except focused)
+    // Create thumbnail for each participant
     participants.forEach(p => {
       if (p.playerId === currentFocus) return;
       
@@ -814,9 +854,12 @@
     } else if (participants.length > 0) {
       setFocus(participants[0].playerId, false);
     }
+    
+    // Attach video tracks
+    attachVideoTracks();
   }
   
-  // V11: Créer un élément de grille pour un participant
+  // V11: Créer un élément de grille
   function createGridItem(participant) {
     const item = document.createElement('div');
     item.className = 'video-grid-item empty';
@@ -831,7 +874,7 @@
     `;
     item.appendChild(nameEl);
     
-    // Mark if dead (but not at GAME_OVER)
+    // Mark if dead
     const state = window.lastKnownState;
     const isGameOver = state?.phase === 'GAME_OVER';
     if (!participant.alive && !isGameOver) {
@@ -952,34 +995,33 @@
   // ============================================
   
   function attachVideoTracks() {
-    // Get tracks from video-tracks.js registry
-    const tracks = window.VideoTracksRegistry?.getAll() || getTracksFromGlobal();
+    // V11: Déterminer le mode
     const isSplitMode = container && container.classList.contains('mode-split');
     const isMaxMode = container && container.classList.contains('mode-full');
     const useGrid = isSplitMode || isMaxMode;
     
-    tracks.forEach((track, playerId) => {
-      if (useGrid) {
-        // V11: Mode grille - attacher à l'élément de grille
-        attachGridVideo(playerId, track);
-      } else {
-        // Mode classique
+    if (useGrid) {
+      // V11: Mode grille - attacher pour chaque participant dans gridElements
+      gridElements.forEach((item, playerId) => {
+        attachGridVideo(playerId);
+      });
+    } else {
+      // Mode classique
+      const tracks = window.VideoTracksRegistry?.getAll() || getTracksFromGlobal();
+      tracks.forEach((track, playerId) => {
         if (playerId === currentFocusId) {
           attachFocusVideo(playerId);
         } else {
           attachThumbVideo(playerId, track);
         }
-      }
-    });
+      });
+    }
   }
   
   // V11: Attacher une vidéo à un élément de la grille
-  function attachGridVideo(playerId, track) {
+  function attachGridVideo(playerId) {
     const gridItem = gridElements.get(playerId);
-    if (!gridItem) {
-      log('Grid item not found for:', playerId);
-      return;
-    }
+    if (!gridItem) return;
     
     // Remove existing video
     const existingVideo = gridItem.querySelector('video');
@@ -987,12 +1029,13 @@
       existingVideo.remove();
     }
     
-    // LIVEKIT: Get video element
+    // Get video from LiveKit
     const videoEl = getLiveKitVideoElement(playerId);
     if (videoEl) {
       gridItem.classList.remove('empty');
       videoEl.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;';
       videoEl.muted = isLocalPlayer(playerId);
+      
       // Insérer avant le nameEl
       const nameEl = gridItem.querySelector('.grid-item-name');
       if (nameEl) {
@@ -1000,8 +1043,10 @@
       } else {
         gridItem.appendChild(videoEl);
       }
-      videoEl.play().catch(e => log('Grid video play error:', e));
-      log('Grid video attached for:', playerId);
+      
+      videoEl.play().catch(e => {
+        if (e.name !== 'AbortError') log('Grid video play error:', e);
+      });
     }
   }
 
@@ -1078,7 +1123,7 @@
         focusVideoEl.src = URL.createObjectURL(stream);
       }
     } else {
-      if (DEBUG) console.warn('[BriefingUI] Cannot get stream from track for focus video');
+      console.warn('[BriefingUI] Cannot get stream from track for focus video');
     }
     
     // Insert before name overlay
@@ -1157,7 +1202,7 @@
         video.src = URL.createObjectURL(stream);
       }
     } else {
-      if (DEBUG) console.warn('[BriefingUI] Cannot get stream from track for thumbnail');
+      console.warn('[BriefingUI] Cannot get stream from track for thumbnail');
     }
     
     // Insert before name label
@@ -1237,7 +1282,7 @@
       el.classList.toggle('is-speaking', id === speakerId);
     });
     
-    // V11: Update grid items (mode SPLIT/MAX grille)
+    // V11: Update grid items
     let speakerElement = null;
     let previousSpeakerElement = null;
     
@@ -1253,12 +1298,8 @@
         gridBadge.style.display = isSpeaking ? 'inline-block' : 'none';
       }
       
-      if (isSpeaking) {
-        speakerElement = el;
-      }
-      if (wasSpeaking && !isSpeaking) {
-        previousSpeakerElement = el;
-      }
+      if (isSpeaking) speakerElement = el;
+      if (wasSpeaking && !isSpeaking) previousSpeakerElement = el;
     });
     
     // V11: En mode SPLIT, déplacer le speaker dans la zone speaker
@@ -1268,15 +1309,14 @@
       const speakerZone = gridContainer.querySelector('.video-grid-speaker');
       
       if (mainZone && speakerZone) {
-        // Déplacer l'ancien speaker vers la zone main
+        // Déplacer l'ancien speaker vers main
         if (previousSpeakerElement && previousSpeakerElement.parentElement === speakerZone) {
           mainZone.appendChild(previousSpeakerElement);
         }
         
-        // Déplacer le nouveau speaker vers la zone speaker
+        // Déplacer le nouveau speaker vers speakerZone
         if (speakerElement && speakerElement.parentElement !== speakerZone) {
           speakerZone.appendChild(speakerElement);
-          log('Speaker moved to speaker zone:', speakerId);
         }
       }
     }
@@ -1517,6 +1557,6 @@
     init();
   }
 
-  if (DEBUG) console.log('[VideoBriefingUI] D4 Module loaded ✅');
+  console.log('[VideoBriefingUI] D4 Module loaded ✅');
 
 })();

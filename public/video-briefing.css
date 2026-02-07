@@ -77,13 +77,9 @@
   display: none;
   position: fixed;
   z-index: 10500;
-  /* V11: Image de fond par thème + fallback gradient */
-  background: var(--video-bg-main), var(--video-bg-fallback), var(--briefing-bg);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--briefing-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-sizing: border-box;
   
   /* Animation d'entrée */
@@ -818,18 +814,6 @@
   opacity: 1 !important;
 }
 
-/* V11: Cacher les vidéos inline quand la visio briefing est active */
-body.video-briefing-active .player-video-slot,
-body:has(.video-briefing-container.active) .player-video-slot,
-.video-briefing-container.active ~ * .player-video-slot,
-html:has(.video-briefing-container.active) .player-video-slot {
-  display: none !important;
-  visibility: hidden !important;
-  width: 0 !important;
-  height: 0 !important;
-  opacity: 0 !important;
-}
-
 .player-video-slot video {
   width: 100% !important;
   height: 100% !important;
@@ -1254,12 +1238,10 @@ body.video-split-active .header-banner::before {
 */
 
 /* ============================================
-   V11 - MODE GRILLE VIDÉO
-   SPLIT: 2 rangées, scroll horizontal
-   MAX: Mosaïque plein écran
+   V11 - GRILLE DE VIDÉOS
    ============================================ */
 
-/* Container de la grille - caché par défaut */
+/* Container de base (caché par défaut) */
 .video-grid-container {
   display: none;
   width: 100%;
@@ -1268,37 +1250,45 @@ body.video-split-active .header-banner::before {
   overflow: hidden;
 }
 
-/* === MODE SPLIT: Grille + Speaker à droite === */
+/* === MODE MAX (PC): Grille 3x4 === */
+.mode-full .video-grid-container {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+/* === MODE SPLIT (PC): Flex avec speaker à droite === */
 .mode-split .video-grid-container {
   display: flex !important;
-  flex-direction: row !important;
+  flex-direction: row;
   gap: 15px;
-  overflow: hidden;
   width: 100%;
   height: 100%;
   padding: 10px;
 }
 
-/* Zone des vidéos normales (gauche) */
+/* Zone main (gauche) - grille 2x6 */
 .mode-split .video-grid-main {
   display: grid !important;
   grid-template-rows: 1fr 1fr;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(120px, 180px);
+  grid-auto-columns: minmax(100px, 150px);
   gap: 10px;
+  flex: 1;
   overflow-x: auto;
   overflow-y: hidden;
-  flex: 1;
   align-content: center;
   justify-content: center;
-  padding-bottom: 8px;
 }
 
-/* Zone du speaker (droite) */
+/* Zone speaker (droite) */
 .mode-split .video-grid-speaker {
-  width: 300px;
-  min-width: 280px;
-  max-width: 350px;
+  width: 280px;
+  min-width: 250px;
+  max-width: 320px;
   flex-shrink: 0;
   display: flex;
   align-items: stretch;
@@ -1307,10 +1297,9 @@ body.video-split-active .header-banner::before {
 .mode-split .video-grid-speaker .video-grid-item {
   width: 100% !important;
   height: 100% !important;
-  min-height: 100% !important;
 }
 
-/* Scrollbar stylée pour SPLIT */
+/* Scrollbar stylée */
 .mode-split .video-grid-main::-webkit-scrollbar {
   height: 6px;
 }
@@ -1325,33 +1314,14 @@ body.video-split-active .header-banner::before {
   border-radius: 3px;
 }
 
-/* === MODE MAX (FULL): Grille 3x3 équilibrée === */
-.mode-full .video-grid-container {
-  display: grid !important;
-  /* Forcer 3 colonnes pour grille équilibrée */
-  grid-template-columns: repeat(3, 1fr) !important;
-  grid-template-rows: repeat(3, 1fr) !important;
-  gap: 10px;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-}
-
-/* Items en mode MAX - pas de débordement */
-.mode-full .video-grid-item {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  aspect-ratio: unset !important;
-}
-
-/* === Éléments de la grille === */
+/* === Éléments de grille === */
 .video-grid-item {
   position: relative;
-  background: var(--video-bg-main), var(--video-bg-fallback, var(--thumb-bg));
+  background: var(--video-bg-main, linear-gradient(135deg, #0a1530 0%, #050a15 100%)), 
+              var(--video-bg-fallback, linear-gradient(135deg, #0a1530 0%, #050a15 100%));
   background-size: cover;
   background-position: center;
-  border: 2px solid var(--thumb-border);
+  border: 2px solid var(--thumb-border, rgba(255, 255, 255, 0.15));
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -1364,13 +1334,9 @@ body.video-split-active .header-banner::before {
   position: absolute;
   top: 0;
   left: 0;
-  /* Background si vidéo pas encore chargée */
-  background: var(--video-bg-main), var(--video-bg-fallback);
-  background-size: cover;
-  background-position: center;
 }
 
-/* Nom du joueur dans la grille */
+/* Nom du joueur */
 .video-grid-item .grid-item-name {
   position: absolute;
   bottom: 0;
@@ -1387,7 +1353,7 @@ body.video-split-active .header-banner::before {
 
 .video-grid-item .grid-item-name .name {
   color: white;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
@@ -1397,32 +1363,36 @@ body.video-split-active .header-banner::before {
 
 /* Badge PARLE */
 .video-grid-item .badge-speaker {
-  background: var(--speaker-ring);
+  background: var(--speaker-ring, rgba(0, 255, 255, 0.8));
   color: #000;
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.65rem;
   font-weight: bold;
   text-transform: uppercase;
-  animation: pulse-speaker 1.5s ease-in-out infinite;
+  animation: pulse-speaker-v11 1.5s ease-in-out infinite;
 }
 
-/* === État SPEAKER (qui parle) === */
+@keyframes pulse-speaker-v11 {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* État SPEAKER (glow) */
 .video-grid-item.is-speaking {
-  border-color: var(--speaker-ring) !important;
-  box-shadow: 0 0 20px var(--speaker-pulse), 0 0 40px var(--speaker-pulse) !important;
+  border-color: var(--speaker-ring, rgba(0, 255, 255, 0.8)) !important;
+  box-shadow: 0 0 20px var(--speaker-pulse, rgba(0, 255, 255, 0.4)), 
+              0 0 40px var(--speaker-pulse, rgba(0, 255, 255, 0.4)) !important;
 }
 
-/* === État MORT === */
+/* État MORT */
 .video-grid-item.is-dead {
   filter: grayscale(80%) brightness(0.6);
   opacity: 0.7;
-  border-color: #666 !important;
 }
 
-/* === État VIDE (pas de vidéo) === */
+/* État VIDE */
 .video-grid-item.empty {
-  /* Utilise le background du parent (video-bg-main) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1434,78 +1404,69 @@ body.video-split-active .header-banner::before {
   opacity: 0.3;
 }
 
-/* Animation pulse pour speaker */
-@keyframes pulse-speaker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
 /* ============================================
-   V11 - RESPONSIVE GRILLE
+   V11 - RESPONSIVE MOBILE
    ============================================ */
 
 @media (max-width: 768px) {
-  /* Mobile SPLIT: Conteneur adapté */
+  /* Mobile SPLIT: conteneur adapté */
   .video-briefing-container.mode-split {
-    height: 50vh !important;
-    min-height: 250px !important;
-    max-height: 350px !important;
+    height: 45vh !important;
+    min-height: 220px !important;
+    max-height: 320px !important;
   }
   
-  /* Mobile MAX: Prend TOUT l'écran */
+  /* Mobile MAX: plein écran */
   .video-briefing-container.mode-full {
     height: 100vh !important;
-    min-height: 100vh !important;
     padding: 10px !important;
     padding-top: 50px !important;
   }
   
-  /* SPLIT mobile: Flex vertical, pas de speaker séparé */
-  .mode-split .video-grid-container {
-    flex-direction: column !important;
-    gap: 5px;
-  }
-  
-  /* Zone main mobile: grille 3 colonnes */
-  .mode-split .video-grid-main {
-    display: grid !important;
-    grid-template-rows: unset !important;
-    grid-auto-flow: row !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    grid-auto-columns: unset !important;
-    grid-auto-rows: minmax(50px, 70px) !important;
-    gap: 5px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-  }
-  
-  /* Zone speaker mobile: plus petite, en haut */
-  .mode-split .video-grid-speaker {
-    width: 100% !important;
-    min-width: unset !important;
-    max-width: unset !important;
-    height: 100px !important;
-    min-height: 80px !important;
-    flex-shrink: 0;
-    order: -1; /* En haut */
-  }
-  
-  /* MAX mobile: grille 3x3 plein écran */
+  /* Mobile MAX: grille 3x3 */
   .mode-full .video-grid-container {
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: repeat(3, 1fr) !important;
     gap: 5px;
-    height: calc(100vh - 60px) !important;
   }
   
-  /* Items mobile plus petits */
+  /* Mobile SPLIT: flex vertical */
+  .mode-split .video-grid-container {
+    flex-direction: column !important;
+    gap: 8px;
+    padding: 5px;
+  }
+  
+  /* Mobile SPLIT: zone main - grille 2x4 */
+  .mode-split .video-grid-main {
+    display: grid !important;
+    grid-template-rows: 1fr 1fr !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-auto-flow: unset !important;
+    grid-auto-columns: unset !important;
+    gap: 5px;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  /* Mobile SPLIT: zone speaker en bas */
+  .mode-split .video-grid-speaker {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    height: 80px !important;
+    min-height: 70px !important;
+    flex-shrink: 0;
+    order: 1;
+  }
+  
+  /* Items plus petits */
   .video-grid-item {
-    min-height: 50px !important;
+    min-height: 50px;
   }
   
   .video-grid-item .grid-item-name {
-    padding: 8px 5px 3px 5px;
+    padding: 8px 5px 4px 5px;
   }
   
   .video-grid-item .grid-item-name .name {
@@ -1514,28 +1475,56 @@ body.video-split-active .header-banner::before {
   
   .video-grid-item .badge-speaker {
     font-size: 0.45rem;
-    padding: 1px 3px;
+    padding: 1px 4px;
   }
 }
 
-@media (max-width: 480px) {
-  /* Petit mobile: 3 colonnes toujours mais plus compact */
-  .mode-split .video-grid-container {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 5px;
+/* ============================================
+   V11 - OVERLAY PHASES PRIVÉES
+   ============================================ */
+
+.video-grid-private-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(10, 21, 48, 0.95) 0%, rgba(5, 10, 21, 0.98) 100%);
+  border-radius: 12px;
+}
+
+.video-grid-private-overlay .private-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 30px;
+  text-align: center;
+}
+
+.video-grid-private-overlay .private-message .icon {
+  font-size: 3rem;
+  animation: pulse-lock 2s ease-in-out infinite;
+}
+
+.video-grid-private-overlay .private-message .text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2rem;
+  font-weight: 500;
+  max-width: 300px;
+}
+
+@keyframes pulse-lock {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@media (max-width: 768px) {
+  .video-grid-private-overlay .private-message .icon {
+    font-size: 2rem;
   }
   
-  .mode-full .video-grid-container {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 5px;
-  }
-  
-  .video-grid-item .grid-item-name .name {
-    font-size: 0.65rem;
-  }
-  
-  .video-grid-item .badge-speaker {
-    font-size: 0.5rem;
-    padding: 1px 4px;
+  .video-grid-private-overlay .private-message .text {
+    font-size: 1rem;
   }
 }
