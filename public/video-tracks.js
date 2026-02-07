@@ -1289,13 +1289,14 @@
     if (!callObject || bound) return;
     bound = true;
 
-    log("Binding to callObject ✅");
+    // V11: Log toujours visible pour confirmer le binding (pas seulement en DEBUG)
+    console.log("[VideoTracks] ✅ Binding to callObject");
 
     callObject.on("participant-joined", (ev) => {
       const p = ev?.participant;
       const peerKey = p?.session_id || p?.peerId || p?.id || "";
       const pid = parsePlayerIdFromUserName(p?.user_name);
-      log("participant-joined:", p?.user_name, "pid:", pid);
+      log("participant-joined:", p?.user_name, "pid:", pid, "peerKey:", peerKey);
       if (peerKey && pid) peerToPlayerId.set(peerKey, pid);
       
       // V11: Rafraîchir la grille du briefing UI quand un participant rejoint
@@ -1382,6 +1383,12 @@
       log("track-started:", ev?.track?.kind, "from", p?.user_name, "pid:", pid, "isLocal:", isLocal);
 
       if (!pid) return;
+      
+      // V11: Ajouter au mapping peerToPlayerId (important pour le speaker detection)
+      if (peerKey && pid && !peerToPlayerId.has(peerKey)) {
+        peerToPlayerId.set(peerKey, pid);
+        log("Added to peerToPlayerId:", peerKey, "->", pid);
+      }
 
       if (ev?.track?.kind === "video") {
         videoTracks.set(pid, ev.track);
@@ -1480,17 +1487,17 @@
       const peerId = ev?.peerId || ev?.activeSpeaker?.peerId || "";
       const pid = peerToPlayerId.get(peerId) || "";
       
-      // D5: Log amélioré
-      log("🎙️ active-speaker-change event:", { peerId, playerId: pid, raw: ev });
+      // V11: Log toujours visible pour debug speaker
+      console.log("[VideoTracks] 🎙️ active-speaker-change:", { peerId, playerId: pid, mapSize: peerToPlayerId.size });
       
       setSpeaking(pid);
       
       // D5: Notifier le VideoModeController avec validation
       if (window.videoModeCtrl && pid) {
-        log("🎙️ Notifying VideoModeController of active speaker:", pid);
+        console.log("[VideoTracks] 🎙️ Notifying VideoModeController of speaker:", pid);
         window.videoModeCtrl.setActiveSpeaker(pid);
       } else if (!pid) {
-        log("🎙️ No playerId found for peerId:", peerId);
+        console.log("[VideoTracks] ⚠️ No playerId found for peerId:", peerId, "- Available mappings:", Array.from(peerToPlayerId.entries()));
       }
     });
 
