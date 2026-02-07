@@ -424,22 +424,25 @@ background: rgba(10, 14, 39, 0.95);
     const controls = document.createElement("div");
     controls.style.cssText = "display:flex; gap:8px; align-items:center;";
 
-    this.camButton = this.createControlButton("📹", "Caméra");
-    this.camButton.onclick = () => this.toggleCamera();
+    // V11: NE PAS créer les boutons en mode headless (ils créent un conflit avec les boutons du briefing UI)
+    if (!this.headless) {
+      this.camButton = this.createControlButton("📹", "Caméra");
+      this.camButton.onclick = () => this.toggleCamera();
 
-    this.micButton = this.createControlButton("🎤", "Micro");
-    this.micButton.onclick = () => this.toggleMicrophone();
+      this.micButton = this.createControlButton("🎤", "Micro");
+      this.micButton.onclick = () => this.toggleMicrophone();
 
-    const minimizeBtn = this.createControlButton("−", "Minimiser");
-    minimizeBtn.onclick = () => this.toggleMinimize();
+      const minimizeBtn = this.createControlButton("−", "Minimiser");
+      minimizeBtn.onclick = () => this.toggleMinimize();
 
-    const closeBtn = this.createControlButton("✕", "Masquer");
-    closeBtn.onclick = () => this.hideWindow();
+      const closeBtn = this.createControlButton("✕", "Masquer");
+      closeBtn.onclick = () => this.hideWindow();
 
-    controls.appendChild(this.camButton);
-    controls.appendChild(this.micButton);
-    controls.appendChild(minimizeBtn);
-    controls.appendChild(closeBtn);
+      controls.appendChild(this.camButton);
+      controls.appendChild(this.micButton);
+      controls.appendChild(minimizeBtn);
+      controls.appendChild(closeBtn);
+    }
 
     header.appendChild(title);
     header.appendChild(controls);
@@ -1136,9 +1139,10 @@ background: rgba(10, 14, 39, 0.95);
 
     // Si la phase change, on remet les overrides utilisateur à zéro,
     // afin que les nouvelles règles s'appliquent directement.
-    if (phaseChanged) {
-      this.userPref = { video: null, audio: null };
-    }
+    // V11: DÉSACTIVÉ - On respecte maintenant le choix manuel de l'utilisateur
+    // if (phaseChanged) {
+    //   this.userPref = { video: null, audio: null };
+    // }
 
     // UI lock/unlock
     this.setButtonEnabled(this.camButton, this.allowed.video, this.allowed.video ? "" : "Caméra interdite: " + (this.allowed.reason || "phase"));
@@ -1159,7 +1163,11 @@ background: rgba(10, 14, 39, 0.95);
       await this.deafenRemotes(false);
     }
 
-    // Si autorisé, on applique l'état voulu (override utilisateur ou "ON" par défaut)
+    // V11: NE PLUS réactiver automatiquement l'audio/vidéo
+    // La gestion est centralisée dans video-integration-client.js
+    // avec la logique simplifiée (mute votes, unmute moments clés)
+    // On respecte le choix manuel de l'utilisateur
+    /*
     if (this.allowed.video) {
       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
       try { await this.callFrame.setLocalVideo(desiredVideo); } catch (e) { console.warn("setLocalVideo(desired) failed", e); }
@@ -1168,6 +1176,7 @@ background: rgba(10, 14, 39, 0.95);
       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
       try { await this.callFrame.setLocalAudio(desiredAudio); } catch (e) { console.warn("setLocalAudio(desired) failed", e); }
     }
+    */
 
     // Message de statut (optionnel)
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");

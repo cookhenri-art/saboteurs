@@ -438,69 +438,53 @@ function showMuteNotification(phase) {
 }
 
 /**
- * D4 v5.8: Force le démute avec notification visuelle
+ * V11: Force le démute du MICRO SEULEMENT avec notification visuelle
+ * Respecte le choix manuel de l'utilisateur - ne touche pas à la caméra
  */
 function forceUnmuteWithNotification(phase, registry) {
-  // Reset le mute manuel
-  if (registry?.resetManualMute) {
-    registry.resetManualMute();
-  }
-  
-  // Fonction de réactivation avec retry
-  const forceEnableTracks = (attempt = 1) => {
-    try {
-      const callFrame = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-      if (!callFrame) {
-        console.warn('[Video] ⚠️ No callFrame available (attempt ' + attempt + ')');
-        return;
-      }
-      
-      // Vérifier si on est toujours dans la room
-      const meetingState = callFrame.meetingState?.();
-      if (meetingState && meetingState !== 'joined-meeting') {
-        console.warn('[Video] ⚠️ Not in meeting state:', meetingState);
-        return;
-      }
-      
-      // Forcer l'activation de la caméra et du micro
-      callFrame.setLocalAudio(true);
-      callFrame.setLocalVideo(true);
-      console.log('[Video] ✅ Camera and mic forcefully enabled (attempt ' + attempt + ')');
-      
-      // Mettre à jour les boutons UI
-      updateMuteButtonsUI(false, false);
-      
-      // Notification visuelle
-      if (attempt === 1) {
-        showUnmuteNotification(phase);
-      }
-      
-      // Retry après 1.5 secondes pour la première tentative
-      if (attempt === 1) {
-        setTimeout(() => forceEnableTracks(2), 1500);
-      }
-    } catch (err) {
-      console.warn('[Video] ⚠️ Could not force enable tracks (attempt ' + attempt + '):', err);
-      if (attempt === 1) {
-        setTimeout(() => forceEnableTracks(2), 1500);
-      }
+  try {
+    const callFrame = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
+    if (!callFrame) {
+      console.warn('[Video] ⚠️ No callFrame available');
+      return;
     }
-  };
-  
-  // Premier passage après 300ms
-  setTimeout(() => forceEnableTracks(1), 300);
+    
+    // V11: Vérifier si l'utilisateur avait manuellement coupé son micro
+    const userMutedAudio = registry?.getUserMutedAudio?.();
+    
+    if (userMutedAudio) {
+      // L'utilisateur avait volontairement coupé son micro - on respecte son choix
+      console.log('[Video] ⏭️ Respecting user choice - mic stays muted');
+      return;
+    }
+    
+    // Réactiver seulement le micro (pas la caméra !)
+    callFrame.setLocalAudio(true);
+    console.log('[Video] 🔊 Mic enabled for phase:', phase);
+    
+    // Mettre à jour les boutons UI (seulement le micro)
+    updateMuteButtonsUI(false, null); // null = ne pas changer la caméra
+    
+    // Notification visuelle
+    showUnmuteNotification(phase);
+    
+  } catch (err) {
+    console.warn('[Video] ⚠️ Could not enable mic:', err);
+  }
 }
 
 /**
  * D4 v5.8: Met à jour visuellement les boutons mute
  * V11: Boutons inline supprimés - uniquement boutons briefing + mobile
+ * V11: Si audioMuted ou videoMuted est null, ne pas changer cet état
  */
 function updateMuteButtonsUI(audioMuted, videoMuted) {
   // Boutons du briefing UI (PC)
   const briefingMicBtn = document.getElementById('briefingMicBtn');
   const briefingCamBtn = document.getElementById('briefingCamBtn');
   
-  if (briefingMicBtn) {
+  // V11: Ne mettre à jour le micro que si audioMuted n'est pas null
+  if (audioMuted !== null && briefingMicBtn) {
     if (audioMuted) {
       briefingMicBtn.textContent = '🔇';
       briefingMicBtn.style.background = 'rgba(180, 50, 50, 0.7)';
@@ -512,7 +496,8 @@ function updateMuteButtonsUI(audioMuted, videoMuted) {
     }
   }
   
-  if (briefingCamBtn) {
+  // V11: Ne mettre à jour la caméra que si videoMuted n'est pas null
+  if (videoMuted !== null && briefingCamBtn) {
     if (videoMuted) {
       briefingCamBtn.textContent = '🚫';
       briefingCamBtn.style.background = 'rgba(180, 50, 50, 0.7)';
@@ -528,7 +513,7 @@ function updateMuteButtonsUI(audioMuted, videoMuted) {
   const mobileMicBtn = document.getElementById('mobileMicBtn');
   const mobileCamBtn = document.getElementById('mobileCamBtn');
   
-  if (mobileMicBtn) {
+  if (audioMuted !== null && mobileMicBtn) {
     if (audioMuted) {
       mobileMicBtn.textContent = '🔇';
       mobileMicBtn.classList.add('is-off');
@@ -538,7 +523,7 @@ function updateMuteButtonsUI(audioMuted, videoMuted) {
     }
   }
   
-  if (mobileCamBtn) {
+  if (videoMuted !== null && mobileCamBtn) {
     if (videoMuted) {
       mobileCamBtn.textContent = '🚫';
       mobileCamBtn.classList.add('is-off');

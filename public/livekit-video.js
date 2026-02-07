@@ -718,10 +718,10 @@ class LiveKitVideoManager {
       reason: permissions.reason || ""
     };
 
-    // Reset overrides utilisateur au changement de phase
-    if (phaseChanged) {
-      this.userPref = { video: null, audio: null };
-    }
+    // V11: DISABLED -     // Reset overrides utilisateur au changement de phase
+    // V11: DISABLED -     if (phaseChanged) {
+    // V11: DISABLED -       this.userPref = { video: null, audio: null };
+    // V11: DISABLED -     }
 
     // UI lock/unlock boutons
     this.setButtonEnabled(this.camButton, this.allowed.video,
@@ -752,21 +752,21 @@ class LiveKitVideoManager {
       await this.deafenRemotes(false);
     }
 
-    // Si autorisé, appliquer l'état voulu
-    if (this.allowed.video) {
-      const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
-      try {
-        await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
-        this._localVideoEnabled = desiredVideo;
-      } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
-    }
-    if (this.allowed.audio) {
-      const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
-      try {
-        await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
-        this._localAudioEnabled = desiredAudio;
-      } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
-    }
+    // V11: DISABLED -     // Si autorisé, appliquer l'état voulu
+    // V11: DISABLED -     if (this.allowed.video) {
+    // V11: DISABLED -       const desiredVideo = (this.userPref.video !== null) ? this.userPref.video : true;
+    // V11: DISABLED -       try {
+    // V11: DISABLED -         await this.room?.localParticipant?.setCameraEnabled(desiredVideo);
+    // V11: DISABLED -         this._localVideoEnabled = desiredVideo;
+    // V11: DISABLED -       } catch (e) { console.warn("[LiveKit] setCameraEnabled(desired) failed", e); }
+    // V11: DISABLED -     }
+    // V11: DISABLED -     if (this.allowed.audio) {
+    // V11: DISABLED -       const desiredAudio = (this.userPref.audio !== null) ? this.userPref.audio : true;
+    // V11: DISABLED -       try {
+    // V11: DISABLED -         await this.room?.localParticipant?.setMicrophoneEnabled(desiredAudio);
+    // V11: DISABLED -         this._localAudioEnabled = desiredAudio;
+    // V11: DISABLED -       } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(desired) failed", e); }
+    // V11: DISABLED -     }
 
     // Message status
     if (!this.allowed.video && this.allowed.audio) this.updateStatus("🎧 Audio only");
