@@ -109,7 +109,7 @@
 }
 
 /* ============================================
-   MODE SPLIT (50/50)
+   MODE SPLIT (50/50) - GRILLE 2x2
    ============================================ */
 
 .video-briefing-container.mode-split {
@@ -130,24 +130,34 @@
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* GRILLE 2x2: Cacher le focus wrapper */
 .mode-split .video-focus-wrapper {
-  flex: 1;
-  min-width: 0;
+  display: none;
 }
 
+/* Pour compatibilité si pas de grille */
 .mode-split .video-focus-main {
   min-height: unset;
   height: 100%;
 }
 
+/* GRILLE 2x2: Sidebar devient grille pleine largeur */
 .mode-split .video-thumbs-sidebar {
-  width: 100px;
-  gap: 8px;
+  width: 100%;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
 }
 
+/* GRILLE 2x2: Thumbnails remplissent les cellules */
 .mode-split .video-thumb {
-  width: 100px;
-  height: 75px;
+  width: 100%;
+  height: 100%;
 }
 
 .mode-split .video-focus-name {
@@ -676,7 +686,7 @@
     max-height: 350px;
   }
   
-  /* Mode SPLIT sur mobile */
+  /* Mode SPLIT sur mobile - GRILLE 2x2 */
   .video-briefing-container.mode-split {
     height: 45vh;
     min-height: 220px;
@@ -687,22 +697,31 @@
     gap: 8px;
   }
   
+  /* GRILLE 2x2: Cacher le focus wrapper */
   .mode-split .video-focus-wrapper {
-    flex: 1;
+    display: none;
   }
   
+  /* GRILLE 2x2: Sidebar devient grille pleine largeur */
   .mode-split .video-thumbs-sidebar {
-    width: 80px;
+    width: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     gap: 6px;
+    max-height: none;
+    overflow: visible;
   }
   
+  /* GRILLE 2x2: Thumbs remplissent les cellules */
   .mode-split .video-thumb {
-    width: 80px;
-    height: 60px;
+    width: 100%;
+    height: 100%;
   }
   
   .mode-split .video-thumb .thumb-name {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     padding: 4px 6px;
   }
   
@@ -1126,15 +1145,16 @@ body.video-split-active #topRightButtons {
     top: calc(35vh + 5px) !important;
   }
   
-  /* Thumbs plus compactes sur mobile en mode split */
+  /* GRILLE 2x2: Mobile - garder la grille, juste réduire le gap */
   .mode-split .video-thumbs-sidebar {
-    width: 80px !important;
-    gap: 5px !important;
+    width: 100% !important;
+    gap: 6px !important;
   }
   
+  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
   .mode-split .video-thumb {
-    width: 75px !important;
-    height: 55px !important;
+    width: 100% !important;
+    height: 100% !important;
   }
   
   /* Header plus compact */
@@ -1147,7 +1167,7 @@ body.video-split-active #topRightButtons {
     font-size: 0.75rem !important;
   }
   
-  /* Focus name plus compact */
+  /* Focus name plus compact (pour compatibilité) */
   .mode-split .video-focus-name {
     padding: 4px 8px !important;
   }
@@ -1172,13 +1192,16 @@ body.video-split-active #topRightButtons {
     /* padding-top: calc(30vh + 10px) !important; SUPPRIMÉ V3.23 */
   }
   
+  /* GRILLE 2x2: Très petits écrans - garder la grille, réduire le gap */
   .mode-split .video-thumbs-sidebar {
-    width: 65px !important;
+    width: 100% !important;
+    gap: 4px !important;
   }
   
+  /* GRILLE 2x2: Thumbs remplissent les cellules (pas de taille fixe) */
   .mode-split .video-thumb {
-    width: 60px !important;
-    height: 45px !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 
@@ -1236,3 +1259,105 @@ body.video-split-active .header-banner::before {
   background-position: center bottom !important;
 }
 */
+
+/* ============================================
+   GRILLE 2x2 MODE SPLIT - V4.0
+   ============================================ 
+   En mode SPLIT, afficher 4 vidéos de taille égale
+   au lieu de 1 focus + 3 thumbnails
+*/
+
+/* CACHER le focus wrapper en mode SPLIT */
+.mode-split .video-focus-wrapper {
+  display: none !important;
+}
+
+/* Transformer la sidebar en grille 2x2 plein écran */
+.mode-split .video-thumbs-sidebar {
+  width: 100% !important;
+  height: 100% !important;
+  flex: 1 !important;
+  
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: 1fr 1fr !important;
+  gap: 10px !important;
+  
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+/* Agrandir les thumbnails pour remplir chaque cellule */
+.mode-split .video-thumb {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: unset !important;
+  
+  border-radius: 12px;
+  border: 2px solid var(--thumb-border);
+}
+
+/* Vidéo dans les thumbnails en mode grille */
+.mode-split .video-thumb video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Nom du joueur en mode grille - plus visible */
+.mode-split .video-thumb .thumb-name {
+  font-size: 0.9rem !important;
+  padding: 8px 10px !important;
+}
+
+/* Highlight du speaker actif dans la grille */
+.mode-split .video-thumb.is-speaking {
+  border-color: var(--speaker-ring) !important;
+  box-shadow: 
+    0 0 0 3px var(--speaker-pulse),
+    0 0 25px var(--speaker-pulse) !important;
+  z-index: 5;
+}
+
+/* Empty state pour grille */
+.mode-split .video-thumb.empty::after {
+  font-size: 2.5rem !important;
+}
+
+/* ============================================
+   GRILLE 2x2 - MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .mode-split .video-thumbs-sidebar {
+    gap: 6px !important;
+  }
+  
+  .mode-split .video-thumb {
+    border-radius: 8px;
+  }
+  
+  .mode-split .video-thumb .thumb-name {
+    font-size: 0.75rem !important;
+    padding: 5px 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mode-split .video-thumbs-sidebar {
+    gap: 4px !important;
+  }
+  
+  .mode-split .video-thumb {
+    border-radius: 6px;
+    border-width: 1px;
+  }
+  
+  .mode-split .video-thumb .thumb-name {
+    font-size: 0.65rem !important;
+    padding: 3px 6px !important;
+  }
+}
