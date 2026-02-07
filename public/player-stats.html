@@ -2157,11 +2157,45 @@
       const values = data.map(([_, v]) => v);
       const bgColors = data.map(([role]) => colors[role] || '#888888');
       
+      // V11: Générer les initiales uniques pour chaque rôle
+      const roleKeys = data.map(([role]) => role);
+      const initials = generateUniqueInitials(roleKeys, getLabel);
+      
       // Détruire le chart existant si présent
       const chartKey = canvasId.includes('wins') ? 'wins' : 'losses';
       if (detailedCharts[chartKey]) {
         detailedCharts[chartKey].destroy();
       }
+      
+      // Plugin pour afficher les initiales sur les segments
+      const initialsPlugin = {
+        id: 'initialsPlugin',
+        afterDraw: (chart) => {
+          const ctx = chart.ctx;
+          const meta = chart.getDatasetMeta(0);
+          
+          meta.data.forEach((arc, i) => {
+            if (values[i] === 0) return;
+            
+            const { x, y, startAngle, endAngle, innerRadius, outerRadius } = arc;
+            const midAngle = (startAngle + endAngle) / 2;
+            const midRadius = (innerRadius + outerRadius) / 2;
+            
+            const labelX = x + Math.cos(midAngle) * midRadius;
+            const labelY = y + Math.sin(midAngle) * midRadius;
+            
+            ctx.save();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 3;
+            ctx.fillText(initials[i], labelX, labelY);
+            ctx.restore();
+          });
+        }
+      };
       
       detailedCharts[chartKey] = new Chart(canvas, {
         type: 'doughnut',
@@ -2191,7 +2225,8 @@
               }
             }
           }
-        }
+        },
+        plugins: [initialsPlugin]
       });
       
       // Générer la légende personnalisée
@@ -2201,6 +2236,45 @@
           <span>${getLabel(role)}: ${value}</span>
         </div>
       `).join('');
+    }
+    
+    // V11: Générer des initiales uniques pour les rôles
+    function generateUniqueInitials(roleKeys, getLabel) {
+      const labels = roleKeys.map(r => getLabel(r));
+      const initials = [];
+      const usedInitials = {};
+      
+      // Premier passage : essayer la première lettre
+      labels.forEach((label, i) => {
+        const firstChar = label.charAt(0).toUpperCase();
+        if (!usedInitials[firstChar]) {
+          initials[i] = firstChar;
+          usedInitials[firstChar] = [i];
+        } else {
+          usedInitials[firstChar].push(i);
+          initials[i] = null; // À résoudre
+        }
+      });
+      
+      // Deuxième passage : résoudre les conflits
+      Object.entries(usedInitials).forEach(([char, indices]) => {
+        if (indices.length > 1) {
+          // Conflit ! Utiliser 2 premières lettres
+          indices.forEach(i => {
+            const label = labels[i];
+            // Prendre les 2 premières lettres significatives
+            let initial = label.substring(0, 2);
+            // Si le mot contient un espace, prendre première lettre de chaque mot
+            if (label.includes(' ')) {
+              const words = label.split(' ');
+              initial = words[0].charAt(0) + words[1].charAt(0);
+            }
+            initials[i] = initial.substring(0, 2);
+          });
+        }
+      });
+      
+      return initials;
     }
 
     // ═══════════════════════════════════════════════════════════════════
