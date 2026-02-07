@@ -856,28 +856,28 @@ const SITE_TRANSLATIONS = {
     detailed_no_data: { fr: "Aucune donnée", en: "No data", es: "Sin datos", de: "Keine Daten", it: "Nessun dato", pt: "Sem dados", nl: "Geen gegevens" },
     
     // V11: Onglet Détaillé - Combat VS Saboteurs
-    detailed_combat_vs: { fr: "🎯 Combat VS Saboteurs", en: "🎯 Combat VS Saboteurs", es: "🎯 Combate VS Saboteadores", de: "🎯 Kampf VS Saboteure", it: "🎯 Combattimento VS Sabotatori", pt: "🎯 Combate VS Sabotadores", nl: "🎯 Gevecht VS Saboteurs" },
+    detailed_combat_vs_prefix: { fr: "Combat VS", en: "Combat VS", es: "Combate VS", de: "Kampf VS", it: "Combattimento VS", pt: "Combate VS", nl: "Gevecht VS" },
     detailed_correct_votes: { fr: "Votes corrects", en: "Correct votes", es: "Votos correctos", de: "Richtige Stimmen", it: "Voti corretti", pt: "Votos corretos", nl: "Correcte stemmen" },
     detailed_wrong_votes: { fr: "Votes faux", en: "Wrong votes", es: "Votos incorrectos", de: "Falsche Stimmen", it: "Voti sbagliati", pt: "Votos errados", nl: "Foute stemmen" },
     
-    // V11: Onglet Détaillé - Chef de Sécurité
-    detailed_security: { fr: "🔫 Chef de Sécurité", en: "🔫 Security Chief", es: "🔫 Jefe de Seguridad", de: "🔫 Sicherheitschef", it: "🔫 Capo Sicurezza", pt: "🔫 Chefe de Segurança", nl: "🔫 Beveiligingschef" },
-    detailed_sab_eliminated: { fr: "Saboteurs éliminés", en: "Saboteurs eliminated", es: "Saboteadores eliminados", de: "Saboteure eliminiert", it: "Sabotatori eliminati", pt: "Sabotadores eliminados", nl: "Saboteurs geëlimineerd" },
-    detailed_astro_eliminated_err: { fr: "Astronautes éliminés (err)", en: "Astronauts eliminated (err)", es: "Astronautas eliminados (err)", de: "Astronauten eliminiert (Fehler)", it: "Astronauti eliminati (err)", pt: "Astronautas eliminados (err)", nl: "Astronauten geëlimineerd (fout)" },
+    // V11: Onglet Détaillé - Vengeance (ex Chef de Sécurité)
+    detailed_revenge: { fr: "Vengeance", en: "Revenge", es: "Venganza", de: "Rache", it: "Vendetta", pt: "Vingança", nl: "Wraak" },
+    detailed_eliminated: { fr: "éliminés", en: "eliminated", es: "eliminados", de: "eliminiert", it: "eliminati", pt: "eliminados", nl: "geëlimineerd" },
+    detailed_eliminated_err: { fr: "éliminés (err)", en: "eliminated (err)", es: "eliminados (err)", de: "eliminiert (Fehler)", it: "eliminati (err)", pt: "eliminados (err)", nl: "geëlimineerd (fout)" },
     
-    // V11: Onglet Détaillé - Docteur
-    detailed_doctor: { fr: "💊 Docteur / Sorcière", en: "💊 Doctor / Witch", es: "💊 Doctor / Bruja", de: "💊 Arzt / Hexe", it: "💊 Dottore / Strega", pt: "💊 Doutor / Bruxa", nl: "💊 Dokter / Heks" },
-    detailed_fatal_potion_ok: { fr: "Potion fatale OK (saboteur)", en: "Fatal potion OK (saboteur)", es: "Poción fatal OK (saboteador)", de: "Todestrank OK (Saboteur)", it: "Pozione fatale OK (sabotatore)", pt: "Poção fatal OK (sabotador)", nl: "Dodelijke drank OK (saboteur)" },
-    detailed_fatal_potion_err: { fr: "Potion fatale err (astronaute)", en: "Fatal potion err (astronaut)", es: "Poción fatal err (astronauta)", de: "Todestrank Fehler (Astronaut)", it: "Pozione fatale err (astronauta)", pt: "Poção fatal err (astronauta)", nl: "Dodelijke drank fout (astronaut)" },
+    // V11: Onglet Détaillé - Soigneur (ex Docteur)
+    detailed_healer: { fr: "Soigneur", en: "Healer", es: "Sanador", de: "Heiler", it: "Guaritore", pt: "Curador", nl: "Genezer" },
+    detailed_fatal_potion_ok_prefix: { fr: "Potion fatale OK", en: "Fatal potion OK", es: "Poción fatal OK", de: "Todestrank OK", it: "Pozione fatale OK", pt: "Poção fatal OK", nl: "Dodelijke drank OK" },
+    detailed_fatal_potion_err_prefix: { fr: "Potion fatale err", en: "Fatal potion err", es: "Poción fatal err", de: "Todestrank Fehler", it: "Pozione fatale err", pt: "Poção fatal err", nl: "Dodelijke drank fout" },
     detailed_life_potions: { fr: "Potions de vie utilisées", en: "Life potions used", es: "Pociones de vida usadas", de: "Lebenstränke verwendet", it: "Pozioni vita usate", pt: "Poções de vida usadas", nl: "Levensdrankjes gebruikt" },
     detailed_not_saved: { fr: "Non sauvés (opportunités manquées)", en: "Not saved (missed opportunities)", es: "No salvados (oportunidades perdidas)", de: "Nicht gerettet (verpasste Gelegenheiten)", it: "Non salvati (opportunità mancate)", pt: "Não salvos (oportunidades perdidas)", nl: "Niet gered (gemiste kansen)" },
     
-    // V11: Onglet Détaillé - Actions du Capitaine
-    detailed_captain: { fr: "👑 Actions du Capitaine", en: "👑 Captain Actions", es: "👑 Acciones del Capitán", de: "👑 Kapitänsaktionen", it: "👑 Azioni del Capitano", pt: "👑 Ações do Capitão", nl: "👑 Kapitein Acties" },
-    detailed_tiebreak_ok: { fr: "Départage OK (tué saboteur)", en: "Tiebreak OK (killed saboteur)", es: "Desempate OK (mató saboteador)", de: "Stichabstimmung OK (Saboteur getötet)", it: "Spareggio OK (ucciso sabotatore)", pt: "Desempate OK (matou sabotador)", nl: "Stemminguitslag OK (saboteur gedood)" },
-    detailed_tiebreak_ko: { fr: "Départage KO (tué astronaute)", en: "Tiebreak KO (killed astronaut)", es: "Desempate KO (mató astronauta)", de: "Stichabstimmung KO (Astronaut getötet)", it: "Spareggio KO (ucciso astronauta)", pt: "Desempate KO (matou astronauta)", nl: "Stemminguitslag KO (astronaut gedood)" },
-    detailed_transfer_ok: { fr: "Transfert OK (à astronaute)", en: "Transfer OK (to astronaut)", es: "Transferencia OK (a astronauta)", de: "Transfer OK (an Astronaut)", it: "Trasferimento OK (a astronauta)", pt: "Transferência OK (para astronauta)", nl: "Transfer OK (naar astronaut)" },
-    detailed_transfer_ko: { fr: "Transfert KO (à saboteur)", en: "Transfer KO (to saboteur)", es: "Transferencia KO (a saboteador)", de: "Transfer KO (an Saboteur)", it: "Trasferimento KO (a sabotatore)", pt: "Transferência KO (para sabotador)", nl: "Transfer KO (naar saboteur)" },
+    // V11: Onglet Détaillé - Capitaine
+    detailed_captain_title: { fr: "Capitaine", en: "Captain", es: "Capitán", de: "Kapitän", it: "Capitano", pt: "Capitão", nl: "Kapitein" },
+    detailed_tiebreak_ok_prefix: { fr: "Départage OK", en: "Tiebreak OK", es: "Desempate OK", de: "Stichabstimmung OK", it: "Spareggio OK", pt: "Desempate OK", nl: "Stemminguitslag OK" },
+    detailed_tiebreak_ko_prefix: { fr: "Départage KO", en: "Tiebreak KO", es: "Desempate KO", de: "Stichabstimmung KO", it: "Spareggio KO", pt: "Desempate KO", nl: "Stemminguitslag KO" },
+    detailed_transfer_ok_prefix: { fr: "Transfert OK", en: "Transfer OK", es: "Transferencia OK", de: "Transfer OK", it: "Trasferimento OK", pt: "Transferência OK", nl: "Transfer OK" },
+    detailed_transfer_ko_prefix: { fr: "Transfert KO", en: "Transfer KO", es: "Transferencia KO", de: "Transfer KO", it: "Trasferimento KO", pt: "Transferência KO", nl: "Transfer KO" },
     
     // V11: Onglet Détaillé - Tableau par rôle
     detailed_table_role: { fr: "Rôle", en: "Role", es: "Rol", de: "Rolle", it: "Ruolo", pt: "Papel", nl: "Rol" },

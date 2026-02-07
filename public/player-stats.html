@@ -1873,8 +1873,8 @@
       };
       
       // Fonction pour obtenir le nom traduit d'un rôle
-      // V11: Fonction de traduction des rôles avec support thèmes
-      const getRoleName = (roleKey) => {
+      // V11: Fonction de traduction des rôles avec support thèmes et pluriel
+      const getRoleName = (roleKey, plural = false) => {
         const theme = localStorage.getItem('saboteur_theme') || 'default';
         const lang = getCurrentLang();
         
@@ -1883,6 +1883,13 @@
           const themeRoles = TRANSLATIONS.themeRoles[theme] || TRANSLATIONS.themeRoles['default'];
           if (themeRoles && themeRoles[roleKey]) {
             const roleTranslations = themeRoles[roleKey];
+            // Forme plurielle
+            if (plural) {
+              const pluralKey = lang + '_plural';
+              if (roleTranslations[pluralKey]) return roleTranslations[pluralKey];
+              if (roleTranslations['fr_plural']) return roleTranslations['fr_plural'];
+            }
+            // Forme singulière
             if (roleTranslations[lang]) return roleTranslations[lang];
             if (roleTranslations.fr) return roleTranslations.fr;
           }
@@ -1890,14 +1897,10 @@
         
         // Fallback: noms statiques en français
         const roleNames = {
-          astronaut: 'Astronaute', crewmate: 'Équipier', villageois: 'Villageois', etudiant: 'Étudiant', mortel: 'Mortel',
-          doctor: 'Docteur', sorciere: 'Sorcière', guerisseur: 'Guérisseur', apollon: 'Apollon',
-          security: 'Chef Sécurité', chasseur: 'Chasseur', ares: 'Arès',
-          radar: 'Officier Radar', voyante: 'Voyante', oracle: 'Oracle', athena: 'Athéna',
-          ai_agent: 'Agent IA', cupidon: 'Cupidon', aphrodite: 'Aphrodite',
-          chameleon: 'Caméléon', salvateur: 'Salvateur', hermes: 'Hermès',
-          engineer: 'Ingénieur', ancien: 'Ancien', hephaïstos: 'Héphaïstos',
-          saboteur: 'Saboteur', loup_garou: 'Loup-Garou', imposteur: 'Imposteur', sorcier_noir: 'Sorcier Noir', titan: 'Titan'
+          astronaut: plural ? 'Astronautes' : 'Astronaute',
+          saboteur: plural ? 'Saboteurs' : 'Saboteur',
+          doctor: 'Docteur', security: 'Chef Sécurité', radar: 'Officier Radar',
+          ai_agent: 'Agent IA', chameleon: 'Caméléon', engineer: 'Ingénieur'
         };
         return roleNames[roleKey] || roleKey;
       };
@@ -1905,6 +1908,12 @@
       // Préparer les données pour les camemberts
       const winsData = Object.entries(winsByRole).filter(([_, v]) => v > 0);
       const lossesData = Object.entries(lossesByRole).filter(([_, v]) => v > 0);
+      
+      // Noms de rôles traduits selon le thème
+      const saboteurPlural = getRoleName('saboteur', true);
+      const saboteurSingular = getRoleName('saboteur', false);
+      const astronautPlural = getRoleName('astronaut', true);
+      const astronautSingular = getRoleName('astronaut', false);
       
       // Stats détaillées
       const correctVotes = stats.correctSaboteurVotes || 0;
@@ -1960,9 +1969,9 @@
           <div class="detailed-section-title">${t('detailed_combat_stats', '🎯 Statistiques de combat')}</div>
           <div class="stats-grid">
             
-            <!-- Combat VS Saboteurs -->
+            <!-- Combat VS Saboteurs (dynamique selon thème) -->
             <div class="stat-card">
-              <div class="stat-card-title">${t('detailed_combat_vs', '🎯 Combat VS Saboteurs')}</div>
+              <div class="stat-card-title">🎯 ${t('detailed_combat_vs_prefix', 'Combat VS')} ${saboteurPlural}</div>
               <div class="stat-row">
                 <span class="stat-label">${t('detailed_correct_votes', 'Votes corrects')}</span>
                 <span class="stat-value good">${correctVotes}/${totalVotes} (${pct(correctVotes, totalVotes)}%)</span>
@@ -1979,18 +1988,18 @@
               </div>
             </div>
             
-            <!-- Chef de Sécurité -->
+            <!-- Vengeance (ex Chef de Sécurité) -->
             <div class="stat-card">
-              <div class="stat-card-title">${t('detailed_security', '🔫 Chef de Sécurité')}</div>
+              <div class="stat-card-title">🔫 ${t('detailed_revenge', 'Vengeance')}</div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_sab_eliminated', 'Saboteurs éliminés')}</span>
+                <span class="stat-label">${saboteurPlural} ${t('detailed_eliminated', 'éliminés')}</span>
                 <span class="stat-value good">${revengeKillsSab}/${totalRevengeShots} (${pct(revengeKillsSab, totalRevengeShots)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(revengeKillsSab, totalRevengeShots)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_astro_eliminated_err', 'Astronautes éliminés (err)')}</span>
+                <span class="stat-label">${astronautPlural} ${t('detailed_eliminated_err', 'éliminés (err)')}</span>
                 <span class="stat-value bad">${revengeKillsInn}/${totalRevengeShots} (${pct(revengeKillsInn, totalRevengeShots)}%)</span>
               </div>
               <div class="stat-bar-container">
@@ -1998,18 +2007,18 @@
               </div>
             </div>
             
-            <!-- Docteur -->
+            <!-- Soigneur (ex Docteur / Sorcière) -->
             <div class="stat-card">
-              <div class="stat-card-title">${t('detailed_doctor', '💊 Docteur / Sorcière')}</div>
+              <div class="stat-card-title">💊 ${t('detailed_healer', 'Soigneur')}</div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_fatal_potion_ok', 'Potion fatale OK (saboteur)')}</span>
+                <span class="stat-label">${t('detailed_fatal_potion_ok_prefix', 'Potion fatale OK')} (${saboteurSingular})</span>
                 <span class="stat-value good">${doctorKillsSab}/${totalDoctorKills} (${pct(doctorKillsSab, totalDoctorKills)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(doctorKillsSab, totalDoctorKills)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_fatal_potion_err', 'Potion fatale err (astronaute)')}</span>
+                <span class="stat-label">${t('detailed_fatal_potion_err_prefix', 'Potion fatale err')} (${astronautSingular})</span>
                 <span class="stat-value bad">${doctorKillsInn}/${totalDoctorKills} (${pct(doctorKillsInn, totalDoctorKills)}%)</span>
               </div>
               <div class="stat-bar-container">
@@ -2025,32 +2034,32 @@
               </div>
             </div>
             
-            <!-- Actions du Capitaine -->
+            <!-- Capitaine (ex Actions du Capitaine) -->
             <div class="stat-card">
-              <div class="stat-card-title">${t('detailed_captain', '👑 Actions du Capitaine')}</div>
+              <div class="stat-card-title">👑 ${t('detailed_captain_title', 'Capitaine')}</div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_tiebreak_ok', 'Départage OK (tué saboteur)')}</span>
+                <span class="stat-label">${t('detailed_tiebreak_ok_prefix', 'Départage OK')} (${saboteurSingular})</span>
                 <span class="stat-value good">${mayorOk}/${mayorTotal} (${pct(mayorOk, mayorTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(mayorOk, mayorTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_tiebreak_ko', 'Départage KO (tué astronaute)')}</span>
+                <span class="stat-label">${t('detailed_tiebreak_ko_prefix', 'Départage KO')} (${astronautSingular})</span>
                 <span class="stat-value bad">${mayorKo}/${mayorTotal} (${pct(mayorKo, mayorTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar bad" style="width: ${pct(mayorKo, mayorTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_transfer_ok', 'Transfert OK (à astronaute)')}</span>
+                <span class="stat-label">${t('detailed_transfer_ok_prefix', 'Transfert OK')} (${astronautSingular})</span>
                 <span class="stat-value good">${captainTransferToAst}/${captainTransferTotal} (${pct(captainTransferToAst, captainTransferTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
                 <div class="stat-bar good" style="width: ${pct(captainTransferToAst, captainTransferTotal)}%"></div>
               </div>
               <div class="stat-row">
-                <span class="stat-label">${t('detailed_transfer_ko', 'Transfert KO (à saboteur)')}</span>
+                <span class="stat-label">${t('detailed_transfer_ko_prefix', 'Transfert KO')} (${saboteurSingular})</span>
                 <span class="stat-value bad">${captainTransferToSab}/${captainTransferTotal} (${pct(captainTransferToSab, captainTransferTotal)}%)</span>
               </div>
               <div class="stat-bar-container">
