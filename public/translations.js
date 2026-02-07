@@ -22,6 +22,75 @@ const TRANSLATIONS = {
   },
 
   // ============================================================================
+  // AVANTAGES COMPTE GRATUIT (freeBenefits)
+  // ============================================================================
+  freeBenefits: {
+    title: {
+      fr: "Avantages du compte gratuit",
+      en: "Free account benefits",
+      es: "Ventajas de la cuenta gratuita",
+      it: "Vantaggi dell'account gratuito",
+      de: "Vorteile des kostenlosen Kontos",
+      pt: "Vantagens da conta gratuita",
+      nl: "Voordelen van het gratis account"
+    },
+    voiceMessages: {
+      fr: "Messages vocaux dans le chat",
+      en: "Voice messages in chat",
+      es: "Mensajes de voz en el chat",
+      it: "Messaggi vocali in chat",
+      de: "Sprachnachrichten im Chat",
+      pt: "Mensagens de voz no chat",
+      nl: "Spraakberichten in chat"
+    },
+    freeVideo: {
+      fr: "2 parties visio OFFERTES",
+      en: "2 FREE video games",
+      es: "2 partidas de video GRATIS",
+      it: "2 partite video GRATIS",
+      de: "2 KOSTENLOSE Videospiele",
+      pt: "2 jogos de vídeo GRÁTIS",
+      nl: "2 GRATIS videospellen"
+    },
+    freeAvatars: {
+      fr: "2 avatars IA OFFERTS",
+      en: "2 FREE AI avatars",
+      es: "2 avatares IA GRATIS",
+      it: "2 avatar IA GRATIS",
+      de: "2 KOSTENLOSE KI-Avatare",
+      pt: "2 avatares IA GRÁTIS",
+      nl: "2 GRATIS AI-avatars"
+    },
+    monthlyAvatars: {
+      fr: "Jusqu'à 30 avatars IA / mois",
+      en: "Up to 30 AI avatars / month",
+      es: "Hasta 30 avatares IA / mes",
+      it: "Fino a 30 avatar IA / mese",
+      de: "Bis zu 30 KI-Avatare / Monat",
+      pt: "Até 30 avatares IA / mês",
+      nl: "Tot 30 AI-avatars / maand"
+    },
+    stats: {
+      fr: "Stats & badges sauvegardés",
+      en: "Stats & badges saved",
+      es: "Estadísticas y medallas guardadas",
+      it: "Statistiche e badge salvati",
+      de: "Statistiken & Abzeichen gespeichert",
+      pt: "Estatísticas e medalhas salvas",
+      nl: "Statistieken & badges opgeslagen"
+    },
+    leaderboard: {
+      fr: "Accès aux classements",
+      en: "Leaderboard access",
+      es: "Acceso a clasificaciones",
+      it: "Accesso alle classifiche",
+      de: "Zugang zur Rangliste",
+      pt: "Acesso às classificações",
+      nl: "Toegang tot ranglijsten"
+    }
+  },
+
+  // ============================================================================
   // NOMS DES RÔLES PAR THÈME ET PAR LANGUE
   // Priorité: thème → langue (ex: Loup-Garou + Allemand = Werwolf)
   // ============================================================================
