@@ -129,6 +129,15 @@
     `;
     document.body.appendChild(floatingActions);
     
+    // V11: Barre de contrôles mobile en bas
+    const mobileControls = document.createElement('div');
+    mobileControls.id = 'mobileVideoControls';
+    mobileControls.innerHTML = `
+      <button id="mobileMicBtn" title="Micro">🎤</button>
+      <button id="mobileCamBtn" title="Caméra">📹</button>
+    `;
+    document.body.appendChild(mobileControls);
+    
     // V40: Media query pour mobile - CACHER les boutons (utiliser double-tap)
     const mobileStyle = document.createElement('style');
     mobileStyle.textContent = `
@@ -279,6 +288,21 @@
     const camBtn = document.getElementById('briefingCamBtn');
     if (camBtn) {
       camBtn.addEventListener('click', () => {
+        toggleCamera();
+      });
+    }
+    
+    // V11: Boutons mic/cam mobile
+    const mobileMicBtn = document.getElementById('mobileMicBtn');
+    if (mobileMicBtn) {
+      mobileMicBtn.addEventListener('click', () => {
+        toggleMicrophone();
+      });
+    }
+    
+    const mobileCamBtn = document.getElementById('mobileCamBtn');
+    if (mobileCamBtn) {
+      mobileCamBtn.addEventListener('click', () => {
         toggleCamera();
       });
     }
@@ -682,6 +706,10 @@
     if (floatingActions) floatingActions.style.display = 'flex';
     // V40b: Le bouton X mobile est géré par updateModeButtons()
     
+    // V11: Afficher la barre de contrôles mobile
+    const mobileControls = document.getElementById('mobileVideoControls');
+    if (mobileControls) mobileControls.style.display = '';
+    
     // V11: Nettoyer les vidéos du lobby pour économiser les ressources
     cleanupLobbyVideos();
     
@@ -719,6 +747,10 @@
     // V40b: Cacher le bouton X mobile
     const mobileCloseBtn = document.getElementById('mobileCloseBtn');
     if (mobileCloseBtn) mobileCloseBtn.style.display = 'none';
+    
+    // V11: Cacher la barre de contrôles mobile
+    const mobileControls = document.getElementById('mobileVideoControls');
+    if (mobileControls) mobileControls.style.display = 'none';
     
     // V11: Arrêter le polling des phases privées
     stopPhasePolling();
@@ -1550,34 +1582,64 @@
     }
   }
   
-  // V11: Mettre à jour le bouton mic du briefing
+  // V11: Mettre à jour le bouton mic du briefing et mobile
   function updateMicButton() {
+    // Bouton PC
     const btn = document.getElementById('briefingMicBtn');
     if (btn) {
       if (isMicMuted) {
         btn.textContent = '🔇';
         btn.style.background = 'rgba(180, 50, 50, 0.7)';
         btn.title = 'Activer le micro';
+        btn.classList.add('is-off');
       } else {
         btn.textContent = '🎤';
         btn.style.background = '';
         btn.title = 'Couper le micro';
+        btn.classList.remove('is-off');
+      }
+    }
+    
+    // Bouton Mobile
+    const mobileBtn = document.getElementById('mobileMicBtn');
+    if (mobileBtn) {
+      if (isMicMuted) {
+        mobileBtn.textContent = '🔇';
+        mobileBtn.classList.add('is-off');
+      } else {
+        mobileBtn.textContent = '🎤';
+        mobileBtn.classList.remove('is-off');
       }
     }
   }
   
-  // V11: Mettre à jour le bouton cam du briefing
+  // V11: Mettre à jour le bouton cam du briefing et mobile
   function updateCamButton() {
+    // Bouton PC
     const btn = document.getElementById('briefingCamBtn');
     if (btn) {
       if (isCamOff) {
         btn.textContent = '🚫';
         btn.style.background = 'rgba(180, 50, 50, 0.7)';
         btn.title = 'Activer la caméra';
+        btn.classList.add('is-off');
       } else {
         btn.textContent = '📹';
         btn.style.background = '';
         btn.title = 'Couper la caméra';
+        btn.classList.remove('is-off');
+      }
+    }
+    
+    // Bouton Mobile
+    const mobileBtn = document.getElementById('mobileCamBtn');
+    if (mobileBtn) {
+      if (isCamOff) {
+        mobileBtn.textContent = '🚫';
+        mobileBtn.classList.add('is-off');
+      } else {
+        mobileBtn.textContent = '📹';
+        mobileBtn.classList.remove('is-off');
       }
     }
   }

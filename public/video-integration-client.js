@@ -305,11 +305,13 @@ function initVideoForGame(state) {
 
 /**
  * Met à jour les permissions vidéo selon la phase
- * D4 v5.4: Respecte le choix manuel de l'utilisateur
- * D4 v5.8: Force démute aux phases clés (GAME_OVER, NIGHT_RESULTS, DAY_WAKE, ROLE_REVEAL)
- * V35: Ne forcer le unmute qu'UNE SEULE FOIS au changement de phase (pas à chaque roomState)
+ * V11: Logique simplifiée
+ * - Couper micro uniquement pendant : phases privées (si pas concerné), vote du jour
+ * - Unmute automatique : réveil, après vote du jour, game over
+ * - Sinon : laisser comme l'utilisateur l'a mis
  */
-let lastForceUnmutePhase = null; // V35: Tracker la dernière phase où on a forcé le unmute
+let lastForceUnmutePhase = null;
+let lastForceMutePhase = null;
 
 function updateVideoPermissions(state) {
   if (!videoRoomJoined || !window.dailyVideo.callFrame) {
@@ -319,48 +321,37 @@ function updateVideoPermissions(state) {
   const permissions = state.videoPermissions;
   if (!permissions) return;
 
-  console.log('[Video] Updating permissions:', permissions);
+  console.log('[Video] V11 Updating permissions for phase:', state.phase);
   
   const registry = window.VideoTracksRegistry;
   const phase = state.phase;
   
-  // D4 v5.8: Phases où on force le démute automatique
-  const FORCE_UNMUTE_PHASES = ['GAME_OVER', 'NIGHT_RESULTS', 'DAY_WAKE', 'ROLE_REVEAL', 'CAPTAIN_RESULT', 'VOTE_RESULT', 'LOBBY'];
+  // V11: Phases où on FORCE le mute (silence obligatoire)
+  const FORCE_MUTE_PHASES = ['DAY_VOTE', 'FINAL_VOTE'];
+  const shouldForceMute = FORCE_MUTE_PHASES.includes(phase);
+  
+  // V11: Phases où on FORCE le unmute (discussion)
+  const FORCE_UNMUTE_PHASES = ['DAY_WAKE', 'DAY_RESULTS', 'VOTE_RESULT', 'GAME_OVER', 'LOBBY'];
   const shouldForceUnmute = FORCE_UNMUTE_PHASES.includes(phase);
   
-  // V35: Ne forcer qu'UNE SEULE FOIS au changement de phase
-  const isNewPhase = (phase !== lastForceUnmutePhase);
+  // V11: Ne forcer qu'UNE SEULE FOIS au changement de phase
+  const isNewPhase = (phase !== lastForceUnmutePhase && phase !== lastForceMutePhase);
   
-  if (shouldForceUnmute && isNewPhase) {
-    console.log('[Video] 🔊 Phase', phase, '- Forcing unmute (first time for this phase)');
+  if (shouldForceMute && isNewPhase) {
+    // COUPER le micro pendant le vote
+    console.log('[Video] 🔇 Phase', phase, '- Forcing MUTE for vote');
+    lastForceMutePhase = phase;
+    lastForceUnmutePhase = null;
+    forceMuteForVote(phase, registry);
+  } else if (shouldForceUnmute && isNewPhase) {
+    // RÉACTIVER le micro pour discussion
+    console.log('[Video] 🔊 Phase', phase, '- Forcing UNMUTE for discussion');
     lastForceUnmutePhase = phase;
+    lastForceMutePhase = null;
     forceUnmuteWithNotification(phase, registry);
-  } else if (shouldForceUnmute && !isNewPhase) {
-    // V35: On a déjà forcé le unmute pour cette phase, respecter le choix de l'utilisateur
-    console.log('[Video] ⏭️ Phase', phase, '- Already forced unmute, respecting user choice');
   } else {
-    // D4 v5.4: Vérifier si l'utilisateur a manuellement muté (seulement si pas de force unmute)
-    const userMutedAudio = registry?.getUserMutedAudio?.() || false;
-    const userMutedVideo = registry?.getUserMutedVideo?.() || false;
-    
-    if (userMutedAudio || userMutedVideo) {
-      console.log('[Video] ⚠️ User has manual mute - preserving user choice:', { userMutedAudio, userMutedVideo });
-      
-      // D4 v5.4: Réappliquer le mute manuel APRÈS les permissions serveur
-      setTimeout(() => {
-        const callFrame = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-        if (callFrame) {
-          if (userMutedAudio) {
-            callFrame.setLocalAudio(false);
-            console.log('[Video] 🔇 Re-applied user audio mute');
-          }
-          if (userMutedVideo) {
-            callFrame.setLocalVideo(false);
-            console.log('[Video] 📷 Re-applied user video mute');
-          }
-        }
-      }, 100);
-    }
+    // V11: Laisser comme l'utilisateur l'a mis - ne rien faire
+    console.log('[Video] ⏭️ Phase', phase, '- Respecting user choice');
   }
   
   // Appliquer les permissions de base
@@ -383,6 +374,67 @@ function updateVideoPermissions(state) {
   if (state.videoPhaseMessage) {
     showVideoStatus(state.videoPhaseMessage, 'info');
   }
+}
+
+/**
+ * V11: Force le mute pendant le vote
+ */
+function forceMuteForVote(phase, registry) {
+  try {
+    const callFrame = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
+    if (!callFrame) return;
+    
+    // Couper le micro seulement (garder la caméra)
+    callFrame.setLocalAudio(false);
+    console.log('[Video] 🔇 Mic muted for vote phase');
+    
+    // Mettre à jour les boutons UI
+    updateMuteButtonsUI(true, false);
+    
+    // Afficher notification
+    showMuteNotification(phase);
+    
+  } catch (e) {
+    console.error('[Video] Error forcing mute:', e);
+  }
+}
+
+/**
+ * V11: Affiche notification de mute
+ */
+function showMuteNotification(phase) {
+  const message = phase === 'FINAL_VOTE' 
+    ? '🗳️ Vote final - Micro coupé pour le vote'
+    : '🗳️ Vote - Micro coupé pendant le vote';
+  
+  let notif = document.getElementById('muteNotification');
+  if (!notif) {
+    notif = document.createElement('div');
+    notif.id = 'muteNotification';
+    notif.style.cssText = `
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(180, 50, 50, 0.95);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: bold;
+      z-index: 11000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: fadeInDown 0.3s ease;
+    `;
+    document.body.appendChild(notif);
+  }
+  
+  notif.textContent = message;
+  notif.style.display = 'block';
+  
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    notif.style.display = 'none';
+  }, 3000);
 }
 
 /**
