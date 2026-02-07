@@ -948,7 +948,7 @@
     <!-- View: Detailed (V11) -->
     <div id="viewDetailed" class="view">
       <div id="detailedContent">
-        <div class="loading" data-i18n-site="stats.detailed_loading">Chargement des statistiques détaillées...</div>
+        <div class="loading">Chargement des statistiques détaillées...</div>
       </div>
     </div>
   </div>
@@ -1870,7 +1870,22 @@
       };
       
       // Fonction pour obtenir le nom traduit d'un rôle
+      // V11: Fonction de traduction des rôles avec support thèmes
       const getRoleName = (roleKey) => {
+        const theme = localStorage.getItem('saboteur_theme') || 'default';
+        const lang = getCurrentLang();
+        
+        // Essayer d'abord TRANSLATIONS.themeRoles (traductions multilingues par thème)
+        if (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.themeRoles) {
+          const themeRoles = TRANSLATIONS.themeRoles[theme] || TRANSLATIONS.themeRoles['default'];
+          if (themeRoles && themeRoles[roleKey]) {
+            const roleTranslations = themeRoles[roleKey];
+            if (roleTranslations[lang]) return roleTranslations[lang];
+            if (roleTranslations.fr) return roleTranslations.fr;
+          }
+        }
+        
+        // Fallback: noms statiques en français
         const roleNames = {
           astronaut: 'Astronaute', crewmate: 'Équipier', villageois: 'Villageois', etudiant: 'Étudiant', mortel: 'Mortel',
           doctor: 'Docteur', sorciere: 'Sorcière', guerisseur: 'Guérisseur', apollon: 'Apollon',
@@ -2289,6 +2304,7 @@
   </script>
   
   <!-- Traductions -->
+  <script src="/translations.js"></script>
   <script src="/site-translations.js"></script>
   <script>
     // Appliquer les traductions au chargement
