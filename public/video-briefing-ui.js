@@ -627,6 +627,9 @@
     // CAPTAIN_RESULT FIX: Remettre display pour afficher le container
     container.style.display = '';
     
+    // V11: Marquer le body pour cacher les vidéos inline
+    document.body.classList.add('video-briefing-active');
+    
     // V40: Afficher les boutons flottants (PC)
     const floatingActions = document.getElementById('floatingVideoActions');
     if (floatingActions) floatingActions.style.display = 'flex';
@@ -642,6 +645,9 @@
     container.classList.remove('active');
     // CAPTAIN_RESULT FIX: Forcer display:none pour vraiment cacher le container
     container.style.display = 'none';
+    
+    // V11: Retirer la classe pour réafficher les vidéos inline
+    document.body.classList.remove('video-briefing-active');
     
     // V40: Cacher les boutons flottants (PC)
     const floatingActions = document.getElementById('floatingVideoActions');
