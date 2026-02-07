@@ -1976,6 +1976,13 @@ function renderEnd() {
       const pctMayorOk = mayorTotal > 0 ? Math.round((mayorOk / mayorTotal) * 100) : 0;
       const pctMayorKo = mayorTotal > 0 ? Math.round((mayorKo / mayorTotal) * 100) : 0;
       
+      // V11: Stats de transfert du capitaine
+      const captainTransferTotal = s.captainTransferTotal || 0;
+      const captainTransferToAst = s.captainTransferToAstronauts || 0;
+      const captainTransferToSab = s.captainTransferToSaboteurs || 0;
+      const pctTransferOk = captainTransferTotal > 0 ? Math.round((captainTransferToAst / captainTransferTotal) * 100) : 0;
+      const pctTransferKo = captainTransferTotal > 0 ? Math.round((captainTransferToSab / captainTransferTotal) * 100) : 0;
+      
       // V28: Labels selon le thème
       const saboteursLabel = t('saboteurs') || 'Saboteurs';
       const astronautesLabel = t('astronauts') || 'Astronautes';
@@ -2030,6 +2037,8 @@ function renderEnd() {
               <div style="font-weight:900; margin-bottom:4px;">${eg('captainAction', '👑 Action du')} ${captainLabel}</div>
               <div>• ${eg('tiebreakerOk', 'Départage OK')}: <b>${mayorOk}/${mayorTotal}</b> (${pctMayorOk}%)</div>
               <div>• ${eg('tiebreakerKo', 'Départage KO')}: <b>${mayorKo}/${mayorTotal}</b> (${pctMayorKo}%)</div>
+              <div>• ${eg('transferOk', 'Transfert OK')}: <b>${captainTransferToAst}/${captainTransferTotal}</b> (${pctTransferOk}%)</div>
+              <div>• ${eg('transferKo', 'Transfert KO')}: <b>${captainTransferToSab}/${captainTransferTotal}</b> (${pctTransferKo}%)</div>
             </div>
             
             <div>
