@@ -1149,19 +1149,29 @@ background: rgba(10, 14, 39, 0.95);
     this.setOverlay(shouldOverlay, this.allowed.reason);
 
     // V11: Vérifier si c'est une phase privée
-    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false };
+    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false, allowCommunication: false };
     const isPrivatePhase = privateStatus.isPrivate;
     const isPrivateNotInvolved = isPrivatePhase && !privateStatus.iAmInvolved;
+    const isPrivateSolo = isPrivatePhase && !privateStatus.allowCommunication;  // Phase solo = pas de comm
 
-    // === V11 ULTRA-SIMPLE: Ne couper audio/vidéo QUE si phase privée non-concerné ===
-    if (isPrivateNotInvolved) {
-      // Phase privée où je ne suis PAS concerné → tout couper
+    // === V11 ULTRA-SIMPLE ===
+    // Phase privée SOLO (caméléon, radar, doctor...) = TOUT LE MONDE muet (même le concerné)
+    // Phase privée GROUPE (saboteurs) où je suis concerné = micro/vidéo ON
+    // Phase privée où je ne suis pas concerné = tout couper
+    // Phase normale = réactiver VIDÉO (pas audio), ne pas toucher au micro
+    
+    if (isPrivateSolo) {
+      // Phase privée SOLO → couper micro/vidéo pour TOUT LE MONDE (y compris le concerné)
       try { await this.callFrame.setLocalVideo(false); } catch (e) { console.warn("setLocalVideo(false) failed", e); }
       try { await this.callFrame.setLocalAudio(false); } catch (e) { console.warn("setLocalAudio(false) failed", e); }
-      // 🔇 DEAFEN : couper l'audio distant
       await this.deafenRemotes(true);
-    } else if (isPrivatePhase && privateStatus.iAmInvolved) {
-      // Phase privée où je SUIS concerné → activer pour communiquer
+    } else if (isPrivateNotInvolved) {
+      // Phase privée GROUPE où je ne suis PAS concerné → tout couper
+      try { await this.callFrame.setLocalVideo(false); } catch (e) { console.warn("setLocalVideo(false) failed", e); }
+      try { await this.callFrame.setLocalAudio(false); } catch (e) { console.warn("setLocalAudio(false) failed", e); }
+      await this.deafenRemotes(true);
+    } else if (isPrivatePhase && privateStatus.iAmInvolved && privateStatus.allowCommunication) {
+      // Phase privée GROUPE où je SUIS concerné (saboteurs) → activer pour communiquer
       await this.deafenRemotes(false);
       try {
         const currentVideo = await this.callFrame.localVideo();
@@ -1176,8 +1186,17 @@ background: rgba(10, 14, 39, 0.95);
         }
       } catch (e) { console.warn("setLocalAudio(true) for private phase failed", e); }
     } else {
-      // Phase normale → NE RIEN TOUCHER à l'audio/vidéo, juste le deafen
+      // Phase normale → réactiver la VIDÉO (mais PAS le micro - l'utilisateur le contrôle)
       await this.deafenRemotes(false);
+      // Réactiver la vidéo si elle était coupée par une phase privée
+      try {
+        const currentVideo = await this.callFrame.localVideo();
+        if (!currentVideo) {
+          await this.callFrame.setLocalVideo(true);
+          console.log("[Daily] V11: Vidéo réactivée après phase privée");
+        }
+      } catch (e) { console.warn("setLocalVideo(true) after private phase failed", e); }
+      // NE PAS toucher au micro - l'utilisateur le contrôle
     }
 
     // Message de statut (optionnel)

@@ -41,10 +41,16 @@
     ],
     
     // Phases de nuit (PiP possible)
-    NIGHT_PHASES: ['NIGHT', 'NIGHT_SABOTEURS', 'SABOTEURS', 'DOCTOR', 'RADAR_OFFICER', 'SECURITY', 'ACTION', 'NIGHT_AI_AGENT', 'NIGHT_AI_EXCHANGE'],
+    NIGHT_PHASES: ['NIGHT', 'NIGHT_SABOTEURS', 'SABOTEURS', 'DOCTOR', 'RADAR_OFFICER', 'SECURITY', 'ACTION', 'NIGHT_AI_AGENT', 'NIGHT_AI_EXCHANGE', 'NIGHT_CHAMELEON', 'NIGHT_RADAR', 'NIGHT_DOCTOR', 'NIGHT_SECURITY', 'NIGHT_REVENGE'],
     
-    // Phases privées (visio cachée pour les non-concernés, mais active pour les concernés)
-    PRIVATE_PHASES: ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE', 'NIGHT_AI_AGENT', 'NIGHT_AI_EXCHANGE'],
+    // Phases privées avec COMMUNICATION entre joueurs concernés (micro/vidéo ON)
+    PRIVATE_PHASES_WITH_COMM: ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE', 'NIGHT_AI_EXCHANGE'],
+    
+    // Phases privées SOLO - UN SEUL joueur agit, PAS de communication (micro/vidéo OFF pour tous)
+    PRIVATE_PHASES_SOLO: ['NIGHT_CHAMELEON', 'NIGHT_RADAR', 'NIGHT_DOCTOR', 'NIGHT_SECURITY', 'NIGHT_REVENGE', 'NIGHT_AI_AGENT'],
+    
+    // Toutes les phases privées (union des deux)
+    PRIVATE_PHASES: ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE', 'NIGHT_AI_EXCHANGE', 'NIGHT_CHAMELEON', 'NIGHT_RADAR', 'NIGHT_DOCTOR', 'NIGHT_SECURITY', 'NIGHT_REVENGE', 'NIGHT_AI_AGENT'],
     
     // Debug
     DEBUG: true

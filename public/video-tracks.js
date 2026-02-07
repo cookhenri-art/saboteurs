@@ -465,7 +465,8 @@
       isPrivate: false,
       iAmInvolved: false,
       allowedPlayerIds: [],
-      message: ""
+      message: "",
+      allowCommunication: false  // V11: true si les joueurs concernés doivent communiquer
     };
     
     if (!state || !state.phase) return result;
@@ -473,6 +474,9 @@
     const phase = state.phase;
     const myPlayer = state.players?.find(p => p.playerId === myId);
     const phaseData = state.phaseData || {};
+    
+    // V11: Phases où les joueurs concernés doivent communiquer
+    const COMM_PHASES = ['NIGHT_SABOTEURS', 'SABOTEURS_PRIVATE', 'NIGHT_AI_EXCHANGE'];
     
     // V35: Helper pour les traductions des messages overlay
     const tr = (key, fallback) => {
@@ -483,9 +487,10 @@
       return fallback;
     };
     
-    // V35: NIGHT_CHAMELEON - Caméléon seul voit son écran
+    // V35: NIGHT_CHAMELEON - Caméléon seul voit son écran (PAS de communication)
     if (phase === 'NIGHT_CHAMELEON') {
       result.isPrivate = true;
+      result.allowCommunication = false;  // Solo - pas de micro
       const chameleonName = window.tRole ? window.tRole('chameleon') : 'Caméléon';
       result.message = tr('overlay.chameleon', `🔒 ${chameleonName} fait son choix...`).replace('{role}', chameleonName);
       
@@ -577,9 +582,10 @@
       return result;
     }
     
-    // NIGHT_AI_EXCHANGE : phase privée Agent IA + partenaire lié
+    // NIGHT_AI_EXCHANGE : phase privée Agent IA + partenaire lié (avec communication)
     if (phase === 'NIGHT_AI_EXCHANGE') {
       result.isPrivate = true;
+      result.allowCommunication = true;  // V11: Agent IA et partenaire doivent communiquer
       // D11: Utiliser la traduction dynamique du rôle
       const aiAgentName = window.tRole ? window.tRole('ai_agent') : 'Agent IA';
       result.message = tr('overlay.aiExchange', `🔒 Échange ${aiAgentName} privé en cours...`).replace('{role}', aiAgentName);
@@ -613,9 +619,10 @@
       return result;
     }
     
-    // NIGHT_SABOTEURS : phase privée saboteurs entre eux
+    // NIGHT_SABOTEURS : phase privée saboteurs entre eux (avec communication)
     if (phase === 'NIGHT_SABOTEURS') {
       result.isPrivate = true;
+      result.allowCommunication = true;  // V11: Les saboteurs doivent communiquer
       // D11: Utiliser la traduction dynamique
       const saboName = window.t ? window.t('saboteurs') : 'saboteurs';
       result.message = tr('overlay.saboteurs', `🔒 Les ${saboName.toLowerCase()} communiquent...`).replace('{team}', saboName.toLowerCase());

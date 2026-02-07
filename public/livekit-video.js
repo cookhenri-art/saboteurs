@@ -732,13 +732,19 @@ class LiveKitVideoManager {
     this.setOverlay(shouldOverlay, this.allowed.reason);
 
     // V11: Vérifier si c'est une phase privée
-    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false };
+    const privateStatus = window.getPrivatePhaseStatus?.() || { isPrivate: false, iAmInvolved: false, allowCommunication: false };
     const isPrivatePhase = privateStatus.isPrivate;
     const isPrivateNotInvolved = isPrivatePhase && !privateStatus.iAmInvolved;
+    const isPrivateSolo = isPrivatePhase && !privateStatus.allowCommunication;  // Phase solo = pas de comm
 
-    // === V11 ULTRA-SIMPLE: Ne couper audio/vidéo QUE si phase privée non-concerné ===
-    if (isPrivateNotInvolved) {
-      // Phase privée où je ne suis PAS concerné → tout couper
+    // === V11 ULTRA-SIMPLE ===
+    // Phase privée SOLO (caméléon, radar, doctor...) = TOUT LE MONDE muet (même le concerné)
+    // Phase privée GROUPE (saboteurs) où je suis concerné = micro/vidéo ON
+    // Phase privée où je ne suis pas concerné = tout couper
+    // Phase normale = réactiver VIDÉO (pas audio), ne pas toucher au micro
+    
+    if (isPrivateSolo) {
+      // Phase privée SOLO → couper micro/vidéo pour TOUT LE MONDE (y compris le concerné)
       if (this._localVideoEnabled) {
         try {
           await this.room?.localParticipant?.setCameraEnabled(false);
@@ -751,10 +757,24 @@ class LiveKitVideoManager {
           this._localAudioEnabled = false;
         } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
       }
-      // 🔇 DEAFEN : couper l'audio distant
       await this.deafenRemotes(true);
-    } else if (isPrivatePhase && privateStatus.iAmInvolved) {
-      // Phase privée où je SUIS concerné → activer pour communiquer
+    } else if (isPrivateNotInvolved) {
+      // Phase privée GROUPE où je ne suis PAS concerné → tout couper
+      if (this._localVideoEnabled) {
+        try {
+          await this.room?.localParticipant?.setCameraEnabled(false);
+          this._localVideoEnabled = false;
+        } catch (e) { console.warn("[LiveKit] setCameraEnabled(false) failed", e); }
+      }
+      if (this._localAudioEnabled) {
+        try {
+          await this.room?.localParticipant?.setMicrophoneEnabled(false);
+          this._localAudioEnabled = false;
+        } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(false) failed", e); }
+      }
+      await this.deafenRemotes(true);
+    } else if (isPrivatePhase && privateStatus.iAmInvolved && privateStatus.allowCommunication) {
+      // Phase privée GROUPE où je SUIS concerné (saboteurs) → activer pour communiquer
       await this.deafenRemotes(false);
       if (!this._localVideoEnabled) {
         try {
@@ -769,8 +789,17 @@ class LiveKitVideoManager {
         } catch (e) { console.warn("[LiveKit] setMicrophoneEnabled(true) for private phase failed", e); }
       }
     } else {
-      // Phase normale → NE RIEN TOUCHER à l'audio/vidéo, juste le deafen
+      // Phase normale → réactiver la VIDÉO (mais PAS le micro - l'utilisateur le contrôle)
       await this.deafenRemotes(false);
+      // Réactiver la vidéo si elle était coupée par une phase privée
+      if (!this._localVideoEnabled) {
+        try {
+          await this.room?.localParticipant?.setCameraEnabled(true);
+          this._localVideoEnabled = true;
+          console.log("[LiveKit] V11: Vidéo réactivée après phase privée");
+        } catch (e) { console.warn("[LiveKit] setCameraEnabled(true) after private phase failed", e); }
+      }
+      // NE PAS toucher au micro - l'utilisateur le contrôle
     }
 
     // Message status
