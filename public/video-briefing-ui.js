@@ -1,363 +1,154 @@
 /**
- * VIDEO BRIEFING UI - D5 V3.23 ULTIMATE FIX
- * ===========================================
+ * VIDEO BRIEFING UI - D4 "Salle de Briefing"
+ * ==========================================
  * 
- * VERSION: 3.23 ULTIMATE FIX
- * BUILD: 2026-01-15 23:00 UTC
+ * Interface avancée de visioconférence style "réunion Zoom/Meet".
+ * Focus sur l'active speaker + sidebar avec vignettes.
  * 
- * Gère le DOM et le rendu du mode "Salle de Briefing".
- * Écoute les événements du VideoModeController et met à jour l'interface.
- * 
- * Responsabilités:
- * - Créer/détruire le DOM du mode briefing
- * - Attacher les flux vidéo aux éléments
- * - Gérer les interactions utilisateur (clic thumbnail, boutons)
- * - Synchroniser avec video-tracks.js
- * - [V3.21] COORDINATION avec client.js via flag global
- * - [V3.22] ABSOLUTE - Container vidéo ne POUSSE PAS le contenu
- * - [V3.23] ULTIMATE - TOUS les padding-top supprimés (desktop + mobile + tablette)
+ * V3 GRILLE FIX: Correction du problème de miniaturisation en mode SPLIT
+ * - Ne JAMAIS reconstruire les thumbs si ils existent déjà en mode SPLIT
+ * - Réutiliser les éléments vidéo existants
  */
 
 (function() {
   'use strict';
 
-  // V41: Logs de version conditionnels
-  if (window.SABOTEUR_DEBUG) {
-    console.log('%c🔥🔥🔥 VIDEO BRIEFING UI V3.23 ULTIMATE FIX LOADED 🔥🔥🔥', 
-      'background: #ff00ff; color: #ffffff; font-size: 20px; font-weight: bold; padding: 10px;');
-    console.log('%cBuild: 2026-01-15 23:00 UTC | Fix: TOUS padding-top supprimés (5 occurrences)', 
-      'background: #0088ff; color: #ffffff; font-size: 14px; padding: 5px;');
-  }
+  const DEBUG = true;
+  const log = (...args) => DEBUG && console.log('[BriefingUI]', ...args);
 
-  // V41: Debug conditionnel
-  const DEBUG = window.SABOTEUR_DEBUG || false;
-  
-  function log(...args) {
-    if (DEBUG) console.log('[BriefingUI]', ...args);
-  }
-
-  // ============================================
-  // DOM REFERENCES
-  // ============================================
-  
+  // DOM Elements
   let container = null;
   let focusWrapper = null;
   let focusMain = null;
   let focusNameEl = null;
   let thumbsSidebar = null;
-  let headerEl = null;
-  let exitBtn = null;
-  let expandBtn = null; // Mobile expand button
-  
-  // Track elements
-  const thumbElements = new Map(); // playerId -> DOM element
-  let focusVideoEl = null;
+  let expandBtn = null;
   
   // State
-  let isInitialized = false;
   let currentFocusId = null;
+  let focusVideoEl = null;
+  let thumbElements = new Map(); // playerId -> thumb element
+  
+  // V3 GRILLE FIX: Tracker le dernier mode pour détecter les changements
+  let lastKnownMode = null;
+  // V3 GRILLE FIX: Tracker si les thumbs ont été initialisés pour ce mode
+  let thumbsInitializedForSplit = false;
 
   // ============================================
   // INITIALIZATION
   // ============================================
   
   function init() {
-    if (isInitialized) return;
+    log('Initializing...');
     
-    createDOM();
+    createContainer();
     bindEvents();
     
-    isInitialized = true;
-    log('UI initialized');
+    log('Initialized');
   }
 
-  function createDOM() {
+  function createContainer() {
     // Main container
     container = document.createElement('div');
-    container.className = 'video-briefing-container';
     container.id = 'videoBriefingContainer';
+    container.className = 'video-briefing-container';
     
-    // Header (sans les boutons - ils seront séparés pour éviter le problème z-index)
-    headerEl = document.createElement('div');
-    headerEl.className = 'video-briefing-header';
-    headerEl.innerHTML = `
+    // Header
+    const header = document.createElement('div');
+    header.className = 'video-briefing-header';
+    header.innerHTML = `
       <div class="video-briefing-title">
-        <span class="icon">🎥</span>
-        <span class="text" data-i18n="briefingTitle">SALLE DE BRIEFING</span>
-        <span class="phase-badge" id="briefingPhaseBadge">DÉBAT</span>
+        <span class="icon">📹</span>
+        <span class="text">SALLE DE BRIEFING</span>
+        <span class="phase-badge" id="briefingPhaseBadge">DISCUSSION</span>
       </div>
-      <div class="video-briefing-actions-placeholder"></div>
+      <div class="video-briefing-controls" id="briefingControls">
+        <!-- Controls injected by video-tracks.js or here -->
+      </div>
     `;
-    container.appendChild(headerEl);
+    container.appendChild(header);
     
-    // V40: Boutons flottants HORS du container (pour éviter le problème de z-index avec transform)
-    const floatingActions = document.createElement('div');
-    floatingActions.id = 'floatingVideoActions';
-    floatingActions.className = 'video-briefing-actions floating-actions';
-    floatingActions.style.cssText = `
-      position: fixed !important;
-      top: 10px !important;
-      right: 180px !important;
-      z-index: 10700 !important;
-      display: none;
-      gap: 10px;
-      background: rgba(0,0,0,0.8);
-      padding: 6px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(0,255,255,0.3);
-    `;
-    floatingActions.innerHTML = `
-      <button class="video-briefing-btn btn-expand" id="briefingExpandBtn" title="Plein écran">
-        ⬆ Max
-      </button>
-      <button class="video-briefing-btn btn-split" id="briefingSplitBtn" title="Mode 50/50">
-        ⬕ Split
-      </button>
-      <button class="video-briefing-btn btn-exit" id="briefingExitBtn" title="Fermer la visio">
-        ✕ Fermer
-      </button>
-    `;
-    document.body.appendChild(floatingActions);
+    // Content wrapper (flexbox)
+    const content = document.createElement('div');
+    content.className = 'video-briefing-content';
     
-    // V40: Media query pour mobile - CACHER les boutons (utiliser double-tap)
-    const mobileStyle = document.createElement('style');
-    mobileStyle.textContent = `
-      @media (max-width: 768px) {
-        #floatingVideoActions {
-          display: none !important;
-        }
-      }
-      @media (min-width: 769px) {
-        #mobileCloseBtn {
-          display: none !important;
-        }
-      }
-      /* V40c: Indicateur de double-tap sur mobile */
-      @media (max-width: 768px) {
-        .video-briefing-container.active::after {
-          content: "Double-tap = Max / Split";
-          position: fixed;
-          bottom: 10px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(0,0,0,0.7);
-          color: rgba(255,255,255,0.7);
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 0.75rem;
-          z-index: 10000;
-          pointer-events: none;
-          opacity: 0;
-          animation: fadeHint 4s ease-in-out;
-        }
-        @keyframes fadeHint {
-          0% { opacity: 0; }
-          10% { opacity: 1; }
-          70% { opacity: 1; }
-          100% { opacity: 0; }
-        }
-      }
-    `;
-    document.head.appendChild(mobileStyle);
-    
-    // V40: Bouton X pour fermer sur mobile - très petit, au-dessus du bouton Visio
-    const mobileCloseBtn = document.createElement('button');
-    mobileCloseBtn.id = 'mobileCloseBtn';
-    mobileCloseBtn.innerHTML = '✕';
-    mobileCloseBtn.title = 'Fermer la visio';
-    mobileCloseBtn.style.cssText = `
-      position: fixed !important;
-      bottom: 65px !important;
-      left: 12px !important;
-      z-index: 10700 !important;
-      display: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgba(255, 60, 60, 0.95);
-      border: 1px solid rgba(255, 80, 80, 1);
-      color: white;
-      font-size: 0.65rem;
-      font-weight: bold;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-      padding: 0;
-      line-height: 1;
-    `;
-    mobileCloseBtn.addEventListener('click', () => {
-      log('Mobile close button clicked');
-      if (window.videoModeCtrl) {
-        window.videoModeCtrl.setInlineMode();
-      }
-    });
-    document.body.appendChild(mobileCloseBtn);
-    
-    // Focus wrapper
+    // Focus wrapper (large video)
     focusWrapper = document.createElement('div');
     focusWrapper.className = 'video-focus-wrapper';
     
-    // Main focus video
     focusMain = document.createElement('div');
     focusMain.className = 'video-focus-main empty';
     focusMain.id = 'videoFocusMain';
     
-    // Focus name overlay
+    // Name overlay for focus
     focusNameEl = document.createElement('div');
     focusNameEl.className = 'video-focus-name';
     focusNameEl.innerHTML = `
-      <span class="name" id="focusPlayerName">—</span>
-      <span class="badge-speaker" id="focusSpeakerBadge" style="display:none;">PARLE</span>
+      <span class="name" id="focusPlayerName">-</span>
+      <span class="badge-speaker" id="focusSpeakerBadge" style="display:none;">🎙️ Parle</span>
     `;
     focusMain.appendChild(focusNameEl);
     
     focusWrapper.appendChild(focusMain);
-    container.appendChild(focusWrapper);
+    content.appendChild(focusWrapper);
     
     // Thumbnails sidebar
     thumbsSidebar = document.createElement('div');
     thumbsSidebar.className = 'video-thumbs-sidebar';
     thumbsSidebar.id = 'videoThumbsSidebar';
-    container.appendChild(thumbsSidebar);
+    content.appendChild(thumbsSidebar);
     
-    // Add to body
+    container.appendChild(content);
+    
+    // Inject into DOM
     document.body.appendChild(container);
     
-    // Mobile expand button (separate from container)
-    expandBtn = document.createElement('button');
-    expandBtn.className = 'video-expand-btn';
-    expandBtn.id = 'videoExpandBtn';
-    expandBtn.innerHTML = `
-      <span class="icon">⤢</span>
-      <span class="text">Agrandir visio</span>
-    `;
-    document.body.appendChild(expandBtn);
+    // Create expand button (floating)
+    createExpandButton();
     
-    // Cache exit button reference
-    exitBtn = document.getElementById('briefingExitBtn');
-    
-    log('DOM created');
+    log('Container created');
   }
 
-  function bindEvents() {
-    // Exit button (fermer complètement)
-    exitBtn = document.getElementById('briefingExitBtn');
-    if (exitBtn) {
-      exitBtn.addEventListener('click', () => {
-        log('Exit button clicked');
-        if (window.videoModeCtrl) {
-          window.videoModeCtrl.setInlineMode();
-        }
-      });
-    }
+  function createExpandButton() {
+    expandBtn = document.createElement('button');
+    expandBtn.id = 'videoExpandBtn';
+    expandBtn.className = 'video-expand-btn';
+    expandBtn.innerHTML = '📹';
+    expandBtn.title = 'Agrandir la visio';
     
-    // V32: Boutons mic/cam supprimés - utiliser les contrôles des mini-vidéos
-    
-    // Expand button (plein écran)
-    const expandBtn2 = document.getElementById('briefingExpandBtn');
-    if (expandBtn2) {
-      expandBtn2.addEventListener('click', () => {
-        log('Expand to full button clicked');
-        if (window.videoModeCtrl) {
-          window.videoModeCtrl.setFullMode();
-        }
-      });
-    }
-    
-    // Split button (50/50)
-    const splitBtn = document.getElementById('briefingSplitBtn');
-    if (splitBtn) {
-      splitBtn.addEventListener('click', () => {
-        log('Split button clicked');
-        if (window.videoModeCtrl) {
+    expandBtn.addEventListener('click', () => {
+      if (window.videoModeCtrl) {
+        if (window.videoModeCtrl.isBriefingActive()) {
+          // Cycle through modes
+          window.videoModeCtrl.cycleMode();
+        } else {
+          // Activate split mode
           window.videoModeCtrl.setSplitMode();
-        }
-      });
-    }
-    
-    // Expand button (mobile - dans le jeu)
-    if (expandBtn) {
-      expandBtn.addEventListener('click', () => {
-        log('Expand button clicked');
-        if (window.videoModeCtrl) {
-          // Par défaut, ouvrir en mode split
-          window.videoModeCtrl.setSplitMode();
-          window.videoModeCtrl.mobileManuallyActivated = true;
-        }
-      });
-    }
-    
-    // ESC key to exit
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isVisible()) {
-        log('ESC pressed, closing briefing');
-        if (window.videoModeCtrl) {
-          window.videoModeCtrl.setInlineMode();
         }
       }
     });
     
-    // V40c: Double-tap sur mobile pour basculer Max <-> Split
-    // Écouter sur document.body car le tap peut être sur un élément enfant
-    let lastTap = 0;
-    let tapTimeout = null;
-    
-    document.body.addEventListener('touchend', (e) => {
-      // V40b: Ne réagir que si le container visio est actif
-      if (!container || !container.classList.contains('active')) {
-        return;
-      }
-      
-      // Ignorer si on tape sur un bouton, une vidéo cliquable, ou en dehors du container
-      if (e.target.closest('button') || 
-          e.target.closest('.video-thumb') ||
-          e.target.closest('#mobileCloseBtn') ||
-          e.target.closest('#floatingVideoActions')) {
-        return;
-      }
-      
-      // Vérifier qu'on tape bien dans la zone vidéo
-      const isInVideoArea = e.target.closest('.video-briefing-container') ||
-                           e.target.closest('.video-focus-wrapper') ||
-                           e.target.closest('.video-focus-main');
-      if (!isInVideoArea) {
-        return;
-      }
-      
-      const now = Date.now();
-      const timeSince = now - lastTap;
-      
-      if (timeSince < 300 && timeSince > 0) {
-        // Double tap détecté !
-        e.preventDefault();
-        clearTimeout(tapTimeout);
+    document.body.appendChild(expandBtn);
+  }
+
+  // ============================================
+  // EVENT BINDING
+  // ============================================
+  
+  function bindEvents() {
+    // D5: Empêcher le scroll du body quand on scrolle dans la sidebar
+    if (thumbsSidebar) {
+      thumbsSidebar.addEventListener('wheel', (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = thumbsSidebar;
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
         
-        log('Double-tap detected - toggling Max <-> Split');
-        
-        if (window.videoModeCtrl) {
-          // Détecter le mode actuel par la classe CSS
-          const isSplitMode = container.classList.contains('mode-split');
-          
-          if (isSplitMode) {
-            // Split → Max
-            log('Switching from SPLIT to FULL');
-            window.videoModeCtrl.setFullMode();
-          } else {
-            // Max → Split
-            log('Switching from FULL to SPLIT');
-            window.videoModeCtrl.setSplitMode();
-          }
+        // Permettre le scroll seulement si pas aux limites
+        if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+          e.preventDefault();
         }
-      } else {
-        // Premier tap - attendre un éventuel second tap
-        tapTimeout = setTimeout(() => {
-          // Simple tap - ne rien faire
-        }, 300);
-      }
-      
-      lastTap = now;
-    }, { passive: false });
+      }, { passive: false });
+    }
     
     // Listen to VideoModeController events
     if (window.videoModeCtrl) {
@@ -381,6 +172,10 @@
     
     const { mode, phase } = data;
     
+    // V3 GRILLE FIX: Détecter si le mode a vraiment changé
+    const modeActuallyChanged = (lastKnownMode !== mode);
+    lastKnownMode = mode;
+    
     // Update phase badge
     const phaseBadge = document.getElementById('briefingPhaseBadge');
     if (phaseBadge) {
@@ -392,6 +187,7 @@
       container.classList.remove('mode-full', 'mode-split');
       if (mode === 'ADVANCED_FOCUS') {
         container.classList.add('mode-full');
+        thumbsInitializedForSplit = false; // Reset car on change de mode
       } else if (mode === 'SPLIT') {
         container.classList.add('mode-split');
       }
@@ -437,9 +233,8 @@
         const current = window.pageYOffset || document.documentElement.scrollTop;
         if (current !== scrollStart) {
           scrollChanges.push({ time: Date.now(), position: current, delta: current - scrollStart });
-          // V41 FIX: Ne plus spammer la console - on log juste à la fin
         }
-      }, 10); // Check toutes les 10ms
+      }, 10);
       
       // ÉTAPE 5: Fonction de restauration agressive
       const forceScrollRestore = (reason) => {
@@ -453,8 +248,9 @@
       };
       
       // ÉTAPE 6: show() avec surveillance
+      // V3 GRILLE FIX: Passer le flag modeActuallyChanged
       console.log('[V3.21] 🎬 Appel show()...');
-      show();
+      show(modeActuallyChanged);
       console.log('[V3.21] ✓ show() terminé');
       
       updateExpandButton(false);
@@ -469,121 +265,90 @@
         requestAnimationFrame(() => {
           forceScrollRestore('RAF-2');
           
-          // Tentative après 2 frames
-          requestAnimationFrame(() => {
-            forceScrollRestore('RAF-3');
+          // Tentative finale + rapport
+          setTimeout(() => {
+            forceScrollRestore('timeout-50ms');
             
-            // Tentatives avec délais
-            setTimeout(() => {
-              forceScrollRestore('Timeout-10ms');
-            }, 10);
+            // Arrêter le monitor
+            if (activeScrollMonitor) {
+              clearInterval(activeScrollMonitor);
+              activeScrollMonitor = null;
+            }
             
-            setTimeout(() => {
-              forceScrollRestore('Timeout-50ms');
-            }, 50);
+            // LIBÉRER LE FLAG
+            window.__briefingUIScrollLock = false;
+            console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
             
-            setTimeout(() => {
-              forceScrollRestore('Timeout-100ms');
-            }, 100);
+            // Rapport final
+            console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 'background: #0066ff; color: white; padding: 3px;');
+            const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
+            console.log('[V3.21] Position finale:', scrollEnd);
+            console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
+            console.log('[V3.21] Changements détectés:', scrollChanges.length);
             
-            // ÉTAPE 8: Attendre 200ms PUIS libérer le flag (permet à client.js d'agir si nécessaire)
-            setTimeout(() => {
-              forceScrollRestore('Timeout-200ms-final');
-              
-              // LIBÉRER LE FLAG
-              window.__briefingUIScrollLock = false;
-              console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
-              
-              // Arrêter le monitoring
-              // V41 FIX: Utiliser la variable de module
-              if (activeScrollMonitor) {
-                clearInterval(activeScrollMonitor);
-                activeScrollMonitor = null;
-              }
-              
-              const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
-              console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 
-                'background: #0088ff; color: #ffffff; font-size: 14px; font-weight: bold; padding: 5px;');
-              console.log('[V3.21] Position finale:', scrollEnd);
-              console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
-              console.log('[V3.21] Changements détectés:', scrollChanges.length);
-              // V41 FIX: Ne plus afficher la table complète (spam)
-              // console.table est disponible en mode debug si nécessaire
-              
-              // Restaurer smooth scroll
-              document.documentElement.style.scrollBehavior = originalScrollBehavior;
-              document.body.style.scrollBehavior = originalScrollBehavior;
-              
-              if (scrollEnd === scrollStart) {
-                console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 
-                  'background: #00ff00; color: #000000; font-size: 16px; font-weight: bold; padding: 5px;');
-              } else {
-                console.error('%c❌ V3.21: ÉCHEC - SCROLL A BOUGÉ', 
-                  'background: #ff0000; color: #ffffff; font-size: 16px; font-weight: bold; padding: 5px;');
-              }
-            }, 200);
-          });
+            if (Math.abs(scrollEnd - scrollStart) < 5) {
+              console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 'background: green; color: white; padding: 5px;');
+            } else {
+              console.log('%c⚠️ V3.21: ATTENTION - SCROLL A BOUGÉ MALGRÉ COORDINATION', 'background: orange; color: black; padding: 5px;');
+              // Restauration finale forcée
+              window.scrollTo({ top: scrollStart, behavior: 'auto' });
+            }
+            
+            // Restaurer smooth scroll
+            document.documentElement.style.scrollBehavior = originalScrollBehavior;
+            document.body.style.scrollBehavior = originalScrollBehavior;
+            
+          }, 50);
         });
       });
       
-    } else {
-      // ============================================
-      // V3.21 COORDINATION: SCROLL FIX POUR HIDE
-      // ============================================
-      
-      console.log('[V3.21] 🔽 MODE HIDE - Début fix scroll');
-      
-      // ACTIVER LE FLAG
-      window.__briefingUIScrollLock = true;
-      console.log('[V3.21] 🔒 Flag activé pour HIDE');
-      
-      const scrollStart = window.pageYOffset || document.documentElement.scrollTop;
-      
+    } else if (mode === 'INLINE' || mode === 'OFF' || mode === 'HIDDEN') {
       hide();
+      updateExpandButton(mode === 'INLINE');
       
-      // Show expand button if conditions allow advanced mode
-      const ctrl = window.videoModeCtrl;
-      if (ctrl && ctrl.canActivateAdvanced() && ctrl.isVideoJoined) {
-        updateExpandButton(true);
-      } else {
-        updateExpandButton(false);
-      }
-      
-      // Restauration pour hide + libération du flag
-      requestAnimationFrame(() => {
-        const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
-        if (scrollEnd !== scrollStart) {
-          window.scrollTo(0, scrollStart);
-          console.log('[V3.21] ✅ Scroll restauré après hide:', scrollStart);
-        }
-        
-        // Libérer le flag après hide
-        setTimeout(() => {
-          window.__briefingUIScrollLock = false;
-          console.log('[V3.21] 🔓 Flag libéré après HIDE');
-        }, 100);
-      });
+      // V3 GRILLE FIX: Reset les flags quand on quitte le mode SPLIT
+      thumbsInitializedForSplit = false;
     }
   }
-  
+
+  function getPhaseLabel(phase) {
+    const labels = {
+      'DEBATE': 'DÉBAT',
+      'VOTING': 'VOTE',
+      'DAY_DEBATE': 'DÉBAT',
+      'DAY_VOTE': 'VOTE',
+      'DISCUSSION': 'DISCUSSION',
+      'GAME_OVER': 'FIN DE PARTIE',
+      'ROLE_REVEAL': 'RÉVÉLATION',
+      'CAPTAIN_CANDIDACY': 'CANDIDATURES',
+      'CAPTAIN_VOTE': 'ÉLECTION',
+      'CAPTAIN_RESULT': 'RÉSULTAT',
+      'DAY': 'JOUR',
+      'DAY_DISCUSSION': 'DISCUSSION',
+      'EJECTION_REVEAL': 'ÉJECTION',
+      'FINAL_VOTE': 'VOTE FINAL'
+    };
+    return labels[phase] || phase || 'BRIEFING';
+  }
+
   function updateModeButtons(mode) {
-    const expandBtn2 = document.getElementById('briefingExpandBtn');
-    const splitBtn = document.getElementById('briefingSplitBtn');
+    const maxBtn = document.getElementById('btnVideoMax');
+    const splitBtn = document.getElementById('btnVideoSplit');
+    const closeBtn = document.getElementById('btnVideoClose');
+    
+    // Update active states
+    if (maxBtn) maxBtn.classList.toggle('active', mode === 'ADVANCED_FOCUS');
+    if (splitBtn) splitBtn.classList.toggle('active', mode === 'SPLIT');
+    
+    // V40b: Gérer le bouton X mobile
     const mobileCloseBtn = document.getElementById('mobileCloseBtn');
-    
-    if (expandBtn2) {
-      expandBtn2.classList.toggle('active', mode === 'ADVANCED_FOCUS');
-      expandBtn2.disabled = mode === 'ADVANCED_FOCUS';
-    }
-    if (splitBtn) {
-      splitBtn.classList.toggle('active', mode === 'SPLIT');
-      splitBtn.disabled = mode === 'SPLIT';
-    }
-    
-    // V40b: Afficher le bouton X seulement en mode FULL ou SPLIT (pas en INLINE)
     if (mobileCloseBtn) {
-      const isExpandedMode = (mode === 'ADVANCED_FOCUS' || mode === 'SPLIT' || mode === 'FULL');
-      mobileCloseBtn.style.display = isExpandedMode ? 'flex' : 'none';
+      // Afficher seulement si en mode SPLIT ou ADVANCED_FOCUS
+      if (mode === 'SPLIT' || mode === 'ADVANCED_FOCUS') {
+        mobileCloseBtn.style.display = 'flex';
+      } else {
+        mobileCloseBtn.style.display = 'none';
+      }
     }
   }
 
@@ -610,27 +375,49 @@
   // VISIBILITY
   // ============================================
   
-  function show() {
+  // V3 GRILLE FIX: show() prend maintenant un paramètre pour indiquer si le mode a changé
+  function show(forceRefresh = false) {
     if (!container) init();
     
     container.classList.add('active');
-    // CAPTAIN_RESULT FIX: Remettre display pour afficher le container
     container.style.display = '';
     
     // V40: Afficher les boutons flottants (PC)
     const floatingActions = document.getElementById('floatingVideoActions');
     if (floatingActions) floatingActions.style.display = 'flex';
-    // V40b: Le bouton X mobile est géré par updateModeButtons()
     
-    refreshParticipants();
-    syncControlStates(); // D4: Synchroniser l'état des boutons micro/caméra
+    // V3 GRILLE FIX: Ne rafraîchir les participants que si nécessaire
+    const isSplitMode = container.classList.contains('mode-split');
+    
+    if (isSplitMode) {
+      // En mode SPLIT, ne rafraîchir que si:
+      // 1. forceRefresh est true (changement de mode)
+      // 2. Les thumbs n'ont jamais été initialisés pour ce mode SPLIT
+      // 3. Le nombre de thumbs ne correspond pas au nombre de participants
+      const participants = window.videoModeCtrl?.getParticipants() || [];
+      const needsRefresh = forceRefresh || !thumbsInitializedForSplit || thumbElements.size !== participants.length;
+      
+      if (needsRefresh) {
+        log('SPLIT MODE: Refreshing participants (forceRefresh:', forceRefresh, 'initialized:', thumbsInitializedForSplit, 'thumbs:', thumbElements.size, 'participants:', participants.length, ')');
+        refreshParticipants();
+        thumbsInitializedForSplit = true;
+      } else {
+        log('SPLIT MODE: Skipping refresh - thumbs already correct');
+        // Juste réattacher les vidéos aux thumbs existants
+        attachVideoTracks();
+      }
+    } else {
+      // En mode MAX/FOCUS, toujours rafraîchir
+      refreshParticipants();
+    }
+    
+    syncControlStates();
     log('Briefing UI shown');
   }
 
   function hide() {
     if (!container) return;
     container.classList.remove('active');
-    // CAPTAIN_RESULT FIX: Forcer display:none pour vraiment cacher le container
     container.style.display = 'none';
     
     // V40: Cacher les boutons flottants (PC)
@@ -671,48 +458,25 @@
   // PARTICIPANTS MANAGEMENT
   // ============================================
   
-  // Variable pour tracker le dernier mode utilisé
-  let lastRefreshMode = null;
-  
   function refreshParticipants() {
     if (!window.videoModeCtrl) return;
     
     const participants = window.videoModeCtrl.getParticipants();
     const currentFocus = window.videoModeCtrl.getFocusedPlayerId();
     
-    // GRILLE: Détecter si on est en mode SPLIT
+    // Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
-    const currentMode = isSplitMode ? 'SPLIT' : 'MAX';
     
-    log('Refreshing participants:', participants.length, 'mode:', currentMode, 'lastMode:', lastRefreshMode);
-    
-    // Calculer le nombre attendu de thumbs
-    const expectedThumbCount = isSplitMode ? participants.length : participants.length - 1;
-    
-    // GRILLE MODE SPLIT: Ne pas reconstruire SI:
-    // 1. On est en mode SPLIT
-    // 2. Le mode n'a pas changé depuis le dernier refresh
-    // 3. Le nombre de thumbs correspond au nombre attendu
-    if (isSplitMode && lastRefreshMode === 'SPLIT' && thumbElements.size === expectedThumbCount) {
-      log('SPLIT MODE: Skipping rebuild, thumbs already correct:', thumbElements.size);
-      // Juste réattacher les tracks aux éléments existants
-      attachVideoTracks();
-      return;
-    }
-    
-    // Mettre à jour le mode tracker
-    lastRefreshMode = currentMode;
-    
-    log('Rebuilding thumbs for mode:', currentMode, 'expected:', expectedThumbCount);
+    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID' : 'FOCUS');
     
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
     // Create thumbnail for each participant
-    // GRILLE: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
     participants.forEach(p => {
-      if (!isSplitMode && p.playerId === currentFocus) return; // Skip focused player in thumbs (mode MAX seulement)
+      // En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
+      if (!isSplitMode && p.playerId === currentFocus) return;
       
       const thumb = createThumbnail(p);
       thumbsSidebar.appendChild(thumb);
@@ -724,7 +488,6 @@
       if (currentFocus) {
         setFocus(currentFocus, false);
       } else if (participants.length > 0) {
-        // Auto-focus first participant
         setFocus(participants[0].playerId, false);
       }
     }
@@ -744,15 +507,18 @@
     nameEl.textContent = participant.name || 'Joueur';
     thumb.appendChild(nameEl);
     
-    // Click to focus
+    // Click to focus (seulement en mode MAX)
     thumb.addEventListener('click', () => {
-      log('Thumbnail clicked:', participant.playerId);
-      if (window.videoModeCtrl) {
-        window.videoModeCtrl.setManualFocus(participant.playerId);
+      const isSplitMode = container && container.classList.contains('mode-split');
+      if (!isSplitMode) {
+        log('Thumbnail clicked:', participant.playerId);
+        if (window.videoModeCtrl) {
+          window.videoModeCtrl.setManualFocus(participant.playerId);
+        }
       }
     });
     
-    // Mark if dead (but not at GAME_OVER - everyone visible for debrief)
+    // Mark if dead
     const state = window.lastKnownState;
     const isGameOver = state?.phase === 'GAME_OVER';
     if (!participant.alive && !isGameOver) {
@@ -780,17 +546,14 @@
       return;
     }
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
+    // Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
     
-    // D5: Animation de transition si le focus change (seulement en mode MAX)
+    // Animation de transition (seulement en mode MAX)
     const isNewFocus = currentFocusId !== playerId;
     
     if (!isSplitMode && isNewFocus && focusMain) {
-      // Ajouter la classe d'animation
       focusMain.classList.add('focus-changing');
-      
-      // Retirer après l'animation
       setTimeout(() => {
         focusMain.classList.remove('focus-changing');
       }, 400);
@@ -798,31 +561,27 @@
     
     currentFocusId = playerId;
     
-    // GRILLE 2x2: En mode SPLIT, ne pas mettre à jour le focus (pas de zone focus visible)
+    // En mode SPLIT, ne pas mettre à jour le focus (pas de zone focus visible)
     if (!isSplitMode) {
-      // Update focus name
       const nameEl = document.getElementById('focusPlayerName');
       if (nameEl) {
         nameEl.textContent = focusedPlayer.name || 'Joueur';
       }
       
-      // Update focus video
       focusMain.classList.remove('empty');
       attachFocusVideo(playerId);
     }
     
-    // Update thumbnail highlights (marquer le speaker actif)
+    // Update thumbnail highlights
     thumbElements.forEach((el, id) => {
       el.classList.toggle('is-focused', id === playerId);
     });
     
-    // GRILLE 2x2: En mode SPLIT, ne PAS reconstruire les thumbs (on garde les 4)
+    // V3 GRILLE FIX: En mode SPLIT, ne PAS reconstruire les thumbs
     if (!isSplitMode) {
-      // Rebuild thumbs to exclude focused player (mode MAX seulement)
       rebuildThumbs(playerId);
     }
     
-    // D5: Log avec indication si manuel ou auto
     log('Focus set to:', playerId, focusedPlayer.name, isManual ? '(manual)' : '(auto-speaker)', isSplitMode ? '[SPLIT-GRID]' : '[MAX]');
   }
 
@@ -831,16 +590,22 @@
     
     const participants = window.videoModeCtrl.getParticipants();
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
+    // Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
+    
+    // V3 GRILLE FIX: Ne jamais reconstruire en mode SPLIT
+    if (isSplitMode) {
+      log('SPLIT MODE: Skipping rebuildThumbs');
+      return;
+    }
     
     // Clear
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
-    // Recreate - en mode SPLIT, inclure TOUS les joueurs
+    // Recreate without focused player (mode MAX seulement)
     participants.forEach(p => {
-      if (!isSplitMode && p.playerId === focusedId) return; // Skip focused seulement en mode MAX
+      if (p.playerId === focusedId) return;
       
       const thumb = createThumbnail(p);
       thumbsSidebar.appendChild(thumb);
@@ -859,11 +624,11 @@
     // Get tracks from video-tracks.js registry
     const tracks = window.VideoTracksRegistry?.getAll() || getTracksFromGlobal();
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
+    // Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
     
     tracks.forEach((track, playerId) => {
-      // GRILLE 2x2: En mode SPLIT, TOUS les joueurs sont dans les thumbs
+      // En mode SPLIT, TOUS les joueurs sont dans les thumbs
       if (!isSplitMode && playerId === currentFocusId) {
         attachFocusVideo(playerId);
       } else {
@@ -873,79 +638,72 @@
   }
 
   function getTracksFromGlobal() {
-    // Fallback: try to find tracks from existing video-tracks.js internals
-    // This is a compatibility layer
     const result = new Map();
     
-    // Check for Daily participants
-    const callObj = window.dailyVideo?.callObject;
-    if (!callObj) return result;
-    
-    try {
-      const participants = callObj.participants();
-      Object.entries(participants).forEach(([key, p]) => {
-        if (key === 'local') return;
-        
-        const userName = p.user_name || '';
-        const idx = userName.lastIndexOf('#');
-        const playerId = idx !== -1 ? userName.slice(idx + 1).trim() : '';
-        
-        if (playerId && p.tracks?.video?.track) {
-          result.set(playerId, p.tracks.video.track);
+    // Check for LiveKit room
+    const room = window.dailyVideo?.room;
+    if (room) {
+      // Local participant
+      const localP = room.localParticipant;
+      if (localP) {
+        const localId = localP.identity;
+        for (const [sid, pub] of localP.videoTrackPublications) {
+          if (pub.track) {
+            result.set(localId, pub.track);
+          }
         }
-      });
-    } catch (e) {
-      log('Error getting tracks:', e);
+      }
+      
+      // Remote participants
+      for (const [id, participant] of room.remoteParticipants) {
+        for (const [sid, pub] of participant.videoTrackPublications) {
+          if (pub.track) {
+            result.set(participant.identity, pub.track);
+          }
+        }
+      }
     }
     
     return result;
   }
 
   function attachFocusVideo(playerId) {
-    // Remove old video if exists
-    if (focusVideoEl) {
-      focusVideoEl.remove();
-      focusVideoEl = null;
-    }
+    if (!focusMain) return;
     
-    // LIVEKIT FIX: Try to get video element directly from LiveKit
-    const liveKitVideo = getLiveKitVideoElement(playerId);
-    if (liveKitVideo) {
-      focusMain.classList.remove('empty');
-      focusVideoEl = liveKitVideo;
-      focusVideoEl.style.cssText = 'width:100%;height:100%;object-fit:contain;';
-      focusVideoEl.muted = isLocalPlayer(playerId);
-      focusMain.insertBefore(focusVideoEl, focusNameEl);
-      focusVideoEl.play().catch(e => log('Focus video play error:', e));
-      log('Focus video attached via LiveKit for:', playerId);
-      return;
-    }
-    
-    // Fallback: try old method
     const track = getTrackForPlayer(playerId);
     if (!track) {
-      focusMain.classList.add('empty');
+      log('No track for focus player:', playerId);
       return;
+    }
+    
+    // Remove existing
+    if (focusVideoEl && focusVideoEl.parentNode) {
+      focusVideoEl.remove();
     }
     
     focusMain.classList.remove('empty');
     
-    // Create new video element
-    focusVideoEl = document.createElement('video');
-    focusVideoEl.autoplay = true;
-    focusVideoEl.playsInline = true;
-    focusVideoEl.muted = isLocalPlayer(playerId);
-    focusVideoEl.style.cssText = 'width:100%;height:100%;object-fit:contain;';
-    
-    const stream = window.getMediaStreamFromTrack ? window.getMediaStreamFromTrack(track) : new MediaStream([track]);
-    if (stream) {
-      try {
-        focusVideoEl.srcObject = stream;
-      } catch (e) {
-        focusVideoEl.src = URL.createObjectURL(stream);
-      }
+    // LIVEKIT FIX: Use track.attach() for LiveKit tracks
+    if (typeof track.attach === 'function') {
+      focusVideoEl = track.attach();
+      focusVideoEl.muted = isLocalPlayer(playerId);
+      focusVideoEl.style.cssText = 'width:100%;height:100%;object-fit:contain;';
     } else {
-      console.warn('[BriefingUI] Cannot get stream from track for focus video');
+      // Fallback: create video element
+      focusVideoEl = document.createElement('video');
+      focusVideoEl.autoplay = true;
+      focusVideoEl.playsInline = true;
+      focusVideoEl.muted = isLocalPlayer(playerId);
+      focusVideoEl.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+      
+      const stream = window.getMediaStreamFromTrack ? window.getMediaStreamFromTrack(track) : new MediaStream([track]);
+      if (stream) {
+        try {
+          focusVideoEl.srcObject = stream;
+        } catch (e) {
+          focusVideoEl.src = URL.createObjectURL(stream);
+        }
+      }
     }
     
     // Insert before name overlay
@@ -954,8 +712,21 @@
     log('Focus video attached for:', playerId);
   }
   
-  // LIVEKIT FIX: Get video element directly from LiveKit track.attach()
+  // V3 GRILLE FIX: Cache pour les éléments vidéo LiveKit
+  const liveKitVideoCache = new Map();
+  
   function getLiveKitVideoElement(playerId) {
+    // V3 GRILLE FIX: Vérifier le cache d'abord
+    if (liveKitVideoCache.has(playerId)) {
+      const cached = liveKitVideoCache.get(playerId);
+      // Vérifier que l'élément est toujours valide
+      if (cached && cached.parentNode === null) {
+        // L'élément existe mais n'est pas dans le DOM, on peut le réutiliser
+        log('Using cached LiveKit video element for:', playerId);
+        return cached;
+      }
+    }
+    
     const room = window.dailyVideo?.room;
     if (!room) return null;
     
@@ -965,7 +736,9 @@
       for (const [sid, pub] of localP.videoTrackPublications) {
         if (pub.track) {
           log('Found local LiveKit track for:', playerId);
-          return pub.track.attach();
+          const videoEl = pub.track.attach();
+          liveKitVideoCache.set(playerId, videoEl);
+          return videoEl;
         }
       }
     }
@@ -976,7 +749,9 @@
         for (const [sid, pub] of participant.videoTrackPublications) {
           if (pub.track) {
             log('Found remote LiveKit track for:', playerId);
-            return pub.track.attach();
+            const videoEl = pub.track.attach();
+            liveKitVideoCache.set(playerId, videoEl);
+            return videoEl;
           }
         }
       }
@@ -991,14 +766,21 @@
     
     thumb.classList.remove('empty');
     
-    // Remove existing video
+    // V3 GRILLE FIX: Vérifier si une vidéo existe déjà et fonctionne
     const existingVideo = thumb.querySelector('video');
+    if (existingVideo && existingVideo.srcObject && !existingVideo.paused) {
+      // La vidéo existe et joue, ne pas la remplacer
+      log('Thumb video already playing for:', playerId);
+      return;
+    }
+    
+    // Remove existing video if it exists but doesn't work
     if (existingVideo) existingVideo.remove();
     
     // LIVEKIT FIX: Try to get video element directly from LiveKit
     const liveKitVideo = getLiveKitVideoElement(playerId);
     if (liveKitVideo) {
-      liveKitVideo.muted = true; // Always mute thumbs
+      liveKitVideo.muted = true;
       liveKitVideo.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       const nameEl = thumb.querySelector('.thumb-name');
       thumb.insertBefore(liveKitVideo, nameEl);
@@ -1014,7 +796,7 @@
     const video = document.createElement('video');
     video.autoplay = true;
     video.playsInline = true;
-    video.muted = true; // Always mute thumbs
+    video.muted = true;
     
     const stream = window.getMediaStreamFromTrack ? window.getMediaStreamFromTrack(track) : new MediaStream([track]);
     if (stream) {
@@ -1023,8 +805,6 @@
       } catch (e) {
         video.src = URL.createObjectURL(stream);
       }
-    } else {
-      console.warn('[BriefingUI] Cannot get stream from track for thumbnail');
     }
     
     // Insert before name label
@@ -1034,40 +814,31 @@
 
   function getTrackForPlayer(playerId) {
     // LIVEKIT FIX: Utiliser VideoTracksRegistry en priorité
-    // Car le callFrame de compatibilité LiveKit ne remplit pas tracks.video.track
     const registryTrack = window.VideoTracksRegistry?.get?.(playerId);
     if (registryTrack) {
       log('Track found in registry for:', playerId);
       return registryTrack;
     }
     
-    // Fallback: ancienne méthode via callObj.participants() (Daily.co)
-    const callObj = window.dailyVideo?.callObject;
-    if (!callObj) return null;
-    
-    try {
-      const participants = callObj.participants();
-      
-      // Check local first
-      const local = participants.local;
-      if (local) {
-        const localId = getPlayerIdFromUserName(local.user_name);
-        if (localId === playerId && local.tracks?.video?.track) {
-          return local.tracks.video.track;
+    // Fallback: get from LiveKit room directly
+    const room = window.dailyVideo?.room;
+    if (room) {
+      // Local
+      const localP = room.localParticipant;
+      if (localP && localP.identity === playerId) {
+        for (const [sid, pub] of localP.videoTrackPublications) {
+          if (pub.track) return pub.track;
         }
       }
       
-      // Check remotes
-      for (const [key, p] of Object.entries(participants)) {
-        if (key === 'local') continue;
-        
-        const pId = getPlayerIdFromUserName(p.user_name);
-        if (pId === playerId && p.tracks?.video?.track) {
-          return p.tracks.video.track;
+      // Remote
+      for (const [id, participant] of room.remoteParticipants) {
+        if (participant.identity === playerId) {
+          for (const [sid, pub] of participant.videoTrackPublications) {
+            if (pub.track) return pub.track;
+          }
         }
       }
-    } catch (e) {
-      log('Error getting track:', e);
     }
     
     return null;
@@ -1090,29 +861,24 @@
   // ============================================
   
   function updateSpeakerHighlights(speakerId) {
-    // D5: Update focus speaker badge (mode SPLIT/ADVANCED_FOCUS)
+    // Update focus speaker badge
     const badge = document.getElementById('focusSpeakerBadge');
     if (badge) {
       badge.style.display = (speakerId === currentFocusId) ? 'inline-block' : 'none';
     }
     
-    // D5: Update focus main speaking state (mode SPLIT/ADVANCED_FOCUS)
+    // Update focus main speaking state
     focusMain?.classList.toggle('is-speaking', speakerId === currentFocusId);
     
-    // D5: Update thumbnails in sidebar (mode SPLIT/ADVANCED_FOCUS)
+    // Update thumbnails in sidebar
     thumbElements.forEach((el, id) => {
       el.classList.toggle('is-speaking', id === speakerId);
     });
     
-    // D5 NEW: Update player-item highlights in INLINE mode (lobby & game lists)
+    // Update player-item highlights in INLINE mode
     updateInlineModeSpeakerHighlights(speakerId);
   }
   
-  /**
-   * D5: Gestion des highlights en mode INLINE
-   * Ajoute/retire la classe .is-speaking sur les .player-item
-   * V40 FIX: Logger uniquement si le speaker a changé
-   */
   let lastLoggedSpeaker = null;
   function updateInlineModeSpeakerHighlights(speakerId) {
     // Retirer tous les anciens highlights
@@ -1120,19 +886,17 @@
       item.classList.remove('is-speaking');
     });
     
-    // Ajouter le nouveau highlight si un speaker est actif
+    // Ajouter le nouveau highlight
     if (speakerId) {
       const playerItem = document.querySelector(`.player-item[data-player-id="${CSS.escape(speakerId)}"]`);
       if (playerItem) {
         playerItem.classList.add('is-speaking');
-        // V40 FIX: Logger uniquement si le speaker a changé
         if (speakerId !== lastLoggedSpeaker) {
           log('🎙️ INLINE highlight added to:', speakerId.slice(0, 8));
           lastLoggedSpeaker = speakerId;
         }
       }
     } else if (lastLoggedSpeaker !== null) {
-      // Reset si plus de speaker
       lastLoggedSpeaker = null;
     }
   }
@@ -1141,163 +905,26 @@
   // MICROPHONE / CAMERA CONTROLS
   // ============================================
   
-  let isMicMuted = false;
-  let isCamOff = false;
-  
-  // D6: Toast notification pour mute/unmute
-  function showMuteToast(isMuted) {
-    // Supprimer toast existant
-    const existing = document.querySelector('.mute-toast');
-    if (existing) existing.remove();
+  function syncControlStates() {
+    // Sync with video-tracks.js button states
+    const briefingMicBtn = document.getElementById('briefingMicBtn');
+    const briefingCamBtn = document.getElementById('briefingCamBtn');
+    const inlineMicBtn = document.getElementById('inlineMicBtn');
+    const inlineCamBtn = document.getElementById('inlineCamBtn');
     
-    const toast = document.createElement('div');
-    toast.className = 'mute-toast';
-    toast.textContent = isMuted ? '🔇 Micro coupé' : '🎤 Micro activé';
-    toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: ${isMuted ? '#ff4444' : '#00cc88'};
-      color: white;
-      padding: 12px 24px;
-      border-radius: 25px;
-      font-weight: bold;
-      z-index: 10000;
-      animation: toastSlide 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    `;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transition = 'opacity 0.3s';
-      setTimeout(() => toast.remove(), 300);
-    }, 2000);
-  }
-  // D6: Exposer globalement pour le bouton inline
-  window.showMuteToast = showMuteToast;
-
-  async function toggleMicrophone() {
-    const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-    if (!callObj) {
-      log('No callObject for mic toggle');
-      return;
+    if (briefingMicBtn && inlineMicBtn) {
+      briefingMicBtn.textContent = inlineMicBtn.textContent;
+      briefingMicBtn.style.background = inlineMicBtn.style.background;
     }
     
-    try {
-      const currentState = await callObj.localAudio();
-      const newState = !currentState;
-      await callObj.setLocalAudio(newState);
-      isMicMuted = !newState; // muted = audio OFF
-      
-      // D4 v5.4: Mémoriser le choix manuel dans le registre
-      if (window.VideoTracksRegistry?.setUserMutedAudio) {
-        window.VideoTracksRegistry.setUserMutedAudio(isMicMuted);
-      }
-      
-      updateMicButton();
-      
-      // D4 v5.4: Synchroniser le bouton inline
-      const inlineMicBtn = document.getElementById('inlineMicBtn');
-      if (inlineMicBtn) {
-        if (isMicMuted) {
-          inlineMicBtn.textContent = '🔇';
-          inlineMicBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-        } else {
-          inlineMicBtn.textContent = '🎤';
-          inlineMicBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-        }
-      }
-      
-      // D6: Afficher le toast de confirmation
-      showMuteToast(isMicMuted);
-      
-      log('Microphone:', newState ? 'ON' : 'OFF', '(manual mute saved)');
-    } catch (e) {
-      log('Error toggling mic:', e);
-    }
-  }
-  
-  async function toggleCamera() {
-    const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-    if (!callObj) {
-      log('No callObject for camera toggle');
-      return;
-    }
-    
-    try {
-      const currentState = await callObj.localVideo();
-      const newState = !currentState;
-      await callObj.setLocalVideo(newState);
-      isCamOff = !newState; // off = video OFF
-      
-      // D4 v5.4: Mémoriser le choix manuel dans le registre
-      if (window.VideoTracksRegistry?.setUserMutedVideo) {
-        window.VideoTracksRegistry.setUserMutedVideo(isCamOff);
-      }
-      
-      updateCamButton();
-      
-      // D4 v5.4: Synchroniser le bouton inline
-      const inlineCamBtn = document.getElementById('inlineCamBtn');
-      if (inlineCamBtn) {
-        if (isCamOff) {
-          inlineCamBtn.textContent = '📷';
-          inlineCamBtn.style.background = 'rgba(180, 50, 50, 0.7)';
-        } else {
-          inlineCamBtn.textContent = '📹';
-          inlineCamBtn.style.background = 'rgba(0, 100, 100, 0.5)';
-        }
-      }
-      
-      log('Camera:', newState ? 'ON' : 'OFF', '(manual mute saved)');
-    } catch (e) {
-      log('Error toggling camera:', e);
-    }
-  }
-  
-  // V32: Fonctions simplifiées - boutons briefing supprimés, utiliser mini-vidéos
-  function updateMicButton() {
-    // Bouton briefing supprimé - contrôles sur mini-vidéos uniquement
-  }
-  
-  function updateCamButton() {
-    // Bouton briefing supprimé - contrôles sur mini-vidéos uniquement
-  }
-  
-  async function syncControlStates() {
-    const callObj = window.dailyVideo?.callFrame || window.dailyVideo?.callObject;
-    if (!callObj) return;
-    
-    try {
-      isMicMuted = !(await callObj.localAudio());
-      isCamOff = !(await callObj.localVideo());
-      updateMicButton();
-      updateCamButton();
-    } catch (e) {
-      log('Error syncing control states:', e);
+    if (briefingCamBtn && inlineCamBtn) {
+      briefingCamBtn.textContent = inlineCamBtn.textContent;
+      briefingCamBtn.style.background = inlineCamBtn.style.background;
     }
   }
 
   // ============================================
-  // UTILITIES
-  // ============================================
-  
-  function getPhaseLabel(phase) {
-    const labels = {
-      'DEBATE': 'DÉBAT',
-      'VOTING': 'VOTE',
-      'DAY_DEBATE': 'DISCUSSION',
-      'DAY_VOTE': 'VOTE',
-      'DISCUSSION': 'DISCUSSION',
-      'GAME_OVER': 'FIN'
-    };
-    return labels[phase] || phase || 'BRIEFING';
-  }
-
-  // ============================================
-  // PUBLIC API
+  // EXPORT API
   // ============================================
   
   window.VideoBriefingUI = {
@@ -1308,26 +935,28 @@
     refreshParticipants,
     setFocus,
     
-    // For external updates (e.g., from video-tracks.js)
+    // For external updates
     onTrackStarted: (playerId, track) => {
       if (isVisible()) {
-        if (playerId === currentFocusId) {
-          attachFocusVideo(playerId);
-        } else {
+        const isSplitMode = container && container.classList.contains('mode-split');
+        // En mode SPLIT, toujours attacher aux thumbs
+        if (isSplitMode || playerId !== currentFocusId) {
           attachThumbVideo(playerId, track);
+        } else {
+          attachFocusVideo(playerId);
         }
       }
     },
     
     onTrackStopped: (playerId) => {
+      // V3 GRILLE FIX: Ne pas supprimer la vidéo, juste marquer comme empty
       if (playerId === currentFocusId) {
         focusMain?.classList.add('empty');
       } else {
         const thumb = thumbElements.get(playerId);
         if (thumb) {
           thumb.classList.add('empty');
-          const video = thumb.querySelector('video');
-          if (video) video.remove();
+          // Ne pas supprimer la vidéo - elle sera réattachée si le track revient
         }
       }
     }
@@ -1340,6 +969,6 @@
     init();
   }
 
-  console.log('[VideoBriefingUI] D4 Module loaded ✅');
+  console.log('[VideoBriefingUI] D4 Module loaded ✅ (V3 GRILLE FIX)');
 
 })();
