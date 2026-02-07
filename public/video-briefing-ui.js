@@ -129,14 +129,15 @@
     `;
     document.body.appendChild(floatingActions);
     
-    // V11: Barre de contrôles mobile en bas
+    // V11: Barre de contrôles mobile EN BAS DU CONTAINER
     const mobileControls = document.createElement('div');
     mobileControls.id = 'mobileVideoControls';
     mobileControls.innerHTML = `
       <button id="mobileMicBtn" title="Micro">🎤</button>
       <button id="mobileCamBtn" title="Caméra">📹</button>
     `;
-    document.body.appendChild(mobileControls);
+    // V11: Ajouter au container (pas au body) pour position relative
+    container.appendChild(mobileControls);
     
     // V40: Media query pour mobile - CACHER les boutons (utiliser double-tap)
     const mobileStyle = document.createElement('style');
@@ -864,23 +865,38 @@
       gridContainer.appendChild(mainZone);
       gridContainer.appendChild(speakerZone);
       
+      // V11: Détecter mobile (largeur < 768px) pour désactiver le speaker zone
+      const isMobile = window.innerWidth <= 768;
+      
       // Créer les items
       filteredParticipants.forEach(p => {
         const gridItem = createGridItem(p);
         gridElements.set(p.playerId, gridItem);
         
-        if (p.playerId === currentSpeaker) {
-          speakerZone.appendChild(gridItem);
-          gridItem.classList.add('is-speaking');
-          const badge = gridItem.querySelector('.badge-speaker');
-          if (badge) badge.style.display = 'inline-block';
-        } else {
+        // V11: Sur mobile, tout mettre dans mainZone
+        if (isMobile) {
           mainZone.appendChild(gridItem);
+          // Marquer quand même le speaker
+          if (p.playerId === currentSpeaker) {
+            gridItem.classList.add('is-speaking');
+            const badge = gridItem.querySelector('.badge-speaker');
+            if (badge) badge.style.display = 'inline-block';
+          }
+        } else {
+          // Desktop : utiliser le speaker zone
+          if (p.playerId === currentSpeaker) {
+            speakerZone.appendChild(gridItem);
+            gridItem.classList.add('is-speaking');
+            const badge = gridItem.querySelector('.badge-speaker');
+            if (badge) badge.style.display = 'inline-block';
+          } else {
+            mainZone.appendChild(gridItem);
+          }
         }
       });
       
-      // Si speakerZone vide, y mettre le premier
-      if (speakerZone.children.length === 0 && mainZone.children.length > 0) {
+      // Si speakerZone vide ET pas mobile, y mettre le premier
+      if (!isMobile && speakerZone.children.length === 0 && mainZone.children.length > 0) {
         speakerZone.appendChild(mainZone.firstElementChild);
       }
     } else {
@@ -1434,9 +1450,11 @@
       if (wasSpeaking && !isSpeaking) previousSpeakerElement = el;
     });
     
-    // V11: En mode SPLIT, déplacer le speaker dans la zone speaker
+    // V11: En mode SPLIT, déplacer le speaker dans la zone speaker (desktop uniquement)
     const isSplitMode = container && container.classList.contains('mode-split');
-    if (isSplitMode && gridContainer) {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isSplitMode && gridContainer && !isMobile) {
       const mainZone = gridContainer.querySelector('.video-grid-main');
       const speakerZone = gridContainer.querySelector('.video-grid-speaker');
       
@@ -1535,24 +1553,36 @@
     }
     
     try {
+      // V11: Toujours vérifier l'état réel AVANT de toggle
       const currentState = await callObj.localAudio();
+      log('Mic current state:', currentState);
+      
       const newState = !currentState;
       await callObj.setLocalAudio(newState);
-      isMicMuted = !newState; // muted = audio OFF
       
-      // D4 v5.4: Mémoriser le choix manuel dans le registre
+      // V11: Attendre un peu et RE-VÉRIFIER que le changement a pris effet
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const actualState = await callObj.localAudio();
+      
+      // V11: L'état muted est l'INVERSE de l'état audio
+      isMicMuted = !actualState;
+      
+      log('Mic toggled:', { requested: newState, actual: actualState, muted: isMicMuted });
+      
+      // Mémoriser le choix manuel dans le registre
       if (window.VideoTracksRegistry?.setUserMutedAudio) {
         window.VideoTracksRegistry.setUserMutedAudio(isMicMuted);
       }
       
       updateMicButton();
       
-      // D6: Afficher le toast de confirmation
+      // Afficher le toast de confirmation
       showMuteToast(isMicMuted);
       
-      log('Microphone:', newState ? 'ON' : 'OFF', '(manual mute saved)');
     } catch (e) {
       log('Error toggling mic:', e);
+      // V11: En cas d'erreur, resynchroniser l'état
+      await syncControlStates();
     }
   }
   
@@ -1564,21 +1594,33 @@
     }
     
     try {
+      // V11: Toujours vérifier l'état réel AVANT de toggle
       const currentState = await callObj.localVideo();
+      log('Cam current state:', currentState);
+      
       const newState = !currentState;
       await callObj.setLocalVideo(newState);
-      isCamOff = !newState; // off = video OFF
       
-      // D4 v5.4: Mémoriser le choix manuel dans le registre
+      // V11: Attendre un peu et RE-VÉRIFIER que le changement a pris effet
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const actualState = await callObj.localVideo();
+      
+      // V11: L'état off est l'INVERSE de l'état vidéo
+      isCamOff = !actualState;
+      
+      log('Cam toggled:', { requested: newState, actual: actualState, off: isCamOff });
+      
+      // Mémoriser le choix manuel dans le registre
       if (window.VideoTracksRegistry?.setUserMutedVideo) {
         window.VideoTracksRegistry.setUserMutedVideo(isCamOff);
       }
       
       updateCamButton();
       
-      log('Camera:', newState ? 'ON' : 'OFF', '(manual mute saved)');
     } catch (e) {
       log('Error toggling camera:', e);
+      // V11: En cas d'erreur, resynchroniser l'état
+      await syncControlStates();
     }
   }
   
