@@ -682,6 +682,15 @@
     
     log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID-2x2' : 'FOCUS');
     
+    // GRILLE MODE SPLIT: Ne JAMAIS reconstruire si les thumbs existent déjà
+    // Cela évite la miniaturisation des vidéos lors des clics "Validé"
+    if (isSplitMode && thumbElements.size > 0) {
+      log('SPLIT MODE: Skipping rebuild, thumbs already exist:', thumbElements.size);
+      // Juste réattacher les tracks aux éléments existants
+      attachVideoTracks();
+      return;
+    }
+    
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();

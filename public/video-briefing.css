@@ -109,7 +109,8 @@
 }
 
 /* ============================================
-   MODE SPLIT (50/50) - GRILLE 2x2
+   MODE SPLIT (50/50) - GRILLE TAILLE FIXE
+   Max 6 vidéos par rangée, centrées
    ============================================ */
 
 .video-briefing-container.mode-split {
@@ -130,7 +131,7 @@
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* *** GRILLE 2x2: CACHER LE FOCUS WRAPPER *** */
+/* *** GRILLE: CACHER LE FOCUS WRAPPER *** */
 .video-briefing-container.mode-split .video-focus-wrapper {
   display: none !important;
   width: 0 !important;
@@ -142,33 +143,37 @@
   display: none !important;
 }
 
-/* *** GRILLE 2x2: SIDEBAR DEVIENT GRILLE PLEINE LARGEUR *** */
+/* *** GRILLE: SIDEBAR DEVIENT CONTENEUR FLEX CENTRÉ *** */
 .video-briefing-container.mode-split .video-thumbs-sidebar {
   width: 100% !important;
   height: 100% !important;
   flex: 1 1 100% !important;
   
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  grid-template-rows: repeat(2, 1fr) !important;
+  /* Flexbox pour centrer et wrap */
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-content: center !important;
   gap: 10px !important;
   
   max-height: none !important;
   overflow: visible !important;
   padding: 0 !important;
-  flex-direction: unset !important;
+  flex-direction: row !important;
 }
 
-/* *** GRILLE 2x2: THUMBNAILS REMPLISSENT LES CELLULES *** */
+/* *** GRILLE: TAILLE FIXE DES VIDÉOS *** */
 .video-briefing-container.mode-split .video-thumb {
-  width: 100% !important;
-  height: 100% !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
-  aspect-ratio: unset !important;
-  flex-shrink: 0 !important;
+  /* Taille fixe - pas étirée */
+  width: 180px !important;
+  height: 135px !important;
+  min-width: 180px !important;
+  min-height: 135px !important;
+  max-width: 180px !important;
+  max-height: 135px !important;
+  
+  flex: 0 0 180px !important;
+  aspect-ratio: 4/3 !important;
   
   border-radius: 12px;
   border: 2px solid var(--thumb-border);
@@ -177,7 +182,7 @@
   overflow: hidden;
 }
 
-/* *** GRILLE 2x2: VIDÉO DANS LES CELLULES *** */
+/* *** GRILLE: VIDÉO DANS LES CELLULES *** */
 .video-briefing-container.mode-split .video-thumb video {
   width: 100% !important;
   height: 100% !important;
@@ -185,10 +190,10 @@
   display: block !important;
 }
 
-/* *** GRILLE 2x2: NOM DU JOUEUR *** */
+/* *** GRILLE: NOM DU JOUEUR *** */
 .video-briefing-container.mode-split .video-thumb .thumb-name {
-  font-size: 1rem !important;
-  padding: 10px 12px !important;
+  font-size: 0.85rem !important;
+  padding: 8px 10px !important;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -196,7 +201,7 @@
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
 }
 
-/* *** GRILLE 2x2: SPEAKER ACTIF *** */
+/* *** GRILLE: SPEAKER ACTIF *** */
 .video-briefing-container.mode-split .video-thumb.is-speaking {
   border-color: var(--speaker-ring) !important;
   box-shadow: 
@@ -727,7 +732,7 @@
     max-height: 350px;
   }
   
-  /* Mode SPLIT sur mobile - GRILLE 2x2 */
+  /* Mode SPLIT sur mobile - GRILLE TAILLE FIXE */
   .video-briefing-container.mode-split {
     height: 45vh;
     min-height: 220px;
@@ -738,28 +743,34 @@
     gap: 8px;
   }
   
-  /* GRILLE 2x2: Cacher focus wrapper */
+  /* GRILLE: Cacher focus wrapper */
   .video-briefing-container.mode-split .video-focus-wrapper {
     display: none !important;
   }
   
-  /* GRILLE 2x2: Sidebar = grille pleine largeur */
+  /* GRILLE: Sidebar = flex centré */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
     height: 100% !important;
     flex: 1 !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: center !important;
     gap: 6px !important;
     max-height: none !important;
     overflow: visible !important;
   }
   
-  /* GRILLE 2x2: Thumbs remplissent cellules */
+  /* GRILLE: Taille fixe mais plus petite sur tablette */
   .video-briefing-container.mode-split .video-thumb {
-    width: 100% !important;
-    height: 100% !important;
+    width: 150px !important;
+    height: 112px !important;
+    min-width: 150px !important;
+    min-height: 112px !important;
+    max-width: 150px !important;
+    max-height: 112px !important;
+    flex: 0 0 150px !important;
   }
   
   .mode-split .video-thumb .thumb-name {
@@ -1187,19 +1198,25 @@ body.video-split-active #topRightButtons {
     top: calc(35vh + 5px) !important;
   }
   
-  /* GRILLE 2x2: Mobile - garder la grille pleine largeur */
+  /* GRILLE: Mobile - taille fixe plus petite */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
     height: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: center !important;
     gap: 5px !important;
   }
   
   .video-briefing-container.mode-split .video-thumb {
-    width: 100% !important;
-    height: 100% !important;
+    width: 120px !important;
+    height: 90px !important;
+    min-width: 120px !important;
+    min-height: 90px !important;
+    max-width: 120px !important;
+    max-height: 90px !important;
+    flex: 0 0 120px !important;
   }
   
   /* Header plus compact */
@@ -1233,19 +1250,25 @@ body.video-split-active #topRightButtons {
     /* padding-top: calc(30vh + 10px) !important; SUPPRIMÉ V3.23 */
   }
   
-  /* GRILLE 2x2: Très petits écrans - garder la grille */
+  /* GRILLE: Très petits écrans - taille fixe encore plus petite */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
     height: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: center !important;
     gap: 4px !important;
   }
   
   .video-briefing-container.mode-split .video-thumb {
-    width: 100% !important;
-    height: 100% !important;
+    width: 100px !important;
+    height: 75px !important;
+    min-width: 100px !important;
+    min-height: 75px !important;
+    max-width: 100px !important;
+    max-height: 75px !important;
+    flex: 0 0 100px !important;
   }
 }
 
