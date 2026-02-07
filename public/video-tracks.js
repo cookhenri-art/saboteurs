@@ -903,9 +903,14 @@
     
     // D4: Forcer les styles inline pour s'assurer de la visibilité
     // D6: Ajouter grayscale SEULEMENT si joueur mort ET pas en GAME_OVER
+    // V11: Ne plus forcer 64px - laisser le CSS gérer la taille
     const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
     const borderColor = shouldGray ? '#666' : '#00ffff';
-    slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+    // V11: Garder juste le border et le grayFilter, pas la taille forcée
+    slot.style.borderColor = borderColor;
+    if (grayFilter) {
+      slot.style.cssText += grayFilter;
+    }
     v.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;
     
     log("Video attached to slot for:", playerId.slice(0,8), "slot size:", rect.width + "x" + rect.height, isEliminated ? "(ELIMINATED)" : "", isGameOver ? "(GAME_OVER - no gray)" : "");
@@ -1379,8 +1384,11 @@
       const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
       const borderColor = shouldGray ? '#666' : '#00ffff';
       
-      // Mettre à jour le style du slot
-      slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+      // V11: Ne plus forcer 64px - juste le border et le grayFilter
+      slot.style.borderColor = borderColor;
+      if (grayFilter) {
+        slot.style.cssText += grayFilter;
+      }
       
       // Mettre à jour le style de la vidéo
       const video = slot.querySelector('video');
@@ -1971,8 +1979,11 @@
         const grayFilter = shouldGray ? 'filter:grayscale(100%) brightness(0.5)!important;opacity:0.6!important;' : '';
         const borderColor = shouldGray ? '#666' : '#00ffff';
         
-        // Appliquer les styles au slot
-        slot.style.cssText = "width:64px!important;height:48px!important;min-width:64px!important;min-height:48px!important;display:block!important;background:#001830!important;border:2px solid " + borderColor + "!important;border-radius:8px!important;overflow:hidden!important;" + grayFilter;
+        // V11: Ne plus forcer 64px - juste le border et le grayFilter
+        slot.style.borderColor = borderColor;
+        if (grayFilter) {
+          slot.style.cssText += grayFilter;
+        }
         
         // Appliquer les styles à la vidéo
         video.style.cssText = "width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;" + grayFilter;

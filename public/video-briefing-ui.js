@@ -688,6 +688,9 @@
     // V11: Arrêter le polling des phases privées
     stopPhasePolling();
     
+    // V11: Arrêter le polling vidéo
+    stopVideoPolling();
+    
     // Retirer la classe split du body
     document.body.classList.remove('video-split-active');
     log('Briefing UI hidden');
@@ -824,6 +827,9 @@
     
     // Attacher les vidéos
     attachVideoTracks();
+    
+    // V11: Démarrer le polling pour les vidéos manquantes
+    startVideoPolling();
     
     log('Grid refreshed with', filteredParticipants.length, 'items');
   }
@@ -1021,10 +1027,15 @@
   // V11: Attacher une vidéo à un élément de la grille
   function attachGridVideo(playerId) {
     const gridItem = gridElements.get(playerId);
-    if (!gridItem) return;
+    if (!gridItem) return false;
     
-    // Remove existing video
+    // Si déjà attachée, ne rien faire
     const existingVideo = gridItem.querySelector('video');
+    if (existingVideo && !gridItem.classList.contains('empty')) {
+      return true; // Déjà attachée
+    }
+    
+    // Remove existing video si présent
     if (existingVideo) {
       existingVideo.remove();
     }
@@ -1047,6 +1058,60 @@
       videoEl.play().catch(e => {
         if (e.name !== 'AbortError') log('Grid video play error:', e);
       });
+      
+      return true; // Attachée avec succès
+    }
+    
+    return false; // Pas encore disponible
+  }
+  
+  // V11: Système de polling pour attacher les vidéos manquantes
+  let videoPollingInterval = null;
+  let videoPollingAttempts = 0;
+  const MAX_POLLING_ATTEMPTS = 20; // 10 secondes max
+  
+  function startVideoPolling() {
+    // Arrêter l'ancien polling s'il existe
+    stopVideoPolling();
+    
+    videoPollingAttempts = 0;
+    
+    videoPollingInterval = setInterval(() => {
+      videoPollingAttempts++;
+      
+      // Vérifier combien de vidéos manquent
+      let missingCount = 0;
+      let attachedCount = 0;
+      
+      gridElements.forEach((item, playerId) => {
+        const hasVideo = item.querySelector('video') && !item.classList.contains('empty');
+        if (!hasVideo) {
+          // Essayer d'attacher
+          const success = attachGridVideo(playerId);
+          if (success) {
+            attachedCount++;
+          } else {
+            missingCount++;
+          }
+        }
+      });
+      
+      if (attachedCount > 0) {
+        log('Video polling: attached', attachedCount, 'videos, still missing:', missingCount);
+      }
+      
+      // Arrêter si toutes les vidéos sont attachées ou après le max d'essais
+      if (missingCount === 0 || videoPollingAttempts >= MAX_POLLING_ATTEMPTS) {
+        stopVideoPolling();
+        log('Video polling stopped after', videoPollingAttempts, 'attempts, missing:', missingCount);
+      }
+    }, 500);
+  }
+  
+  function stopVideoPolling() {
+    if (videoPollingInterval) {
+      clearInterval(videoPollingInterval);
+      videoPollingInterval = null;
     }
   }
 
@@ -1528,15 +1593,35 @@
     // For external updates (e.g., from video-tracks.js)
     onTrackStarted: (playerId, track) => {
       if (isVisible()) {
-        if (playerId === currentFocusId) {
-          attachFocusVideo(playerId);
+        // V11: Vérifier si on est en mode grille
+        const isSplitMode = container && container.classList.contains('mode-split');
+        const isMaxMode = container && container.classList.contains('mode-full');
+        const useGrid = isSplitMode || isMaxMode;
+        
+        if (useGrid) {
+          // Mode grille - attacher à l'élément de grille
+          attachGridVideo(playerId);
         } else {
-          attachThumbVideo(playerId, track);
+          // Mode classique
+          if (playerId === currentFocusId) {
+            attachFocusVideo(playerId);
+          } else {
+            attachThumbVideo(playerId, track);
+          }
         }
       }
     },
     
     onTrackStopped: (playerId) => {
+      // V11: Gérer la grille
+      const gridItem = gridElements.get(playerId);
+      if (gridItem) {
+        gridItem.classList.add('empty');
+        const video = gridItem.querySelector('video');
+        if (video) video.remove();
+      }
+      
+      // Mode classique
       if (playerId === currentFocusId) {
         focusMain?.classList.add('empty');
       } else {
