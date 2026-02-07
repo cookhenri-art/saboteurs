@@ -2675,11 +2675,11 @@ function buildEndReport(room, winner) {
     if (e.type === "radar_inspect") inc(e.by, "radarInspects");
     if (e.type === "chameleon_swap") inc(e.by, "chameleonSwaps");
     if (e.type === "revenge_shot") {
-      inc(e.by, "revengeShots");
+      inc(e.by, "securityRevengeShots");
       const tRole = room.players.get(e.targetId)?.role;
       const team = ROLES[tRole]?.team || "astronauts";
-      if (team === "saboteurs") inc(e.by, "revengeKillsSaboteurs");
-      else inc(e.by, "revengeKillsAstronauts");
+      if (team === "saboteurs") inc(e.by, "revengeKillsOnSaboteurs");
+      else inc(e.by, "revengeKillsOnInnocents");
     }
     if (e.type === "ai_link") inc(e.by, "aiLinks");
   }
