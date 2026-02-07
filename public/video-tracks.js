@@ -53,7 +53,7 @@
           return new MediaStream([track._liveKitTrack.mediaStreamTrack]);
         }
       } catch (e) {
-        console.warn('[VideoTracks] LiveKit track attach error:', e);
+        if (DEBUG) console.warn('[VideoTracks] LiveKit track attach error:', e);
       }
     }
     
@@ -66,7 +66,7 @@
     try {
       return new MediaStream([track]);
     } catch (e) {
-      console.warn('[VideoTracks] Cannot create MediaStream from track:', e);
+      if (DEBUG) console.warn('[VideoTracks] Cannot create MediaStream from track:', e);
       return null;
     }
   }

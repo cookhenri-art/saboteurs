@@ -419,16 +419,16 @@
       // V3.21 COORDINATION: SCROLL FIX AVEC FLAG
       // ============================================
       
-      console.log('%c🎯 V3.21: MODE SPLIT ACTIVÉ - COORDINATION SCROLL', 
+      if (DEBUG) console.log('%c🎯 V3.21: MODE SPLIT ACTIVÉ - COORDINATION SCROLL', 
         'background: #00ff00; color: #000000; font-size: 16px; font-weight: bold; padding: 5px;');
       
       // ÉTAPE 1: ACTIVER LE FLAG pour bloquer client.js
       window.__briefingUIScrollLock = true;
-      console.log('[V3.21] 🔒 Flag de coordination activé - client.js est bloqué');
+      if (DEBUG) console.log('[V3.21] 🔒 Flag de coordination activé - client.js est bloqué');
       
       // ÉTAPE 2: Capturer position initiale
       const scrollStart = window.pageYOffset || document.documentElement.scrollTop;
-      console.log('[V3.21] 📍 Position de départ:', scrollStart);
+      if (DEBUG) console.log('[V3.21] 📍 Position de départ:', scrollStart);
       
       // ÉTAPE 3: Désactiver smooth scroll temporairement
       const originalScrollBehavior = document.documentElement.style.scrollBehavior;
@@ -456,16 +456,16 @@
         const current = window.pageYOffset || document.documentElement.scrollTop;
         if (current !== scrollStart) {
           window.scrollTo({ top: scrollStart, behavior: 'auto' });
-          console.log(`[V3.21] ✅ Scroll restauré (${reason}):`, scrollStart, 'was:', current);
+          if (DEBUG) console.log(`[V3.21] ✅ Scroll restauré (${reason}):`, scrollStart, 'was:', current);
           return true;
         }
         return false;
       };
       
       // ÉTAPE 6: show() avec surveillance
-      console.log('[V3.21] 🎬 Appel show()...');
+      if (DEBUG) console.log('[V3.21] 🎬 Appel show()...');
       show();
-      console.log('[V3.21] ✓ show() terminé');
+      if (DEBUG) console.log('[V3.21] ✓ show() terminé');
       
       updateExpandButton(false);
       
@@ -502,7 +502,7 @@
               
               // LIBÉRER LE FLAG
               window.__briefingUIScrollLock = false;
-              console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
+              if (DEBUG) console.log('[V3.21] 🔓 Flag de coordination libéré - client.js peut agir');
               
               // Arrêter le monitoring
               // V41 FIX: Utiliser la variable de module
@@ -512,11 +512,13 @@
               }
               
               const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
-              console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 
-                'background: #0088ff; color: #ffffff; font-size: 14px; font-weight: bold; padding: 5px;');
-              console.log('[V3.21] Position finale:', scrollEnd);
-              console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
-              console.log('[V3.21] Changements détectés:', scrollChanges.length);
+              if (DEBUG) {
+                console.log('%c📊 V3.21: RAPPORT FINAL COORDINATION', 
+                  'background: #0088ff; color: #ffffff; font-size: 14px; font-weight: bold; padding: 5px;');
+                console.log('[V3.21] Position finale:', scrollEnd);
+                console.log('[V3.21] Delta total:', scrollEnd - scrollStart);
+                console.log('[V3.21] Changements détectés:', scrollChanges.length);
+              }
               // V41 FIX: Ne plus afficher la table complète (spam)
               // console.table est disponible en mode debug si nécessaire
               
@@ -525,10 +527,10 @@
               document.body.style.scrollBehavior = originalScrollBehavior;
               
               if (scrollEnd === scrollStart) {
-                console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 
+                if (DEBUG) console.log('%c✅ V3.21: SUCCÈS - SCROLL STABLE (COORDINATION)', 
                   'background: #00ff00; color: #000000; font-size: 16px; font-weight: bold; padding: 5px;');
               } else {
-                console.error('%c❌ V3.21: ÉCHEC - SCROLL A BOUGÉ', 
+                if (DEBUG) console.error('%c❌ V3.21: ÉCHEC - SCROLL A BOUGÉ', 
                   'background: #ff0000; color: #ffffff; font-size: 16px; font-weight: bold; padding: 5px;');
               }
             }, 200);
@@ -541,11 +543,11 @@
       // V3.21 COORDINATION: SCROLL FIX POUR HIDE
       // ============================================
       
-      console.log('[V3.21] 🔽 MODE HIDE - Début fix scroll');
+      if (DEBUG) console.log('[V3.21] 🔽 MODE HIDE - Début fix scroll');
       
       // ACTIVER LE FLAG
       window.__briefingUIScrollLock = true;
-      console.log('[V3.21] 🔒 Flag activé pour HIDE');
+      if (DEBUG) console.log('[V3.21] 🔒 Flag activé pour HIDE');
       
       const scrollStart = window.pageYOffset || document.documentElement.scrollTop;
       
@@ -564,13 +566,13 @@
         const scrollEnd = window.pageYOffset || document.documentElement.scrollTop;
         if (scrollEnd !== scrollStart) {
           window.scrollTo(0, scrollStart);
-          console.log('[V3.21] ✅ Scroll restauré après hide:', scrollStart);
+          if (DEBUG) console.log('[V3.21] ✅ Scroll restauré après hide:', scrollStart);
         }
         
         // Libérer le flag après hide
         setTimeout(() => {
           window.__briefingUIScrollLock = false;
-          console.log('[V3.21] 🔓 Flag libéré après HIDE');
+          if (DEBUG) console.log('[V3.21] 🔓 Flag libéré après HIDE');
         }, 100);
       });
     }
@@ -637,6 +639,18 @@
     
     refreshParticipants();
     syncControlStates(); // D4: Synchroniser l'état des boutons micro/caméra
+    
+    // V11: Refresh différé pour s'assurer que toutes les vidéos sont attachées
+    setTimeout(() => {
+      refreshParticipants();
+      attachVideoTracks();
+    }, 500);
+    
+    // V11: Second refresh pour les vidéos qui tardent
+    setTimeout(() => {
+      attachVideoTracks();
+    }, 1500);
+    
     log('Briefing UI shown');
   }
 
@@ -1021,7 +1035,7 @@
         focusVideoEl.src = URL.createObjectURL(stream);
       }
     } else {
-      console.warn('[BriefingUI] Cannot get stream from track for focus video');
+      if (DEBUG) console.warn('[BriefingUI] Cannot get stream from track for focus video');
     }
     
     // Insert before name overlay
@@ -1100,7 +1114,7 @@
         video.src = URL.createObjectURL(stream);
       }
     } else {
-      console.warn('[BriefingUI] Cannot get stream from track for thumbnail');
+      if (DEBUG) console.warn('[BriefingUI] Cannot get stream from track for thumbnail');
     }
     
     // Insert before name label
@@ -1427,6 +1441,6 @@
     init();
   }
 
-  console.log('[VideoBriefingUI] D4 Module loaded ✅');
+  if (DEBUG) console.log('[VideoBriefingUI] D4 Module loaded ✅');
 
 })();
