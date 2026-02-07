@@ -414,10 +414,31 @@
     }, { passive: false });
     
     // Listen to VideoModeController events
-    if (window.videoModeCtrl) {
-      window.videoModeCtrl.on('modeChange', handleModeChange);
-      window.videoModeCtrl.on('focusChange', handleFocusChange);
-      window.videoModeCtrl.on('activeSpeakerChange', handleActiveSpeakerChange);
+    // V11: Attacher immédiatement si disponible, sinon réessayer plus tard
+    function attachVideoModeCtrlListeners() {
+      if (window.videoModeCtrl) {
+        window.videoModeCtrl.on('modeChange', handleModeChange);
+        window.videoModeCtrl.on('focusChange', handleFocusChange);
+        window.videoModeCtrl.on('activeSpeakerChange', handleActiveSpeakerChange);
+        log('VideoModeCtrl listeners attached');
+        return true;
+      }
+      return false;
+    }
+    
+    if (!attachVideoModeCtrlListeners()) {
+      // V11: Réessayer toutes les 500ms jusqu'à 10 secondes
+      let attempts = 0;
+      const maxAttempts = 20;
+      const retryInterval = setInterval(() => {
+        attempts++;
+        if (attachVideoModeCtrlListeners() || attempts >= maxAttempts) {
+          clearInterval(retryInterval);
+          if (attempts >= maxAttempts) {
+            log('Warning: VideoModeCtrl not found after 10s');
+          }
+        }
+      }, 500);
     }
     
     log('Events bound');
@@ -911,6 +932,13 @@
         const gridItem = createGridItem(p);
         gridContainer.appendChild(gridItem);
         gridElements.set(p.playerId, gridItem);
+        
+        // V11: Marquer le speaker aussi en mode MAX
+        if (p.playerId === currentSpeaker) {
+          gridItem.classList.add('is-speaking');
+          const badge = gridItem.querySelector('.badge-speaker');
+          if (badge) badge.style.display = 'inline-block';
+        }
       });
     }
     
