@@ -671,32 +671,46 @@
   // PARTICIPANTS MANAGEMENT
   // ============================================
   
+  // Variable pour tracker le dernier mode utilisé
+  let lastRefreshMode = null;
+  
   function refreshParticipants() {
     if (!window.videoModeCtrl) return;
     
     const participants = window.videoModeCtrl.getParticipants();
     const currentFocus = window.videoModeCtrl.getFocusedPlayerId();
     
-    // GRILLE 2x2: Détecter si on est en mode SPLIT
+    // GRILLE: Détecter si on est en mode SPLIT
     const isSplitMode = container && container.classList.contains('mode-split');
+    const currentMode = isSplitMode ? 'SPLIT' : 'MAX';
     
-    log('Refreshing participants:', participants.length, 'mode:', isSplitMode ? 'SPLIT-GRID-2x2' : 'FOCUS');
+    log('Refreshing participants:', participants.length, 'mode:', currentMode, 'lastMode:', lastRefreshMode);
     
-    // GRILLE MODE SPLIT: Ne JAMAIS reconstruire si les thumbs existent déjà
-    // Cela évite la miniaturisation des vidéos lors des clics "Validé"
-    if (isSplitMode && thumbElements.size > 0) {
-      log('SPLIT MODE: Skipping rebuild, thumbs already exist:', thumbElements.size);
+    // Calculer le nombre attendu de thumbs
+    const expectedThumbCount = isSplitMode ? participants.length : participants.length - 1;
+    
+    // GRILLE MODE SPLIT: Ne pas reconstruire SI:
+    // 1. On est en mode SPLIT
+    // 2. Le mode n'a pas changé depuis le dernier refresh
+    // 3. Le nombre de thumbs correspond au nombre attendu
+    if (isSplitMode && lastRefreshMode === 'SPLIT' && thumbElements.size === expectedThumbCount) {
+      log('SPLIT MODE: Skipping rebuild, thumbs already correct:', thumbElements.size);
       // Juste réattacher les tracks aux éléments existants
       attachVideoTracks();
       return;
     }
+    
+    // Mettre à jour le mode tracker
+    lastRefreshMode = currentMode;
+    
+    log('Rebuilding thumbs for mode:', currentMode, 'expected:', expectedThumbCount);
     
     // Clear existing thumbs
     thumbsSidebar.innerHTML = '';
     thumbElements.clear();
     
     // Create thumbnail for each participant
-    // GRILLE 2x2: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
+    // GRILLE: En mode SPLIT, inclure TOUS les joueurs (y compris le focusé)
     participants.forEach(p => {
       if (!isSplitMode && p.playerId === currentFocus) return; // Skip focused player in thumbs (mode MAX seulement)
       

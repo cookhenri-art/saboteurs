@@ -146,33 +146,35 @@
 /* *** GRILLE: SIDEBAR DEVIENT CONTENEUR FLEX CENTRÉ *** */
 .video-briefing-container.mode-split .video-thumbs-sidebar {
   width: 100% !important;
-  height: 100% !important;
-  flex: 1 1 100% !important;
+  height: calc(100% - 10px) !important;
+  flex: 1 1 auto !important;
   
   /* Flexbox pour centrer et wrap */
   display: flex !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
+  align-items: center !important;
   align-content: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
   
   max-height: none !important;
   overflow: visible !important;
-  padding: 0 !important;
+  padding: 5px !important;
   flex-direction: row !important;
+  box-sizing: border-box !important;
 }
 
 /* *** GRILLE: TAILLE FIXE DES VIDÉOS *** */
 .video-briefing-container.mode-split .video-thumb {
-  /* Taille fixe - pas étirée */
-  width: 180px !important;
-  height: 135px !important;
-  min-width: 180px !important;
-  min-height: 135px !important;
-  max-width: 180px !important;
-  max-height: 135px !important;
+  /* Taille fixe - pas étirée - assez grande pour 6 max par ligne */
+  width: 200px !important;
+  height: 150px !important;
+  min-width: 200px !important;
+  min-height: 150px !important;
+  max-width: 200px !important;
+  max-height: 150px !important;
   
-  flex: 0 0 180px !important;
+  flex: 0 0 200px !important;
   aspect-ratio: 4/3 !important;
   
   border-radius: 12px;
@@ -751,26 +753,27 @@
   /* GRILLE: Sidebar = flex centré */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
-    height: 100% !important;
-    flex: 1 !important;
+    height: calc(100% - 10px) !important;
+    flex: 1 1 auto !important;
     display: flex !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
+    align-items: center !important;
     align-content: center !important;
-    gap: 6px !important;
+    gap: 8px !important;
     max-height: none !important;
     overflow: visible !important;
   }
   
-  /* GRILLE: Taille fixe mais plus petite sur tablette */
+  /* GRILLE: Taille fixe sur tablette */
   .video-briefing-container.mode-split .video-thumb {
-    width: 150px !important;
-    height: 112px !important;
-    min-width: 150px !important;
-    min-height: 112px !important;
-    max-width: 150px !important;
-    max-height: 112px !important;
-    flex: 0 0 150px !important;
+    width: 160px !important;
+    height: 120px !important;
+    min-width: 160px !important;
+    min-height: 120px !important;
+    max-width: 160px !important;
+    max-height: 120px !important;
+    flex: 0 0 160px !important;
   }
   
   .mode-split .video-thumb .thumb-name {
@@ -1198,25 +1201,26 @@ body.video-split-active #topRightButtons {
     top: calc(35vh + 5px) !important;
   }
   
-  /* GRILLE: Mobile - taille fixe plus petite */
+  /* GRILLE: Mobile - taille fixe */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
-    height: 100% !important;
+    height: calc(100% - 5px) !important;
     display: flex !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
+    align-items: center !important;
     align-content: center !important;
-    gap: 5px !important;
+    gap: 6px !important;
   }
   
   .video-briefing-container.mode-split .video-thumb {
-    width: 120px !important;
-    height: 90px !important;
-    min-width: 120px !important;
-    min-height: 90px !important;
-    max-width: 120px !important;
-    max-height: 90px !important;
-    flex: 0 0 120px !important;
+    width: 140px !important;
+    height: 105px !important;
+    min-width: 140px !important;
+    min-height: 105px !important;
+    max-width: 140px !important;
+    max-height: 105px !important;
+    flex: 0 0 140px !important;
   }
   
   /* Header plus compact */
@@ -1250,25 +1254,26 @@ body.video-split-active #topRightButtons {
     /* padding-top: calc(30vh + 10px) !important; SUPPRIMÉ V3.23 */
   }
   
-  /* GRILLE: Très petits écrans - taille fixe encore plus petite */
+  /* GRILLE: Très petits écrans - taille fixe plus petite */
   .video-briefing-container.mode-split .video-thumbs-sidebar {
     width: 100% !important;
-    height: 100% !important;
+    height: calc(100% - 5px) !important;
     display: flex !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
+    align-items: center !important;
     align-content: center !important;
     gap: 4px !important;
   }
   
   .video-briefing-container.mode-split .video-thumb {
-    width: 100px !important;
-    height: 75px !important;
-    min-width: 100px !important;
-    min-height: 75px !important;
-    max-width: 100px !important;
-    max-height: 75px !important;
-    flex: 0 0 100px !important;
+    width: 110px !important;
+    height: 82px !important;
+    min-width: 110px !important;
+    min-height: 82px !important;
+    max-width: 110px !important;
+    max-height: 82px !important;
+    flex: 0 0 110px !important;
   }
 }
 
