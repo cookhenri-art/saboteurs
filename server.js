@@ -149,6 +149,66 @@ function sanitizeForLLM(text) {
     .substring(0, 2000);
 }
 
+// ============================================================================
+// V42 SECURITY: Fonctions de sanitization pour entrées utilisateur
+// ============================================================================
+
+/**
+ * V42: Sanitize un nom de joueur (anti-XSS)
+ * - Limite la longueur à 30 caractères
+ * - Supprime les caractères HTML dangereux
+ * - Supprime les caractères de contrôle
+ */
+function sanitizeName(name) {
+  if (!name) return 'Joueur';
+  return String(name)
+    .trim()
+    .substring(0, 30)
+    .replace(/[<>\"'&\\]/g, '')
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+=/gi, '') || 'Joueur';
+}
+
+/**
+ * V42: Sanitize un message de chat (anti-XSS)
+ * - Limite à 500 caractères
+ * - Échappe les balises HTML
+ */
+function sanitizeChatMessage(message) {
+  if (!message) return '';
+  return String(message)
+    .trim()
+    .substring(0, 500)
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * V42: Valide un code couleur hex (anti-CSS injection)
+ * - Accepte uniquement #RGB ou #RRGGBB
+ */
+function validateColorHex(hex) {
+  if (!hex) return null;
+  const clean = String(hex).trim();
+  if (/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(clean)) {
+    return clean;
+  }
+  return null;
+}
+
+/**
+ * V42: Sanitize un commentaire de room
+ */
+function sanitizeComment(comment) {
+  if (!comment) return '';
+  return String(comment)
+    .trim()
+    .substring(0, 50)
+    .replace(/[<>\"'&\\]/g, '')
+    .replace(/[\x00-\x1F\x7F]/g, '');
+}
+
 /**
  * Liste des langues valides
  */
@@ -10674,7 +10734,7 @@ function joinRoomCommon(socket, room, playerId, name, playerToken = null, custom
     
     p = {
       playerId,
-      name: String(name || "Joueur").trim(),
+      name: sanitizeName(name),  // V42 SEC: Sanitization anti-XSS
       socketId: socket.id,
       connected: true,
       status: "alive",
@@ -10694,7 +10754,7 @@ function joinRoomCommon(socket, room, playerId, name, playerToken = null, custom
       avatarEmoji: avatarEmoji,  // V32: Peut être réassigné
       avatarUrl: avatarUrl,  // V31: Avatar IA généré
       colorId: customization.colorId || null,
-      colorHex: customization.colorHex || null,
+      colorHex: validateColorHex(customization.colorHex),  // V42 SEC: Anti-CSS injection
       badgeId: customization.badgeId || null,
       badgeEmoji: customization.badgeEmoji || null,
       badgeName: customization.badgeName || null
@@ -10980,8 +11040,8 @@ io.on("connection", (socket) => {
       // V35: Configuration room publique
       if (isPublic) {
         room.isPublic = true;
-        room.roomName = roomName || `Room de ${name}`;
-        room.comment = comment ? comment.substring(0, 50) : ''; // Max 50 chars
+        room.roomName = sanitizeName(roomName) || `Room de ${sanitizeName(name)}`;  // V42 SEC
+        room.comment = sanitizeComment(comment);  // V42 SEC: Anti-XSS
         room.creatorAccountType = creatorAccountType;
         // Max players: 9 pour mobile, 12 pour PC
         room.maxPlayers = isMobile ? 9 : 12;
@@ -11247,7 +11307,7 @@ io.on("connection", (socket) => {
       playerName: player.name,
       avatarEmoji: player.avatarEmoji || "👤",
       avatarUrl: player.avatarUrl || null,  // V31: Avatar IA
-      message: trimmedMessage,
+      message: sanitizeChatMessage(trimmedMessage),  // V42 SEC: Anti-XSS
       voiceMessage: voiceMessage || null,  // V42: Message vocal
       timestamp: Date.now(),
       type: "player"
