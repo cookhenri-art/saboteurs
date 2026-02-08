@@ -3290,7 +3290,11 @@ socket.on("roomState", (s) => {
   }
   
   // D7: Animation d'éjection (quand un joueur est éliminé)
-  console.log('[D7] Ejection check - previousAlive:', previousAliveCount, 'currentAlive:', currentAliveCount);
+  // PERF12: Ne logger que si le nombre de vivants a changé
+  if (window._lastD7AliveCount !== currentAliveCount) {
+    window._lastD7AliveCount = currentAliveCount;
+    console.log('[D7] Ejection check - previousAlive:', previousAliveCount, 'currentAlive:', currentAliveCount);
+  }
   if (previousAliveCount > 0 && currentAliveCount < previousAliveCount) {
     // D11 V4: Trouver les joueurs qui viennent d'être éliminés en utilisant previousPlayerStatuses
     const newlyDead = s.players.filter(p => {

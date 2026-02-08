@@ -3916,6 +3916,34 @@ const TRANSLATIONS = {
         pt: "Partida interrompida — jogadores insuficientes",
         nl: "Spel afgebroken — niet genoeg spelers"
       },
+      // PERF12: Traductions manquantes ajoutées
+      draw: {
+        fr: "Match nul",
+        en: "Draw",
+        es: "Empate",
+        it: "Pareggio",
+        de: "Unentschieden",
+        pt: "Empate",
+        nl: "Gelijkspel"
+      },
+      transferOk: {
+        fr: "✅ Transfert réussi",
+        en: "✅ Transfer successful",
+        es: "✅ Transferencia exitosa",
+        it: "✅ Trasferimento riuscito",
+        de: "✅ Übertragung erfolgreich",
+        pt: "✅ Transferência bem-sucedida",
+        nl: "✅ Overdracht geslaagd"
+      },
+      transferKo: {
+        fr: "❌ Transfert échoué",
+        en: "❌ Transfer failed",
+        es: "❌ Transferencia fallida",
+        it: "❌ Trasferimento fallito",
+        de: "❌ Übertragung fehlgeschlagen",
+        pt: "❌ Transferência falhou",
+        nl: "❌ Overdracht mislukt"
+      },
       tabSummary: {
         fr: "Résumé",
         en: "Summary",
@@ -4414,6 +4442,25 @@ const TRANSLATIONS = {
         de: "Rache",
         pt: "vingança",
         nl: "wraak"
+      },
+      // PERF12: Traductions manquantes ajoutées
+      orques: {
+        fr: "orques",
+        en: "orcs",
+        es: "orcos",
+        it: "orchi",
+        de: "Orks",
+        pt: "orcs",
+        nl: "orks"
+      },
+      guérisseur: {
+        fr: "guérisseur",
+        en: "healer",
+        es: "curandero",
+        it: "guaritore",
+        de: "Heiler",
+        pt: "curandeiro",
+        nl: "genezer"
       },
       // V24: Sources thématiques
       lycanthropes: {

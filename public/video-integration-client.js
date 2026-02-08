@@ -8,7 +8,18 @@
 // SECTION VIDEO - LIVEKIT INTEGRATION (was Daily.co)
 // ============================================
 
-console.log('[Video] build=D4-briefing-mode-livekit-v1');
+console.log('[Video] build=PERF12-optimized-livekit');
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PERF12: Optimisations pour réduire CPU/batterie sur mobile
+// - Memoization des états pour éviter logs/actions redondants
+// - Throttling renforcé des opérations coûteuses
+// ═══════════════════════════════════════════════════════════════════════════
+let _lastPermissionsHash = null;
+let _lastPhaseLogged = null;
+window.SABOTEUR_DEBUG = window.location.hostname === 'localhost' || 
+                        window.location.hostname.includes('test') ||
+                        window.location.search.includes('debug=1');
 
 // ============================================
 // D4: INTEGRATION WITH VideoModeController
@@ -321,7 +332,25 @@ function updateVideoPermissions(state) {
   const permissions = state.videoPermissions;
   if (!permissions) return;
 
-  console.log('[Video] V11 ULTRA-SIMPLE: Phase', state.phase, '- Audio géré uniquement par phases privées');
+  // PERF12: Créer un hash des permissions pour détecter les vrais changements
+  const permHash = JSON.stringify({
+    phase: state.phase,
+    canBroadcast: permissions.canBroadcast,
+    canReceive: permissions.canReceive,
+    deafened: permissions.deafened
+  });
+
+  // PERF12: Ne logger que si la phase change
+  if (_lastPhaseLogged !== state.phase) {
+    _lastPhaseLogged = state.phase;
+    console.log('[Video] V11 ULTRA-SIMPLE: Phase', state.phase, '- Audio géré uniquement par phases privées');
+  }
+
+  // PERF12: Ne rien faire si les permissions n'ont pas changé
+  if (permHash === _lastPermissionsHash) {
+    return;
+  }
+  _lastPermissionsHash = permHash;
   
   // V11 ULTRA-SIMPLE: NE RIEN FORCER sur le micro
   // Seule exception : phases privées gérées par video-tracks.js (forceLocalMute)
@@ -330,14 +359,17 @@ function updateVideoPermissions(state) {
   // Appliquer les permissions de base (vidéo + deafen seulement)
   window.dailyVideo.updatePermissions(permissions);
   
-  // Rafraîchir le filtrage des tracks selon les nouvelles permissions
+  // PERF12: Throttle renforcé - 500ms minimum entre refreshs
   if (window.VideoTracksRefresh) {
     const now = Date.now();
-    if (!window._lastTracksRefreshTime || (now - window._lastTracksRefreshTime) > 300) {
+    if (!window._lastTracksRefreshTime || (now - window._lastTracksRefreshTime) > 500) {
       window._lastTracksRefreshTime = now;
       setTimeout(() => {
         window.VideoTracksRefresh();
-        console.log('[Video] 🔄 Tracks refreshed for new permissions');
+        // PERF12: Log uniquement en debug
+        if (window.SABOTEUR_DEBUG) {
+          console.log('[Video] 🔄 Tracks refreshed for new permissions');
+        }
       }, 200);
     }
   }
@@ -661,10 +693,11 @@ function cleanupVideo() {
     // Stocker l'état pour debug
     window.lastKnownState = state;
     
-    // V32: Mettre à jour immédiatement le statut de broadcast vidéo
-    if (state?.you?.canBroadcastVideo !== undefined) {
+    // V32/PERF12: Mettre à jour SEULEMENT si la valeur change
+    if (state?.you?.canBroadcastVideo !== undefined && 
+        state.you.canBroadcastVideo !== playerCanBroadcastVideo) {
       playerCanBroadcastVideo = state.you.canBroadcastVideo;
-      console.log('[Video] V32: canBroadcastVideo updated to:', playerCanBroadcastVideo);
+      console.log('[Video] V32: canBroadcastVideo changed to:', playerCanBroadcastVideo);
     }
 
     // D4: Synchroniser avec le VideoModeController
@@ -710,9 +743,12 @@ function cleanupVideo() {
         showVideoStatus('📱 Appuie sur "Activer la visio"', 'info');
       } else {
         // Desktop: auto si préférence persistée, ou si non mobile
+        // PERF12: Ne pas log/init si déjà initialisé ou en cours
         if (!VIDEO_IS_MOBILE && (videoUserRequestedPersisted || true)) {
-          console.log('[Video] 🎯 Conditions met for video initialization');
-          initVideoForGame(state);
+          if (!videoRoomJoined && !isInitializingVideo) {
+            console.log('[Video] 🎯 Conditions met for video initialization');
+            initVideoForGame(state);
+          }
         }
       }
     } else {

@@ -149,16 +149,25 @@
     
     /**
      * Met à jour l'état depuis roomState (appelé par video-integration-client.js)
+     * PERF12: Memoization pour éviter logs/updates redondants
      */
     updateFromRoomState(state) {
       if (!state) return;
       
-      this.currentPhase = state.phase || 'LOBBY';
-      
-      // Compter les joueurs vivants avec vidéo potentiellement active
+      const newPhase = state.phase || 'LOBBY';
       const players = state.players || [];
       const alivePlayers = players.filter(p => p.alive !== false);
-      this.activePlayerCount = alivePlayers.length;
+      const newPlayerCount = alivePlayers.length;
+      
+      // PERF12: Créer un hash pour détecter les vrais changements
+      const stateHash = `${newPhase}-${newPlayerCount}-${this.isVideoJoined}`;
+      if (this._lastStateHash === stateHash) {
+        return; // Pas de changement significatif
+      }
+      this._lastStateHash = stateHash;
+      
+      this.currentPhase = newPhase;
+      this.activePlayerCount = newPlayerCount;
       
       // Update participants map
       this.participants.clear();
@@ -182,11 +191,17 @@
 
     /**
      * Signale que la vidéo Daily est connectée
+     * PERF12: Ne logger/agir que si la valeur change
      */
     setVideoJoined(joined) {
+      const wasJoined = this.isVideoJoined;
       this.isVideoJoined = !!joined;
-      this.log('Video joined:', joined);
-      this.evaluateMode();
+      
+      // PERF12: Ne logger et évaluer que si changement
+      if (wasJoined !== this.isVideoJoined) {
+        this.log('Video joined:', joined);
+        this.evaluateMode();
+      }
     }
 
     /**
