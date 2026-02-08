@@ -4633,7 +4633,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formContainer) {
       const notice = document.createElement('p');
       notice.style.cssText = 'text-align:center;color:var(--neon-green);margin-top:15px;font-size:0.9em;';
-      notice.innerHTML = `📣 Room publique : <strong>${urlRoomName || 'Nouvelle room'}</strong><br><small>${urlRoomType === 'chat' ? '💬 Chat uniquement' : '🎥 Avec vidéo'}</small>`;
+      // V42 SEC: Échapper urlRoomName pour éviter XSS via paramètre URL
+      notice.innerHTML = `📣 Room publique : <strong>${escapeHtml(urlRoomName || 'Nouvelle room')}</strong><br><small>${urlRoomType === 'chat' ? '💬 Chat uniquement' : '🎥 Avec vidéo'}</small>`;
       formContainer.appendChild(notice);
     }
   }
