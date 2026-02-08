@@ -18,28 +18,29 @@
 
 :root {
   /* Briefing mode colors */
-  --briefing-bg: linear-gradient(135deg, rgba(8, 12, 30, 0.98) 0%, rgba(15, 25, 50, 0.98) 100%);
+  /* V42: Fond COMPLÈTEMENT transparent */
+  --briefing-bg: transparent;
   --briefing-border: rgba(0, 255, 255, 0.25);
   --briefing-glow: rgba(0, 255, 255, 0.15);
   
   /* Focus video */
   --focus-border: rgba(0, 255, 255, 0.4);
   --focus-glow: 0 0 40px rgba(0, 255, 255, 0.3);
-  --focus-bg: rgba(0, 0, 0, 0.6);
+  --focus-bg: transparent;
   
   /* Thumbnails */
   --thumb-size: 120px;
   --thumb-size-mobile: 90px;
   --thumb-border: rgba(255, 255, 255, 0.15);
   --thumb-border-hover: rgba(0, 255, 255, 0.5);
-  --thumb-bg: rgba(0, 0, 0, 0.5);
+  --thumb-bg: transparent;
   
   /* Speaker highlight */
   --speaker-ring: rgba(0, 255, 255, 0.8);
   --speaker-pulse: rgba(0, 255, 255, 0.4);
   
   /* Controls */
-  --control-bg: rgba(0, 0, 0, 0.7);
+  --control-bg: rgba(0, 0, 0, 0.5);
   --control-hover: rgba(0, 255, 255, 0.2);
   
   /* Animations */
@@ -48,22 +49,23 @@
 }
 
 /* Theme overrides (optional - uses existing theme vars) */
+/* V42: Tous les thèmes avec fond transparent */
 [data-theme="werewolf"] {
-  --briefing-bg: linear-gradient(135deg, rgba(20, 10, 5, 0.98) 0%, rgba(40, 20, 10, 0.98) 100%);
+  --briefing-bg: transparent;
   --briefing-border: rgba(200, 150, 100, 0.3);
   --focus-border: rgba(200, 150, 100, 0.5);
   --speaker-ring: rgba(255, 180, 100, 0.8);
 }
 
 [data-theme="wizard-academy"] {
-  --briefing-bg: linear-gradient(135deg, rgba(25, 15, 40, 0.98) 0%, rgba(45, 25, 70, 0.98) 100%);
+  --briefing-bg: transparent;
   --briefing-border: rgba(157, 78, 221, 0.3);
   --focus-border: rgba(157, 78, 221, 0.5);
   --speaker-ring: rgba(157, 78, 221, 0.8);
 }
 
 [data-theme="mythic-realms"] {
-  --briefing-bg: linear-gradient(135deg, rgba(15, 25, 20, 0.98) 0%, rgba(30, 50, 40, 0.98) 100%);
+  --briefing-bg: transparent;
   --briefing-border: rgba(100, 200, 150, 0.3);
   --focus-border: rgba(100, 200, 150, 0.5);
   --speaker-ring: rgba(100, 200, 150, 0.8);
@@ -78,13 +80,13 @@
   position: fixed;
   z-index: 10500;
   background: var(--briefing-bg);
-  /* V11: Ajouter l'image de fond du thème */
-  background-image: var(--lazy-bg-url, none);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* V42: Fond complètement transparent - pas d'image ni blur */
+  /* background-image: var(--lazy-bg-url, none); */
+  /* background-size: cover; */
+  /* background-position: center; */
+  /* background-blend-mode: overlay; */
+  /* backdrop-filter: blur(5px); */
+  /* -webkit-backdrop-filter: blur(5px); */
   box-sizing: border-box;
   
   /* Animation d'entrée */
